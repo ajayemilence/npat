@@ -1,0 +1,124 @@
+let express = require('express');
+let mongoose = require('mongoose');
+let multer = require('multer');
+let moment = require('moment');
+
+let config = require('../config');
+let Place = require('../model/place');
+
+
+module.exports = ({ config, db }) => {
+    let api = express.Router();
+
+
+    // add place ============================>
+
+    api.post('/addPlace', (req, res) => {
+        let place = new Place({
+            name: req.body.name,
+            word: req.body.word,
+            type: req.body.type,
+            createdAt: moment().local().valueOf(),
+            updatedAt: moment().local().valueOf(),
+            language: req.body.language
+        });
+        place.save((error, place) => {
+            if (error) {
+                res.json({ success: 0, msg: error });
+            }
+
+            res.status(200).json({ success: 1, msg: 'place info added', data: place });
+
+        });
+    });
+
+    api.get('/getAllplaces', (req, res) => {
+        Place.find({}, (err, names) => {
+            if (err) {
+                res.json({ success: 0, msg: "error occurred while retriving the places" });
+            }
+            return res.status(200).json({ success: 1, msg: "succesfully get all names ", data: names });
+        });
+    });
+
+    api.put('/updatePlace/:id', (req, res) => {
+        Place.findById(req.params.id, (err, place) => {
+            if (err) {
+                return res.json({ msg: "error occurred in getting the place" })
+            }
+            place.name = (req.body.name === undefined) ? place.name : req.body.name,
+                place.word = (req.body.word === undefined) ? place.word : req.body.word,
+                place.type = (req.body.type === undefined) ? place.type : req.body.type,
+                place.updatedAt = moment().local().valueOf(),
+                place.language = (req.body.language === undefined) ? place.language : req.body.language,
+
+                place.save(err => {
+                    if (err) {
+                        return res.json({ success: 0, msg: err });
+                    }
+
+                    res.status(200).json({ success: 1, msg: 'place info added', data: place });
+
+                });
+        });
+    });
+
+
+    api.delete('/delete/:id', (req, res) => {
+        Place.findById(req.params.id, (err, place) => {
+            place.remove((err) => {
+                if(err){
+                    return res.status(501).json({success : 0 , msg : "something went wrong"})
+                }
+                
+                    res.status(200).json({ success: 1, msg: "place is deleted" });
+            });
+
+        });
+    });
+
+
+
+    api.post('/upVote', (req, res) => {
+        Place.findOne({ name: req.body.name }, (err, place) => {
+            if (err) {
+                return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
+            }
+            
+            if(place.upVote == undefined || place.upVote == NaN){
+                place.upVote = 0;
+            }
+            place.upVote = place.upVote + 1;
+            place.save((err, place) => {
+                if (err) {
+                    return res.status(201).json({ success: 1, msg: " error occurred while saving the upvote" })
+                }
+                return res.status(200).json({ success: 0, msg: "word upvoted", data: place })
+            })
+        });
+    });
+
+
+    api.post('/downVote', (req, res) => {
+        Place.findOne({ name: req.body.name }, (err, place) => {
+            if (err) {
+                return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
+            }
+            
+            if(place.downVote == undefined || place.downVote == NaN){
+                place.downVote = 0;
+            }
+            place.downVote = place.downVote + 1;
+            place.save((err, place) => {
+                if (err) {
+                    return res.status(201).json({ success: 1, msg: " error occurred while saving the upvote" })
+                }
+                return res.status(200).json({ success: 0, msg: "word downVotet", data: place })
+            })
+        });
+    });
+
+
+
+    return api;
+};
