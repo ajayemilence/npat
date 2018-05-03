@@ -1,0 +1,214 @@
+<style>th, td {
+    padding: 45px;
+    text-align: left;
+}
+h1 {
+    font-family: 'Open Sans Condensed', sans-serif;
+    letter-spacing: 1px;
+    font-size: 2.3em;
+    line-height: 44px;
+    text-transform: uppercase;
+    color: #0059b3;
+    /*font-weight: 900;*/
+    margin: 0;
+    padding: 10px 0 0 30px;
+    letter-spacing: 1px;
+    /*background-color: black*/
+}
+
+</style>
+
+<style> 
+
+input[type=text]
+ {
+    width: 100px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    background-image: url('searchicon.png');
+    background-position: 10px 10px; 
+    background-repeat: no-repeat;
+    padding: 12px 12px 12px 25px;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+}
+
+input[type=text]:focus {
+    width: 100%;
+}
+
+
+</style>
+
+
+ <form>
+
+  <input class="btn btn-md" type="text" name="search" placeholder=" Search Name here .." id="myInput" onkeyup="myFunction()">
+
+</form>
+<br>
+
+<!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
+
+<div>
+<Button id="btn_add_new" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i> Add thing word</Button>
+</div>
+
+<div class="box">
+<font size="3" face="courier " >
+<!-- <Button id="btn_add_new" class="btn btn-primary pull-right new-item">Add word</Button> -->
+  <div class="box-body commit-lists">
+
+        <!-- <input id="hdAdminArea" type="hidden" value="{{user.isAdmin}}"> -->
+        <!--  {{#haveRecord words}} -->
+        <table id="tbl_assigned_repos_thing" class="table table-bordered table-striped">
+            <!-- <table id="tbl_assigned_repos"> -->
+            <thead>
+                <tr style="color:#004d66;">
+                    <th onclick="sortTable2(0)"><a>Name <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></a></i></th>
+                    <th onclick="sortTable2(1)"><a>Word <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></a></i></th>
+                    <th style="font-size:15px;padding-bottom : 20px;"><a>Created At<a></th>
+                    <th style="font-size:15px;padding-bottom : 20px;"><a>Up Vote<a></th>
+                    <th style="font-size:15px;padding-bottom : 20px;"><a>Down Vote<a></th>
+                    <!-- <th>fullName</th> -->
+                   <!--  <th></th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {{#each words}}
+                <tr class="odd gradeX">
+                    <td height="100">{{this.name}}</td>
+                    <td>{{this.word}}</td>
+                    <td>{{this.createdAt}}</td>
+                    <!-- <td>{{this.fullName}}</td> -->
+                </tr>
+                
+                {{/each}}
+            </tbody>
+        </table>
+        {{/haveRecord}}
+    </div>
+
+    <!-- =================sorting tables script ============= -->
+        <script>
+function sortTable2(n) {
+  var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+  table = document.getElementById("tbl_assigned_repos_thing");
+  switching = true;
+  //Set the sorting direction to ascending:
+  dir = "asc"; 
+  /*Make a loop that will continue until
+  no switching has been done:*/
+  while (switching) {
+    //start by saying: no switching is done:
+    switching = false;
+    rows = table.getElementsByTagName("TR");
+    /*Loop through all table rows (except the
+    first, which contains table headers):*/
+    for (i = 1; i < (rows.length - 1); i++) {
+      //start by saying there should be no switching:
+      shouldSwitch = false;
+      /*Get the two elements you want to compare,
+      one from current row and one from the next:*/
+      x = rows[i].getElementsByTagName("TD")[n];
+      y = rows[i + 1].getElementsByTagName("TD")[n];
+      /*check if the two rows should switch place,
+      based on the direction, asc or desc:*/
+      if (dir == "asc") {
+        if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      } else if (dir == "desc") {
+        if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {
+          //if so, mark as a switch and break the loop:
+          shouldSwitch= true;
+          break;
+        }
+      }
+    }
+    if (shouldSwitch) {
+      /*If a switch has been marked, make the switch
+      and mark that a switch has been done:*/
+      rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+      switching = true;
+      //Each time a switch is done, increase this count by 1:
+      switchcount ++;      
+    } else {
+      /*If no switching has been done AND the direction is "asc",
+      set the direction to "desc" and run the while loop again.*/
+      if (switchcount == 0 && dir == "asc") {
+        dir = "desc";
+        switching = true;
+      }
+    }
+  }
+}
+  </script>
+
+    </div>
+
+
+    <script>
+function myFunction() {
+  var input, filter, table, tr, td, i;
+  input = document.getElementById("myInput");
+  filter = input.value.toUpperCase();
+  table = document.getElementById("tbl_assigned_repos_thing");
+  tr = table.getElementsByTagName("TR");
+  for (i = 0; i < tr.length; i++) {
+    td = tr[i].getElementsByTagName("td")[0];
+    if (td) {
+      if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        tr[i].style.display = "";
+      } else {
+        tr[i].style.display = "none";
+      }
+    }       
+  }
+}
+</script>
+
+<!-- /.box -->
+<input type="hidden" value="" id="hdnRepoId" />
+<script>
+
+$(document).ready(function() {
+    $('#btn_add_new').click(function() {
+        $(".modal-body").load("/thing/addThing", function(responseTxt, statusTxt, xhr) {
+            $('.modal-title').text('Add Thing');
+            $('#modalPopup').modal('show');
+        });
+    });
+});
+
+
+$(document).off(function() {
+    $('#btn_delete').click(function() {
+        console.log('idhar delete pe hai');
+        var elem = this;
+
+            //console.log('yeh delete vala hai');
+        // $('#confirm').modal({
+        //         backdrop: 'static',
+        //         keyboard: false
+        //     })
+
+            // .off('click', '#delete').on('click', '#delete', function(e) {
+                $.post("/restaurants/delete", { id: $(elem).attr('data-id') }, function(data) {
+                    debugger
+                    if (data.success)
+                        $(elem).closest('li').remove();
+                });
+          //  })
+    });
+
+})
+
+
+</script>
+

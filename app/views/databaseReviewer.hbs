@@ -1,0 +1,131 @@
+<div id="openPostReviewPopup" class="user-profile addpost">
+    <form id="frmDatabaseReviewer" method="POST" enctype="multipart/form-data" action="../databaseReviewer/DatabaseReviewers">
+        <div id="openDatabseReviewPopup" class="user-profile-col">
+            <div class="profile-pic-user">
+                <span class="profile-users-img" style="background-image:url({{user.avatar_url}})"></span>
+            </div>
+            <div class="profile-pic-comment">
+                <div class="form-group">
+                    <textarea class="form-control" name="databaseReviewComment" onkeyup="textAreaAdjust(this)" id="databaseReviewComment" placeholder="Hi {{user.name}}, post your database diagram here"
+                        rows="2" required></textarea>
+                </div>
+            </div>
+        </div>
+        <div class="addpost-popup-content">
+            <div class="upload-pic-col">
+                <div class="upload-pic-submit-col">
+                    <div class="upload-btn-wrapper">
+                        <button class="btn btn-primary">
+                            <span class="upload-icon">
+                                <i class="fa fa-plus" aria-hidden="true"></i>
+                            </span>
+                            Upload File
+                        </button>
+                        <input type="file" name="databaseFileUpload" id="databaseFileUpload" accept="image/*" />
+                        <div class="uploaded-pic-col text-center" id="pnlPreview" style="display:none;">
+                            <span id="SolutionPreview" class="uploaded-pic-show" style=""></span>
+                        </div>
+                    </div>
+                </div>
+                <span id="imageUploadExt" class="imageUploadExtention" style="display:none;">Please upload image file type.</span>
+            </div>
+            <div class="comment-submit text-right">
+                <a onclick="closeDatabseReviewPopup()" class="btn btn-default" href="#">Cancel</a>
+                <input id="btnPostSolution" class="btn btn-primary" type="submit" value="Post" disabled="disabled" />
+            </div>
+            <input id="hdnRepoId" type="hidden" name="hdnRepoId" value="{{repository_id}}">
+        </div>
+    </form>
+</div>
+
+<div style="clear:both;"></div>
+{{#if Success}}
+<div class="alert alert-success custom-success" id="successMsg" style="display: block">
+    <strong>{{Message}}</strong>
+</div>
+{{/if}}
+<div class="box">
+    <div class="box-body">
+        <div class="post-container displaypost">
+            {{#if databaseReviewers }} {{#each databaseReviewers}}
+            <div class="post-content-panel">
+                <div class="post-content-panel-wrap">
+                    <div class="profile-pic-user">
+                        <span class="profile-users-img" style="background-image:url({{this.team_member.avatar_url}})"></span>
+                    </div>
+                    <div class="panel-comment-detail">
+                        <h5>{{this.team_member.login}} </h5>
+                        <span>{{dateFormat this.created_at "mmm dS, yyyy, h:MM:ss TT"}}</span>
+                    </div>
+                    <p>{{this.comment}}</p>
+                    <input id="hdnRepositoryId" type="hidden" value="{{this.repository_id}}">
+                    <a style="cursor: pointer" class="post-screen" onclick="openImgPreview({{this.id}})">
+                        <img id="imageUpload_{{this.id}}" class="img-responsive" src="https://s3-eu-west-2.amazonaws.com/reviewtool/{{this.file_name}}"
+                        />
+                    </a>
+                </div>
+                <!--post-content-panel-wrap-->
+                <div class="comment-section">
+                    <div class="comment-inner add_comment-list_{{this.id}}">
+                        {{render_partial this 'databaseReviewersComments.hbs'}}
+
+                        {{!-- {{#each this.database_reviewers_comments}}
+                        <div class="comment-list" id="comment-list_{{this.id}}">
+                            <div class="profile-pic-user">
+                                <span class="profile-users-img" style="background-image:url({{this.team_member.avatar_url}}"></span>
+                            </div>
+                            <div class="comment-text" id="comment-text_{{this.id}}" style="display:block" >
+                                <span class="user-name-comment">{{this.team_member.login}}</span> <span id="lblComment_{{this.id}}"  comment-id="{{this.id}}">{{this.comment}}</span> 
+                                <span class="comment-time">{{dateFormat this.created_at "mmm dS, yyyy, h:MM:ss TT"}}</span>
+                                {{#ifvalue this.team_member.login equals=../../user.login}}
+                                <div class="comment-dropdown">
+                                    <div class="dropdown ">
+                                        <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true"
+                                            aria-expanded="true">
+                                            <i class="fa fa-ellipsis-h" aria-hidden="true"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                                            <li>
+                                                <a class="editComment" id="editComment_{{this.id}}" comment-id="{{this.id}}" href="#"><span class="glyphicon glyphicon-pencil"></span> Edit</a>
+                                            </li>
+                                            <li>
+                                                <a class="deleteComment" id="deleteComment_{{this.id}}" comment-id="{{this.id}}" href="#"><span class="glyphicon glyphicon-trash"></span> Delete</a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                {{/ifvalue}}
+                            </div>
+                        </div>
+                        {{/each}} --}}
+                    </div>
+                    <div class="panel-comment-detail">
+                        <div class="profile-pic-user">
+                            <span class="profile-users-img" style="background-image:url({{../user.avatar_url}}"></span>
+                        </div>
+                        <textarea id="txtPostComment" database_reviewer_id="{{this.id}}" class="postComment  markdown animated" placeholder="Post comment here..."></textarea>
+                        <img src="../images/small-loader.gif" id="imgLoaderComment_{{this.id}}" class="imgLoader_comment" style="display:none">
+                    </div>
+                </div>
+            </div>
+            {{/each}} {{else}}
+            <div class="text-center">
+                <img src='/images/No-record-found.png' /> </div>
+            {{/if}}
+
+        </div>
+    </div>
+    <input id="hdnloggedInUserId" type="hidden" value="{{user.id}}">
+
+    <!-- The Modal -->
+    <div id="myModal" class="modal">
+        <span class="close_preview" onclick="document.getElementById('myModal').style.display='none'">&times;</span>
+        <img class="modal-content" id="imgPreview">
+    </div>
+    <link href="../bootstrap/css/bootstrap-markdown.min.css" rel="stylesheet">
+    <script src="../bootstrap/js/textarea_autosize.js"></script>
+    <script src="../bootstrap/js/bootstrap-markdown.js"></script> {{!--jquery from where we are getting emoji's--}}
+    <script src="../bootstrap/js/emoji.js"></script> {{!--jquery for autocomplete--}}
+    <script src="../bootstrap/js/jquery.textcomplete.js"></script> {{!--jquery to display markdown into html--}}
+    <script src="../bootstrap/js/markdown.js"></script>
+    <script type="text/javascript" src="../Scripts/Views/databaseReviewer.js"></script>
