@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
     npatService.getanimals(req, function(data) {
     	//console.log(data);
     	var data2 = data.forEach((eachdata) => {
-eachdata.createdAt =  moment(eachdata.createdAt).format("MMMM Do YYYY") //"2013-03-10"
+eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
             });
     	//console.log(data2);
         res.render('animal', { words: data , title: 'Animals', rootPath: process.env.IMAGES_ROOT_PATH});

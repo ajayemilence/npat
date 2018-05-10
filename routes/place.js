@@ -11,7 +11,7 @@ router.use(multipartyMiddleware);
 router.get('/', function(req, res) {
     npatService.getplaces(req, function(data) {
     	var data2 = data.forEach((eachdata) => {
-eachdata.createdAt =  moment(eachdata.createdAt).format("MMMM Do YYYY") //"2013-03-10"
+eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
             });
         res.render('place', { words: data , title: 'Places', rootPath: process.env.IMAGES_ROOT_PATH});
     });

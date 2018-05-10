@@ -12,7 +12,7 @@ router.get('/', function(req, res) {
 
     npatService.getthings(req, function(data) {
     	var data2 = data.forEach((eachdata) => {
-eachdata.createdAt =  moment(eachdata.createdAt).format("MMMM Do YYYY") //"2013-03-10"
+eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
             });
         res.render('thing', { words: data , title: 'Things', rootPath: process.env.IMAGES_ROOT_PATH});
     });
