@@ -50,9 +50,12 @@ module.exports = ({ config, db }) => {
                     createdAt: moment().local().valueOf(),
                     updatedAt: moment().local().valueOf(),
                     language: req.body.language,
-                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    upVote: (req.body.upVote === undefined ) ? 0 : req.body.upVote,
                     downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
                 });
+               console.log(human.upVote , "upVoteeeeeeee111111111");
+               console.log(req.body.upVote , "22222222222hhhhhhhhh");
+
                 human.save((error, human) => {
                     if (error) {
                         res.json({ success: 0, msg: error });
@@ -71,8 +74,6 @@ module.exports = ({ config, db }) => {
                     }
                     return res.status(200).json({ success: 1, msg: " human word info added upvoted", data: human })
                 });
-
-                
             }
 
         });
