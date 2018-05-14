@@ -51,6 +51,14 @@ input[type=text]:focus {
 </form>
 <br>
 
+<div class="container">
+        <div id="table_filter">
+            <a id="show_all" href="#">Show All&nbsp;&nbsp;&nbsp;</a>
+        </div>
+
+</div>
+<br>
+
 <!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
 
 <div>
@@ -72,7 +80,9 @@ input[type=text]:focus {
                     <!-- <th onclick="sortTable1(0)">name</th> -->
                     <th><a>Letter <i onclick="sortTable1(1)" class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
                     <th onclick="sortTable1(1)"><a>Gender <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
-                    <th onclick="sortTable1(2)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
+                    <!-- <th onclick="sortTable1(4)""><a>Language<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th> -->
+                    <th style="font-size:15px;padding-bottom : 20px;"><a>Language<a></th>
+                    <th onclick="sortTable1(3)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
                     <th style="font-size:15px;padding-bottom : 20px;"><a>Up Vote<a></th>
                     <th style="font-size:15px;padding-bottom : 20px;"><a>Down Vote<a></th>
                 </tr>
@@ -83,9 +93,11 @@ input[type=text]:focus {
                     <td height="100">{{this.name}}</td>
                     <td>{{this.word}}</td>
                     <td>{{this.gender}}</td>
+                    <td>{{this.language}}</td>
                     <td>{{this.createdAt}}</td>
                     <td>{{this.upVote}}</td>
                     <td>{{this.downVote}}</td>
+                    
                 </tr>
                 
                 {{/each}}
@@ -178,6 +190,29 @@ function myFunction() {
 </script>
 
 
+<!-- <script src="../jquery/jquery.min.js"></script> -->
+<script>
+        var alphas = 'abcdefghijklmnopqrstuvwxyz';
+        var tmp = '';
+        for (var x = 0; x < 26; x++){ 
+            tmp += '<a href="#">' + alphas[x].toUpperCase() + '</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        }
+        $('#table_filter').append(tmp);
+        $('#table_filter a').click(function () {
+            if ($(this).attr('id') == 'show_all') {
+                $('#tbl_assigned_repos tbody tr').css('display', 'table-row');
+                $('#message').html('displaying all rows');
+                return false;
+            }
+            var alpha = $(this).html();
+            $('#tbl_assigned_repos tbody tr').hide().filter(function () {
+                var td = $('td:nth-child(2)', $(this));
+                return td.length && td.html() && new RegExp('^' + alpha + '.*$', 'i').test( td.html().toLowerCase() );
+            }).css('display', 'table-row');
+        });
+    </script>
+
+
 
 
 <!-- /.box -->
@@ -197,32 +232,3 @@ $(document).ready(function() {
 
 
 </script>
-
-<!-- sign out  -->
-
-
-<!-- <li class="xn-icon-button pull-right">
-                        <a href="#" class="mb-control" data-box="#mb-signout"><span class="fa fa-sign-out"></span></a>
-                    </li>
-
-<div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
-            <div class="mb-container">
-                <div class="mb-middle">
-                    <div class="mb-title"><span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?</div>
-                    <div class="mb-content">
-                        <p>Are you sure you want to log out?</p>
-                        <p>Press No if you want to continue work. Press Yes to logout.</p>
-                    </div>
-                    <div class="mb-footer">
-                        <div class="pull-right">
-                            <a href="logout" class="btn btn-success btn-lg">Yes</a>
-                            <button class="btn btn-default btn-lg mb-control-close">No</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-<div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
-
-<link rel="stylesheet" type="text/css" id="theme" href="css/theme-default.css"/> -->

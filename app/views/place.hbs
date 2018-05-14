@@ -47,7 +47,13 @@ input[type=text]:focus {
 
 </form>
 <br>
+<div class="container">
+        <div id="table_filter">
+            <a id="show_all" href="#">Show All&nbsp;&nbsp;&nbsp;</a>
+        </div>
 
+</div> 
+<br>
 <!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
 
 <div>
@@ -68,6 +74,9 @@ input[type=text]:focus {
                 <tr style="color:#004d66;">
                     <th onclick="sortTable2(0)"><a>Word <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></a></i></th>
                     <th onclick="sortTable2(1)"><a>Letter <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></a></i></th>
+                    
+                    <!-- <th onclick="sortTable2(3)""><a>Language<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th> -->
+                    <th style="font-size:15px;padding-bottom : 20px;"><a>Language<a></th>
                     <th onclick="sortTable2(2)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
                     <th style="font-size:15px;padding-bottom : 20px;"><a>Up Vote<a></th>
                     <th style="font-size:15px;padding-bottom : 20px;"><a>Down Vote<a></th>
@@ -78,7 +87,11 @@ input[type=text]:focus {
                 <tr class="odd gradeX">
                     <td height="100">{{this.name}}</td>
                     <td>{{this.word}}</td>
+                    
+                    <td>{{this.language}}</td>
                     <td>{{this.createdAt}}</td>
+                    <td>{{this.upVote}}</td>
+                    <td>{{this.downVote}}</td>
                     <!-- <td>{{this.fullName}}</td> -->
                 </tr>
                 
@@ -167,6 +180,27 @@ function myFunction() {
   }
 }
 </script>
+
+<script>
+        var alphas = 'abcdefghijklmnopqrstuvwxyz';
+        var tmp = '';
+        for (var x = 0; x < 26; x++){ 
+            tmp += '<a href="#">' + alphas[x].toUpperCase() + '</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+        }
+        $('#table_filter').append(tmp);
+        $('#table_filter a').click(function () {
+            if ($(this).attr('id') == 'show_all') {
+                $('#tbl_assigned_repos_place tbody tr').css('display', 'table-row');
+                $('#message').html('displaying all rows');
+                return false;
+            }
+            var alpha = $(this).html();
+            $('#tbl_assigned_repos_place tbody tr').hide().filter(function () {
+                var td = $('td:nth-child(2)', $(this));
+                return td.length && td.html() && new RegExp('^' + alpha + '.*$', 'i').test( td.html().toLowerCase() );
+            }).css('display', 'table-row');
+        });
+    </script>
 
 
 <input type="hidden" value="" id="hdnRepoId" />

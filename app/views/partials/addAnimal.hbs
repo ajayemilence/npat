@@ -22,6 +22,14 @@
                     <input name="name" placeholder=" Enter Animal Word" class="form-control" type="text">           </div>
                 </div>
             </div>
+            <div class="form-group">
+                <label class="col-md-4 control-label">Language</label>
+                <div class="col-md-6 inputGroupContainer" style=' width="283px"'>
+                    <div class="input-group">
+
+                    <input name="language" placeholder=" Enter language" class="form-control" type="text">           </div>
+                </div>
+            </div>
 
         <!-- Button -->
         <div class="form-group">
@@ -92,6 +100,13 @@
                     validators: {
                         notEmpty: {
                             message: 'Please type a Animal'
+                        }
+                    }
+                },
+                language: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please type the language'
                         }
                     }
                 }
