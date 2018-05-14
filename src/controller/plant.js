@@ -14,23 +14,47 @@ module.exports = ({ config, db }) => {
     // add plant ============================>
 
     api.post('/addPlant', (req, res) => {
-        let plant = new Plant({
-            name: req.body.name,
-            word: req.body.word,
-            type: req.body.type,
-            createdAt: moment().local().valueOf(),
-            updatedAt: moment().local().valueOf(),
-            language: req.body.language
-        });
-        plant.save((error, plant) => {
-            if (error) {
-                res.json({ success: 0, msg: error });
+        Plant.findOne({ name: req.body.name }, (err, plant) => {
+            if (err) {
+                return res.send(err);
             }
 
-            res.status(200).json({ success: 1, msg: 'plant info added', data: plant });
+            if (plant == null || !plant) {
+                let plant = new Plant({
+                    name: req.body.name,
+                    word: req.body.word,
+                    type: req.body.type,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: req.body.language,
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
 
+                });
+                plant.save((error, plant) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
+
+                    res.status(200).json({ success: 1, msg: 'plant info added', data: plant });
+
+                });
+            } else {
+                plant.upVote = plant.upVote + req.body.upVote;
+                plant.downVote = plant.downVote + req.body.downVote;
+
+                plant.save((err, plant) => {
+                    if (err) {
+                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote", Error: err })
+                    }
+                    return res.status(200).json({ success: 1, msg: " plant word info added upvoted", data: plant })
+                });
+
+
+            }
         });
     });
+
 
     api.get('/getAllplants', (req, res) => {
         Plant.find({}, (err, names) => {
@@ -109,7 +133,7 @@ module.exports = ({ config, db }) => {
         Plant.findById(req.params.id, (err, plant) => {
             plant.remove((err) => {
                 if (err) {
-                    return res.status(501).json({ success: 0, msg: "something went wrong" })
+                    return res.status(501).json({ success: 0, msg: "someplant went wrong" })
                 }
 
                 res.status(200).json({ success: 1, msg: "plant is deleted" });

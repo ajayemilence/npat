@@ -14,21 +14,45 @@ module.exports = ({ config, db }) => {
     // add place ============================>
 
     api.post('/addPlace', (req, res) => {
-        let place = new Place({
-            name: req.body.name,
-            word: req.body.word,
-            type: req.body.type,
-            createdAt: moment().local().valueOf(),
-            updatedAt: moment().local().valueOf(),
-            language: req.body.language
-        });
-        place.save((error, place) => {
-            if (error) {
-                res.json({ success: 0, msg: error });
+        Place.findOne({ name: req.body.name }, (err, place) => {
+            if (err) {
+                return res.send(err);
             }
 
-            res.status(200).json({ success: 1, msg: 'place info added', data: place });
+            if (place == null || !place) {
 
+                let place = new Place({
+                    name: req.body.name,
+                    word: req.body.word,
+                    type: req.body.type,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: req.body.language,
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+
+                });
+                place.save((error, place) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
+
+                    res.status(200).json({ success: 1, msg: 'place info added', data: place });
+
+                });
+            } else {
+                place.upVote = place.upVote + req.body.upVote;
+                place.downVote = place.downVote + req.body.downVote;
+
+                place.save((err, place) => {
+                    if (err) {
+                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote", Error: err })
+                    }
+                    return res.status(200).json({ success: 1, msg: " place word info added upvoted", data: place })
+                });
+
+
+            }
         });
     });
 
@@ -67,11 +91,11 @@ module.exports = ({ config, db }) => {
     api.delete('/delete/:id', (req, res) => {
         Place.findById(req.params.id, (err, place) => {
             place.remove((err) => {
-                if(err){
-                    return res.status(501).json({success : 0 , msg : "something went wrong"})
+                if (err) {
+                    return res.status(501).json({ success: 0, msg: "something went wrong" })
                 }
-                
-                    res.status(200).json({ success: 1, msg: "place is deleted" });
+
+                res.status(200).json({ success: 1, msg: "place is deleted" });
             });
 
         });
@@ -84,8 +108,8 @@ module.exports = ({ config, db }) => {
             if (err) {
                 return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
             }
-            
-            if(place.upVote == undefined || place.upVote == NaN){
+
+            if (place.upVote == undefined || place.upVote == NaN) {
                 place.upVote = 0;
             }
             place.upVote = place.upVote + 1;
@@ -104,8 +128,8 @@ module.exports = ({ config, db }) => {
             if (err) {
                 return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
             }
-            
-            if(place.downVote == undefined || place.downVote == NaN){
+
+            if (place.downVote == undefined || place.downVote == NaN) {
                 place.downVote = 0;
             }
             place.downVote = place.downVote + 1;

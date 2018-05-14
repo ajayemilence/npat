@@ -17,8 +17,6 @@ module.exports = ({ config, db }) => {
 
     //  'v1/account/register'
     api.post('/register', (req, res) => {
-        console.log('aaaa');
-
         let upload = multer({ storage: storage }).single('userPic');
         upload(req, res, (err) => {
             Account.register(new Account({

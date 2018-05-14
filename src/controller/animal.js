@@ -15,21 +15,43 @@ module.exports = ({ config, db }) => {
     // add animal ============================>
 
     api.post('/addAnimal', (req, res) => {
-        let animal = new Animal({
-            name: req.body.name,
-            word: req.body.word,
-            type: req.body.type,
-            createdAt: moment().local().valueOf(),
-            updatedAt: moment().local().valueOf(),
-            language: req.body.language
-        });
-        animal.save((error, animal) => {
-            if (error) {
-                res.json({ success: 0, msg: error });
+        Animal.findOne({ name: req.body.name }, (err, animal) => {
+            if (err) {
+                return res.send(err);
             }
 
-            res.status(200).json({ success: 1, msg: 'animal info added', data: animal });
+            if (animal == null || !animal) {
+                let animal = new Animal({
+                    name: req.body.name,
+                    word: req.body.word,
+                    type: req.body.type,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: req.body.language,
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                });
+                animal.save((error, animal) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
 
+                    res.status(200).json({ success: 1, msg: 'animal info added', data: animal });
+
+                });
+            } else {
+                animal.upVote = animal.upVote + req.body.upVote;
+                animal.downVote = animal.downVote + req.body.downVote;
+
+                animal.save((err, animal) => {
+                    if (err) {
+                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote", Error: err })
+                    }
+                    return res.status(200).json({ success: 1, msg: " animal word info added upvoted", data: animal })
+                });
+
+
+            }
         });
     });
 
@@ -86,7 +108,7 @@ module.exports = ({ config, db }) => {
                     return res.status(201).json({ success: 1, msg: " error occurred while saving the upvote" })
                 }
                 return res.status(200).json({ success: 0, msg: "word upvoted", data: animal })
-            })
+            });
         });
     });
 
@@ -113,11 +135,11 @@ module.exports = ({ config, db }) => {
     api.delete('/delete/:id', (req, res) => {
         Animal.findById(req.params.id, (err, animal) => {
             animal.remove((err) => {
-                if(err){
-                    return res.status(501).json({success : 0 , msg : "something went wrong"})
+                if (err) {
+                    return res.status(501).json({ success: 0, msg: "something went wrong" })
                 }
-                
-                    res.status(200).json({ success: 1, msg: "animal is deleted" });
+
+                res.status(200).json({ success: 1, msg: "animal is deleted" });
             });
 
         });

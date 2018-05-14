@@ -23,7 +23,6 @@ module.exports = ({ config, db }) => {
             var random = Math.floor(Math.random() * count)
             Animal.findOne({ word: req.query.word }).skip(random).exec(
                 (err, animal) => {
-
                     Human.count({ word: req.query.word }).exec(function(err, counthuman) {
                         var randomHuman = Math.floor(Math.random() * counthuman)
                         Human.findOne({ word: req.query.word }).skip(randomHuman).exec(

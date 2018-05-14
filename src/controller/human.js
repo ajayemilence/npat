@@ -13,32 +13,81 @@ module.exports = ({ config, db }) => {
 
     // add human ============================>
 
+    // api.post('/addHuman', (req, res) => {
+    //     let human = new Human({
+    //         name: req.body.name,
+    //         word: req.body.word,
+    //         type: req.body.type,
+    //         gender: req.body.gender,
+    //         createdAt: moment().local().valueOf(),
+    //         updatedAt: moment().local().valueOf(),
+    //         language: req.body.language
+    //     });
+    //     human.save((error, human) => {
+    //         if (error) {
+    //             res.json({ success: 0, msg: error });
+    //         }
+
+    //         res.status(200).json({ success: 1, msg: 'human info added', data: human });
+
+    //     });
+    // });
+
+
     api.post('/addHuman', (req, res) => {
-        let human = new Human({
-            name: req.body.name,
-            word: req.body.word,
-            type: req.body.type,
-            gender: req.body.gender,
-            createdAt: moment().local().valueOf(),
-            updatedAt: moment().local().valueOf(),
-            language : req.body.language
-        });
-        human.save((error, human) => {
-            if (error) {
-                res.json({ success: 0, msg: error });
+        Human.findOne({ name: req.body.name }, (err, human) => {
+            if (err) {
+                return res.send(err);
             }
 
-            res.status(200).json({ success: 1, msg: 'human info added', data: human });
+            if (human == null || !human) {
+
+               let human = new Human({
+                    name: req.body.name,
+                    word: req.body.word,
+                    type: req.body.type,
+                    gender: req.body.gender,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: req.body.language,
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                });
+                human.save((error, human) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
+
+                    res.status(200).json({ success: 1, msg: 'human info added', data: human });
+
+                });
+            } else {
+                 human.upVote = human.upVote + req.body.upVote;
+                human.downVote = human.downVote + req.body.downVote;
+
+                human.save((err, human) => {
+                    if (err) {
+                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote" , Error : err})
+                    }
+                    return res.status(200).json({ success: 1, msg: " human word info added upvoted", data: human })
+                });
+
+                
+            }
 
         });
     });
 
-    api.get('/getAllNames' ,(req, res) =>{
-        Human.find({} , (err , names) =>{
-            if(err){
-                res.json({success : 0 , msg : "error occurred while retriving the names of human"});
+
+
+
+
+    api.get('/getAllNames', (req, res) => {
+        Human.find({}, (err, names) => {
+            if (err) {
+                res.json({ success: 0, msg: "error occurred while retriving the names of human" });
             }
-            return res.status(200).json({success : 1 , msg : "succesfully get all names" , data : names});
+            return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
         });
     });
 
@@ -70,19 +119,19 @@ module.exports = ({ config, db }) => {
     api.post('/upVote', (req, res) => {
         Human.findOne({ name: req.body.name }, (err, human) => {
             if (err) {
-                return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
+                return res.json({ success: 0, msg: "error occurred while retriving the word" });
             }
-            
-            if(human.upVote == undefined || human.upVote == NaN){
+
+            if (human.upVote == undefined || human.upVote == NaN) {
                 human.upVote = 0;
             }
             human.upVote = human.upVote + 1;
             human.save((err, human) => {
                 if (err) {
-                    return res.status(201).json({ success: 1, msg: " error occurred while saving the upvote" })
+                    return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote" })
                 }
-                return res.status(200).json({ success: 0, msg: "word upvoted", data: human })
-            })
+                return res.status(200).json({ success: 1, msg: "word upvoted", data: human })
+            });
         });
     });
 
@@ -91,8 +140,8 @@ module.exports = ({ config, db }) => {
             if (err) {
                 return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
             }
-            
-            if(human.downVote == undefined || human.downVote == NaN){
+
+            if (human.downVote == undefined || human.downVote == NaN) {
                 human.downVote = 0;
             }
             human.downVote = human.downVote + 1;
@@ -109,18 +158,18 @@ module.exports = ({ config, db }) => {
     api.delete('/delete/:id', (req, res) => {
         Human.findById(req.params.id, (err, human) => {
             human.remove((err) => {
-                if(err){
-                    return res.status(501).json({success : 0 , msg : "something went wrong"})
+                if (err) {
+                    return res.status(501).json({ success: 0, msg: "something went wrong" })
                 }
-                
-                    res.status(200).json({ success: 1, msg: "human is deleted" });
+
+                res.status(200).json({ success: 1, msg: "human is deleted" });
             });
 
         });
     });
 
 
-    // eaxmple for npat to show ===============
+    // example for npat to show ===============
 
     api.post('/npat', (req, res) => {
         var active = req.body.alphabet;

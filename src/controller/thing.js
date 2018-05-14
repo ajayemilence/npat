@@ -14,22 +14,46 @@ module.exports = ({ config, db }) => {
     // add thing ============================>
 
     api.post('/addThing', (req, res) => {
-        let thing = new Thing({
-            name: req.body.name,
-            word: req.body.word,
-            type: req.body.type,
-            createdAt: moment().local().valueOf(),
-            updatedAt: moment().local().valueOf(),
-            language: req.body.language,
-        });
-        thing.save((error, thing) => {
-            if (error) {
-                res.json({ success: 0, msg: error });
+        Thing.findOne({ name: req.body.name }, (err, thing) => {
+            if (err) {
+                return res.send(err);
             }
 
-            res.status(200).json({ success: 1, msg: 'thing info added', data: thing });
+            if (thing == null || !thing) {
+                let thing = new Thing({
+                    name: req.body.name,
+                    word: req.body.word,
+                    type: req.body.type,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: req.body.language,
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                });
+                thing.save((error, thing) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
 
+                    res.status(200).json({ success: 1, msg: 'thing info added', data: thing });
+
+                });
+            }
+            else {
+                thing.upVote = thing.upVote + req.body.upVote;
+                thing.downVote = thing.downVote + req.body.downVote;
+
+                thing.save((err, thing) => {
+                    if (err) {
+                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote", Error: err })
+                    }
+                    return res.status(200).json({ success: 1, msg: " thing word info added upvoted", data: thing })
+                });
+
+
+            }
         });
+
     });
 
     api.get('/getAllthings', (req, res) => {
@@ -70,8 +94,8 @@ module.exports = ({ config, db }) => {
             if (err) {
                 return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
             }
-            
-            if(thing.upVote == undefined || thing.upVote == NaN){
+
+            if (thing.upVote == undefined || thing.upVote == NaN) {
                 thing.upVote = 0;
             }
             thing.upVote = thing.upVote + 1;
@@ -90,8 +114,8 @@ module.exports = ({ config, db }) => {
             if (err) {
                 return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
             }
-            
-            if(thing.downVote == undefined || thing.downVote == NaN){
+
+            if (thing.downVote == undefined || thing.downVote == NaN) {
                 thing.downVote = 0;
             }
             thing.downVote = thing.downVote + 1;
@@ -107,11 +131,11 @@ module.exports = ({ config, db }) => {
     api.delete('/delete/:id', (req, res) => {
         Thing.findById(req.params.id, (err, thing) => {
             thing.remove((err) => {
-                if(err){
-                    return res.status(501).json({success : 0 , msg : "something went wrong"})
+                if (err) {
+                    return res.status(501).json({ success: 0, msg: "something went wrong" })
                 }
-                
-                    res.status(200).json({ success: 1, msg: "thing is deleted" });
+
+                res.status(200).json({ success: 1, msg: "thing is deleted" });
             });
 
         });
