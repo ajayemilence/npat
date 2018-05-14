@@ -53,8 +53,6 @@ module.exports = ({ config, db }) => {
                     upVote: (req.body.upVote === undefined ) ? 0 : req.body.upVote,
                     downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
                 });
-               console.log(human.upVote , "upVoteeeeeeee111111111");
-               console.log(req.body.upVote , "22222222222hhhhhhhhh");
 
                 human.save((error, human) => {
                     if (error) {
