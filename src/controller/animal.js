@@ -25,6 +25,7 @@ module.exports = ({ config, db }) => {
                     name: req.body.name,
                     word: req.body.word,
                     type: req.body.type,
+                    createdBy : (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
                     createdAt: moment().local().valueOf(),
                     updatedAt: moment().local().valueOf(),
                     language: req.body.language,

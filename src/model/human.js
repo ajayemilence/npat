@@ -11,6 +11,7 @@ let humanSchema = new Schema({
     createdAt : Date,
     updatedAt : Date,
     language : String,
+    createdBy : String,
     upVote :  Number,
     downVote : Number
 
