@@ -5,7 +5,10 @@ let animalSchema = new Schema({
     name: {
         type: String
     },
-    word: String,
+    word: {
+        type :String,
+        uppercase : true
+        },
     type: String,
     gender : String,
     createdAt : Date,
