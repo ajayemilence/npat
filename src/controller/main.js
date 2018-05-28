@@ -21,7 +21,7 @@ module.exports = ({ config, db }) => {
     api.get('/main', (req, res) => {
         switch (req.query.round) {
 
-            case "a":
+            case "A":
                 var bot1 = Math.random();
                 if (bot1 >= 0.5) {
 
@@ -110,7 +110,7 @@ module.exports = ({ config, db }) => {
                     });
                 }
                 break;
-            case "b":
+            case "B":
                 var bot2 = Math.random()
                 if (bot2 >= 0.6) {
 
@@ -199,7 +199,7 @@ module.exports = ({ config, db }) => {
                     });
                 }
                 break;
-            case "c":
+            case "C":
                 var bot3 = Math.random()
                 if (bot3 >= 0.7) {
                     Animal.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
@@ -287,7 +287,7 @@ module.exports = ({ config, db }) => {
                     });
                 }
                 break;
-            case "d":
+            case "D":
                 var bot4 = Math.random()
                 if (bot4 >= 0.8) {
                     Animal.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
@@ -375,7 +375,7 @@ module.exports = ({ config, db }) => {
                     });
                 }
                 break;
-            case "e":
+            case "E":
                 var bot5 = Math.random();
                 if (bot5 >= 0.9) {
 
@@ -468,7 +468,7 @@ module.exports = ({ config, db }) => {
                 break;
 
             default:
-                res.status(200).json({ success: 1, msg: 'Please send the round ex : a , b' });
+                return res.status(200).json({ success: 1, msg: 'Please send the round ex : A , B' });
         }
 
 
@@ -516,6 +516,12 @@ module.exports = ({ config, db }) => {
         //         });
         // });
     });
+
+
+     api.get('/testing', (req, res) => {
+        res.status(200).json({ success : 1 , msg : "user is online"});
+     });
+
 
 
 

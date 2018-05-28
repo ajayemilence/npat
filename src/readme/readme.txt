@@ -333,3 +333,41 @@ response :-
         "_id": "5afd37e97fa21f2da2ba2f23"
     }
 }
+
+
+
+http://localhost:4012/v1/npat/main?word=P&round=d
+
+
+
+=========================== FOR get words================================
+baseUrl/npat/main
+ 
+**send word and round in query
+
+ex =>   baseUrl/npat/main?word=P&round=d
+
+
+response : -
+
+
+{
+    "success": 1,
+    "msg": "words shown of given letter",
+    "data": {
+        "animalName": "Parot3",
+        "humanName": "Puneet2",
+        "thingName": "Pencil",
+        "placeName": "Palce3",
+        "plantName": "Pea"
+    }
+}
+
+
+=========================== FOR testing================================
+     baseUrl/npat/testing
+ 
+{
+    "success": 1,
+    "msg": "user is online"
+}
