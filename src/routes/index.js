@@ -11,6 +11,11 @@ let thing = require('../controller/thing');
 let place = require('../controller/place');
 let main = require('../controller/main');
 let admin = require('../controller/admin');
+let adminHuman = require('../controller/adminHuman');
+let adminAnimal = require('../controller/adminAnimal');
+let adminPlant = require('../controller/adminPlant');
+let adminThing = require('../controller/adminThing');
+let adminPlace = require('../controller/adminPlace');
 
 let router = express();
 
@@ -25,6 +30,11 @@ initdb(db => {
     router.use('/place', place({ config, db }));
     router.use('/npat', main({ config, db }));
     router.use('/admin', admin({ config, db }));
+    router.use('/adminHuman', adminHuman({ config, db }));
+    router.use('/adminAnimal', adminAnimal({ config, db }));
+    router.use('/adminPlant', adminPlant({ config, db }));
+    router.use('/adminThing', adminThing({ config, db }));
+    router.use('/adminPlace', adminPlace({ config, db }));
 
  });
 

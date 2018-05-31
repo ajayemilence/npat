@@ -1,0 +1,175 @@
+let express = require('express');
+let mongoose = require('mongoose');
+let multer = require('multer');
+let moment = require('moment');
+
+let config = require('../config');
+let adminHuman = require('../model/adminHuman');
+
+
+module.exports = ({ config, db }) => {
+    let api = express.Router();
+
+
+    // add human ============================>
+
+    // api.post('/addHuman', (req, res) => {
+    //     let human = new Human({
+    //         name: req.body.name,
+    //         word: req.body.word,
+    //         type: req.body.type,
+    //         gender: req.body.gender,
+    //         createdAt: moment().local().valueOf(),
+    //         updatedAt: moment().local().valueOf(),
+    //         language: req.body.language
+    //     });
+    //     human.save((error, human) => {
+    //         if (error) {
+    //             res.json({ success: 0, msg: error });
+    //         }
+
+    //         res.status(200).json({ success: 1, msg: 'human info added', data: human });
+
+    //     });
+    // });
+
+
+    api.post('/addHuman', (req, res) => {
+        adminHuman.findOne({ name: req.body.name }, (err, human) => {
+            if (err) {
+                return res.send(err);
+            }
+
+            if (human == null || !human) {
+
+               let human = new adminHuman({
+                    name: req.body.name,
+                    word: req.body.word,
+                    type: req.body.type,
+                    gender: req.body.gender,
+                    createdBy : (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: req.body.language,
+                    upVote: (req.body.upVote === undefined ) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                });
+
+                human.save((error, human) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
+
+                    res.status(200).json({ success: 1, msg: 'human info added', data: human });
+
+                });
+            } else {
+                 human.upVote = human.upVote + req.body.upVote;
+                human.downVote = human.downVote + req.body.downVote;
+
+                human.save((err, human) => {
+                    if (err) {
+                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote" , Error : err})
+                    }
+                    return res.status(200).json({ success: 1, msg: " human word info added upvoted", data: human })
+                });
+            }
+
+        });
+    });
+
+    
+
+
+
+
+
+    api.get('/getAllNames', (req, res) => {
+        adminHuman.find({}, (err, names) => {
+            if (err) {
+                res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+            }
+            return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
+        });
+    });
+
+    api.put('/updateHuman/:id', (req, res) => {
+        adminHuman.findById(req.params.id, (err, human) => {
+            if (err) {
+                return res.json({ msg: "error occurred in getting the human" })
+            }
+            human.name = (req.body.name === undefined) ? human.name : req.body.name,
+                human.word = (req.body.word === undefined) ? human.word : req.body.word,
+                human.type = (req.body.type === undefined) ? human.type : req.body.type,
+                human.updatedAt = moment().local().valueOf(),
+                human.language = (req.body.language === undefined) ? human.language : req.body.language,
+
+                human.save(err => {
+                    if (err) {
+                        return res.json({ success: 0, msg: err });
+                    }
+
+                    res.status(200).json({ success: 1, msg: 'human info added', data: human });
+
+                });
+        });
+    });
+
+
+
+
+    api.post('/upVote', (req, res) => {
+        adminHuman.findOne({ name: req.body.name }, (err, human) => {
+            if (err) {
+                return res.json({ success: 0, msg: "error occurred while retriving the word" });
+            }
+
+            if (human.upVote == undefined || human.upVote == NaN) {
+                human.upVote = 0;
+            }
+            human.upVote = human.upVote + 1;
+            human.save((err, human) => {
+                if (err) {
+                    return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote" })
+                }
+                return res.status(200).json({ success: 1, msg: "word upvoted", data: human })
+            });
+        });
+    });
+
+    api.post('/downVote', (req, res) => {
+        adminHuman.findOne({ name: req.body.name }, (err, human) => {
+            if (err) {
+                return res.json({ success: 0, msg: "error occurred whilw retriving the word" });
+            }
+
+            if (human.downVote == undefined || human.downVote == NaN) {
+                human.downVote = 0;
+            }
+            human.downVote = human.downVote + 1;
+            human.save((err, human) => {
+                if (err) {
+                    return res.status(201).json({ success: 1, msg: " error occurred while saving the upvote" })
+                }
+                return res.status(200).json({ success: 0, msg: "word downVoted", data: human })
+            })
+        });
+    });
+
+
+    api.delete('/delete/:id', (req, res) => {
+        adminHuman.findById(req.params.id, (err, human) => {
+            human.remove((err) => {
+                if (err) {
+                    return res.status(501).json({ success: 0, msg: "something went wrong" })
+                }
+
+                res.status(200).json({ success: 1, msg: "human is deleted" });
+            });
+
+        });
+    });
+
+
+    return api;
+};
