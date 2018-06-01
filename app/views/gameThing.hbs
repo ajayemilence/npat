@@ -63,8 +63,6 @@ input[type=text]:focus {
 <!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
 
 
-<Button id="btn_add_new" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i> Add Thing Word</Button>
-
  
 
 <div class="box">
@@ -277,14 +275,7 @@ function myFunction() {
 <input type="hidden" value="" id="hdnRepoId" />
 <script>
 
-$(document).ready(function() {
-    $('#btn_add_new').click(function() {
-        $(".modal-body").load("/thing/addThing", function(responseTxt, statusTxt, xhr) {
-            $('.modal-title').text('Add Thing');
-            $('#modalPopup').modal('show');
-        });
-    });
-});
+
 
 
 $(document).off(function() {
