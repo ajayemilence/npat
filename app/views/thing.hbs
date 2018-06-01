@@ -43,6 +43,8 @@ input[type=text]:focus {
 
 </style>
 
+<a href="../thing/game" class="btn btn-info pull-right"></span>Game</a>
+<a href="#" class="btn btn-info pull-right">Admin</a>
 
  <form>
 
@@ -61,7 +63,7 @@ input[type=text]:focus {
 <!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
 
 
-<Button id="btn_add_new" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i> Add Thing Word</Button>
+<Button id="btn_add_new" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i>Add Thing Word</Button>
 
  
 
@@ -79,11 +81,11 @@ input[type=text]:focus {
                     <th onclick="sortTable2(0)"><a>Word<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
                     <th onclick="sortTable2(1)"><a>Letter<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
                     <!-- <th onclick="sortTable2(2)""><a>Language<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th> -->
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Language</a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Language</a></th>
                     <th onclick="sortTable2(2)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Up Vote</a></th>
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Down Vote</a></th>
-                    <!-- <th>fullName</th> -->
+                   <!--  <th style="font-size:15px;padding-bottom : 19px;"><a>Created By<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Up Vote</a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Down Vote</a></th> -->
                    <!--  <th></th> -->
                 </tr>
             </thead>
@@ -94,9 +96,9 @@ input[type=text]:focus {
                     <td>{{this.word}}</td>
                     <td>{{this.language}}</td>
                     <td>{{this.createdAt}}</td>
+      <!--               <td>{{this.createdBy}}</td>
                     <td>{{this.upVote}}</td>
-                    <td>{{this.downVote}}</td>
-                    <!-- <td>{{this.fullName}}</td> -->
+                    <td>{{this.downVote}}</td> -->
                 </tr>
                 
                 {{/each}}
@@ -285,22 +287,20 @@ $(document).ready(function() {
 
 $(document).off(function() {
     $('#btn_delete').click(function() {
-        console.log('idhar delete pe hai');
         var elem = this;
 
             //console.log('yeh delete vala hai');
         // $('#confirm').modal({
         //         backdrop: 'static',
         //         keyboard: false
-        //     })
-
+        //     });
             // .off('click', '#delete').on('click', '#delete', function(e) {
                 $.post("/restaurants/delete", { id: $(elem).attr('data-id') }, function(data) {
                     debugger
                     if (data.success)
                         $(elem).closest('li').remove();
                 });
-          //  })
+          //  });
     });
 
 })

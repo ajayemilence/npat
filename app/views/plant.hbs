@@ -44,6 +44,10 @@ input[type=text]:focus {
 </style>
 
 
+<a href="../plant/game" class="btn btn-info pull-right"></span>Game</a>
+<a href="#" class="btn btn-info pull-right">Admin</a>
+
+
  <form>
 
   <input class="btn btn-md" type="text" name="search" placeholder=" Search Name here .." id="myInput" onkeyup="myFunction()">
@@ -78,10 +82,11 @@ input[type=text]:focus {
                     <th onclick="sortTable2(0)"><a>Word <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></a></i></th>
                     <th onclick="sortTable2(1)"><a>Letter <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></a></i></th>
                     <!-- <th onclick="sortTable2(2)""><a>Language<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th> -->
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Language<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Language<a></th>
                     <th onclick="sortTable2(2)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Up Vote<a></th>
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Down Vote<a></th>
+                    <!-- <th style="font-size:15px;padding-bottom : 19px;"><a>Created By<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Up Vote<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Down Vote<a></th> -->
                     <!-- <th>fullName</th> -->
                    <!--  <th></th> -->
                 </tr>
@@ -93,8 +98,9 @@ input[type=text]:focus {
                     <td>{{this.word}}</td>
                     <td>{{this.language}}</td>
                     <td>{{this.createdAt}}</td>
+                   <!--  <td>{{this.createdBy}}</td>
                     <td>{{this.upVote}}</td>
-                    <td>{{this.downVote}}</td>
+                    <td>{{this.downVote}}</td> -->
                     <!-- <td>{{this.fullName}}</td> -->
                 </tr>
                 

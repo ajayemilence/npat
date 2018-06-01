@@ -19,7 +19,15 @@ h1 {
 }
 
 
+/* Table Layout */
 
+/*table.vitamins {
+    margin: 20px 0 0 0;
+    border-collapse: collapse;
+    border-spacing: 0;
+    background: #212121;
+    color: #fff;
+*/}
 
 </style>
 <style> 
@@ -50,25 +58,25 @@ input[type=text]:focus {
 
 <!-- <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
   <label class="btn btn-info active">
-    <input type="radio" name="options" id="admin" autocomplete="off" checked> Admin
+    <input type="radio" name="options" id="admin" autocomplete="off" checked> Active
   </label>
   <label class="btn btn-secondary">
-    <input type="radio" name="options" id="game" autocomplete="off"> Game
+    <input type="radio" name="options" id="game" autocomplete="off"> Radio
   </label>
-  <a href="../animal/game" class="btn btn-secondary"> Button</a>
-</div> -->
+</div>
+<br> -->
 
-<br>
+<a href="#" class="btn btn-info pull-right"></span>Game</a>
+<a href="../animal" class="btn btn-info pull-right">Admin</a>
 
-<!-- <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons"> -->
 
-<a href="../animal/game" class="btn btn-info pull-right"></span>Game</a>
-<a href="#" class="btn btn-info pull-right">Admin</a>
-<!-- </div>
- -->
+ <form>
+
   <input class="btn btn-md" type="text" name="search" placeholder=" Search Name here .." id="myInput" onkeyup="myFunction()">
 
 </form>
+
+
 <br>
 
 
@@ -82,15 +90,14 @@ input[type=text]:focus {
 
 </div> 
 <br>
-<div>
-<Button id="btn_add_new" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i> Add Animal Word</Button>
-</div>
+
+
 
 
 
 <div class="box">
 <font size="3" face="courier " >
-<!-- <Button id="btn_add_new" class="btn btn-primary pull-right new-item">Add word</Button> -->
+
   <div class="box-body commit-lists">
 
         <!-- <input id="hdAdminArea" type="hidden" value="{{user.isAdmin}}"> -->
@@ -104,9 +111,9 @@ input[type=text]:focus {
                     <!-- <th onclick="sortTable2(2)""><a>Language<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th> -->
                     <th style="font-size:15px;padding-bottom : 19px;"><a>Language<a></th>
                     <th onclick="sortTable2(2)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
-                    <!-- <th style="font-size:15px;padding-bottom : 19px;"><a>Created By<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Created By<a></th>
                     <th style="font-size:15px;padding-bottom : 19px;"><a>Up Vote<a></th>
-                    <th style="font-size:15px;padding-bottom : 19px;"><a>Down Vote<a></th> -->
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Down Vote<a></th>
                     <!-- <th>fullName</th> -->
                    <!--  <th></th> -->
                 </tr>
@@ -118,9 +125,9 @@ input[type=text]:focus {
                     <td>{{this.word}}</td>
                     <td>{{this.language}}</td>
                     <td>{{this.createdAt}}</td>
-                   <!--  <td>{{this.createdBy}}</td>
+                    <td>{{this.createdBy}}</td>
                     <td>{{this.upVote}}</td>
-                    <td>{{this.downVote}}</td> -->
+                    <td>{{this.downVote}}</td>
                     <!-- <td>{{this.fullName}}</td> -->
                 </tr>
                 
@@ -236,14 +243,6 @@ function myFunction() {
 <input type="hidden" value="" id="hdnRepoId" />
 <script>
 
-$(document).ready(function() {
-    $('#btn_add_new').click(function() {
-        $(".modal-body").load("/animal/addAnimal", function(responseTxt, statusTxt, xhr) {
-            $('.modal-title').text('Add Animal');
-            $('#modalPopup').modal('show');
-        });
-    });
-});
 
 
 

@@ -43,6 +43,8 @@ input[type=text]:focus {
 
 </style>
 
+<a href="../name/game" class="btn btn-info pull-right"></span>Game</a>
+<a href="#" class="btn btn-info pull-right">Admin</a>
 
  <form>
 
@@ -59,10 +61,8 @@ input[type=text]:focus {
 </div>
 <br>
 
-<!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
-
 <div>
-<Button id="btn_add_new" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i> Add Human Word</Button>
+<Button id="btn_add_new_name" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i> Add Human Word</Button>
 </div>
 
 <div class="box">
@@ -81,10 +81,11 @@ input[type=text]:focus {
                     <th><a>Letter <i onclick="sortTable1(1)" class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
                     <th onclick="sortTable1(1)"><a>Gender <i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
                     <!-- <th onclick="sortTable1(4)""><a>Language<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th> -->
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Language<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Language<a></th>
                     <th onclick="sortTable1(3)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Up Vote<a></th>
-                    <th style="font-size:15px;padding-bottom : 20px;"><a>Down Vote<a></th>
+                   <!--  <th style="font-size:15px;padding-bottom : 19px;"><a>Created By<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Up Vote<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Down Vote<a></th> -->
                 </tr>
             </thead>
             <tbody>
@@ -95,8 +96,9 @@ input[type=text]:focus {
                     <td>{{this.gender}}</td>
                     <td>{{this.language}}</td>
                     <td>{{this.createdAt}}</td>
+                   <!--  <td>{{this.createdBy}}</td>
                     <td>{{this.upVote}}</td>
-                    <td>{{this.downVote}}</td>
+                    <td>{{this.downVote}}</td> -->
                     
                 </tr>
                 
@@ -190,7 +192,7 @@ function myFunction() {
 </script>
 
 
-<!-- <script src="../jquery/jquery.min.js"></script> -->
+
 <script>
         var alphas = 'abcdefghijklmnopqrstuvwxyz';
         var tmp = '';
@@ -220,8 +222,8 @@ function myFunction() {
 <script>
 
 $(document).ready(function() {
-    $('#btn_add_new').click(function() {
-        $(".modal-body").load("/name/addname", function(responseTxt, statusTxt, xhr) {
+    $('#btn_add_new_name').click(function() {
+        $(".modal-body").load("/name/addName", function(responseTxt, statusTxt, xhr) {
             $('.modal-title').text('Add Name');
             $('#modalPopup').modal('show');
         });
@@ -231,4 +233,7 @@ $(document).ready(function() {
 
 
 
+
 </script>
+
+

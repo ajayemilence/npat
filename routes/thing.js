@@ -18,6 +18,16 @@ eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
     });
 });
 
+router.get('/game', function(req, res) {
+
+    npatService.getthingsGame(req, function(data) {
+        var data2 = data.forEach((eachdata) => {
+eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
+            });
+        res.render('gameThing', { words: data , title: 'Things by game', rootPath: process.env.IMAGES_ROOT_PATH});
+    });
+});
+
 
 router.get('/addThing', function(req, res, next) {
     res.render('partials/addThing', { layout: false });

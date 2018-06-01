@@ -18,6 +18,17 @@ eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
     });
 });
 
+router.get('/game', function(req, res) {
+
+    npatService.getplantsGame(req, function(data) {
+        var data2 = data.forEach((eachdata) => {
+eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
+            });
+        res.render('gamePlant', { words: data , title: 'Plants by game', rootPath: process.env.IMAGES_ROOT_PATH});
+    });
+});
+
+
 
 router.get('/addPlant', function(req, res, next) {
     res.render('partials/addPlant', { layout: false });

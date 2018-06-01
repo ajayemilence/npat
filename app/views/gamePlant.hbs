@@ -1,11 +1,9 @@
-<style>
-
-article {
-    margin: 40px 30px;
+<style>th, td {
+    padding: 45px;
+    text-align: left;
 }
-
 h1 {
-    font-family: 'courier', sans-serif;
+    font-family: 'Open Sans Condensed', sans-serif;
     letter-spacing: 1px;
     font-size: 2.3em;
     line-height: 44px;
@@ -18,10 +16,8 @@ h1 {
     /*background-color: black*/
 }
 
-
-
-
 </style>
+
 <style> 
 
 input[type=text]
@@ -48,33 +44,16 @@ input[type=text]:focus {
 </style>
 
 
-<!-- <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons">
-  <label class="btn btn-info active">
-    <input type="radio" name="options" id="admin" autocomplete="off" checked> Admin
-  </label>
-  <label class="btn btn-secondary">
-    <input type="radio" name="options" id="game" autocomplete="off"> Game
-  </label>
-  <a href="../animal/game" class="btn btn-secondary"> Button</a>
-</div> -->
+<a href="#" class="btn btn-info pull-right"></span>Game</a>
+<a href="../plant" class="btn btn-info pull-right">Admin</a>
 
-<br>
 
-<!-- <div class="btn-group btn-group-toggle pull-right" data-toggle="buttons"> -->
+ <form>
 
-<a href="../animal/game" class="btn btn-info pull-right"></span>Game</a>
-<a href="#" class="btn btn-info pull-right">Admin</a>
-<!-- </div>
- -->
   <input class="btn btn-md" type="text" name="search" placeholder=" Search Name here .." id="myInput" onkeyup="myFunction()">
 
 </form>
 <br>
-
-
-
-
-<!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
 <div class="container">
         <div id="table_filter">
             <a id="show_all" href="#">Show All&nbsp;&nbsp;&nbsp;</a>
@@ -82,9 +61,8 @@ input[type=text]:focus {
 
 </div> 
 <br>
-<div>
-<Button id="btn_add_new" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-pencil" style="font-size:15px;"></i> Add Animal Word</Button>
-</div>
+
+<!-- <input type="text" id="myInput" onkeyup="myFunction()" placeholder="Search for names.." title="Type in a name"> -->
 
 
 
@@ -95,7 +73,7 @@ input[type=text]:focus {
 
         <!-- <input id="hdAdminArea" type="hidden" value="{{user.isAdmin}}"> -->
         <!--  {{#haveRecord words}} -->
-        <table id="tbl_assigned_repos_animal" class="table table-bordered table-striped">
+        <table id="tbl_assigned_repos_place" class="table table-bordered table-striped">
             <!-- <table id="tbl_assigned_repos"> -->
             <thead>
                 <tr style="color:#004d66;">
@@ -104,9 +82,9 @@ input[type=text]:focus {
                     <!-- <th onclick="sortTable2(2)""><a>Language<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th> -->
                     <th style="font-size:15px;padding-bottom : 19px;"><a>Language<a></th>
                     <th onclick="sortTable2(2)""><a>Created At<i class="fa fa-sort" style="font-size:10px;padding: 15px;"></i></a></th>
-                    <!-- <th style="font-size:15px;padding-bottom : 19px;"><a>Created By<a></th>
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Created By<a></th>
                     <th style="font-size:15px;padding-bottom : 19px;"><a>Up Vote<a></th>
-                    <th style="font-size:15px;padding-bottom : 19px;"><a>Down Vote<a></th> -->
+                    <th style="font-size:15px;padding-bottom : 19px;"><a>Down Vote<a></th>
                     <!-- <th>fullName</th> -->
                    <!--  <th></th> -->
                 </tr>
@@ -118,9 +96,9 @@ input[type=text]:focus {
                     <td>{{this.word}}</td>
                     <td>{{this.language}}</td>
                     <td>{{this.createdAt}}</td>
-                   <!--  <td>{{this.createdBy}}</td>
+                    <td>{{this.createdBy}}</td>
                     <td>{{this.upVote}}</td>
-                    <td>{{this.downVote}}</td> -->
+                    <td>{{this.downVote}}</td>
                     <!-- <td>{{this.fullName}}</td> -->
                 </tr>
                 
@@ -134,7 +112,7 @@ input[type=text]:focus {
         <script>
 function sortTable2(n) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
-  table = document.getElementById("tbl_assigned_repos_animal");
+  table = document.getElementById("tbl_assigned_repos_place");
   switching = true;
   //Set the sorting direction to ascending:
   dir = "asc"; 
@@ -195,7 +173,7 @@ function myFunction() {
   var input, filter, table, tr, td, i;
   input = document.getElementById("myInput");
   filter = input.value.toUpperCase();
-  table = document.getElementById("tbl_assigned_repos_animal");
+  table = document.getElementById("tbl_assigned_repos_place");
   tr = table.getElementsByTagName("TR");
   for (i = 0; i < tr.length; i++) {
     td = tr[i].getElementsByTagName("td")[0];
@@ -210,6 +188,7 @@ function myFunction() {
 }
 </script>
 
+
 <script>
         var alphas = 'abcdefghijklmnopqrstuvwxyz';
         var tmp = '';
@@ -219,31 +198,21 @@ function myFunction() {
         $('#table_filter').append(tmp);
         $('#table_filter a').click(function () {
             if ($(this).attr('id') == 'show_all') {
-                $('#tbl_assigned_repos_animal tbody tr').css('display', 'table-row');
+                $('#tbl_assigned_repos_place tbody tr').css('display', 'table-row');
                 $('#message').html('displaying all rows');
                 return false;
             }
             var alpha = $(this).html();
-            $('#tbl_assigned_repos_animal tbody tr').hide().filter(function () {
+            $('#tbl_assigned_repos_place tbody tr').hide().filter(function () {
                 var td = $('td:nth-child(2)', $(this));
                 return td.length && td.html() && new RegExp('^' + alpha + '.*$', 'i').test( td.html().toLowerCase() );
             }).css('display', 'table-row');
         });
     </script>
 
-
 <!-- /.box -->
 <input type="hidden" value="" id="hdnRepoId" />
 <script>
-
-$(document).ready(function() {
-    $('#btn_add_new').click(function() {
-        $(".modal-body").load("/animal/addAnimal", function(responseTxt, statusTxt, xhr) {
-            $('.modal-title').text('Add Animal');
-            $('#modalPopup').modal('show');
-        });
-    });
-});
 
 
 

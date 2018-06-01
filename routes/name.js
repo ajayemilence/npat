@@ -18,7 +18,17 @@ eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
     });
 });
 
-router.get('/addname', function(req, res, next) {
+router.get('/game', function(req, res) {
+    npatService.getnamesGame(req, function(data) {
+        var data2 = data.forEach((eachdata) => {
+eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
+            });
+        res.render('gameName', { words: data , title: 'Names by game', rootPath: process.env.IMAGES_ROOT_PATH});
+    });
+});
+
+
+router.get('/addName', function(req, res, next) {
     res.render('partials/addName', { layout: false });
 });
 

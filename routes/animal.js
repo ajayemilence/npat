@@ -21,6 +21,20 @@ eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
 });
 
 
+router.get('/game', function(req, res) {
+
+    npatService.getanimalsGame(req, function(data) {
+        //console.log(data);
+        var data2 = data.forEach((eachdata) => {
+eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
+            });
+        //console.log(data2);
+        res.render('gameAnimal', { words: data , title: 'Animals', rootPath: process.env.IMAGES_ROOT_PATH});
+    });
+});
+
+
+
 router.get('/addAnimal', function(req, res, next) {
     res.render('partials/addAnimal', { layout: false });
 });

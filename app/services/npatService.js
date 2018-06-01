@@ -22,42 +22,79 @@ exports.login = function (req, callback) {
   });
 }
 
-
+//=============admin ========================
 exports.getnames = function (pin ,callback) {
-  let url = format("{}human/getAllNames", base_url);
+  let url = format("{}adminHuman/getAllNames", base_url);
   httpService.getResponse(url, "", function (error, data) {
     callback(data.data)
   });
 }
 
 exports.getplaces = function (pin ,callback) {
-  let url = format("{}place/getAllplaces", base_url);
+  let url = format("{}adminPlace/getAllplaces", base_url);
   httpService.getResponse(url, "", function (error, data) {
     callback(data.data)
   });
 }
 
 exports.getanimals = function (pin ,callback) {
-  let url = format("{}animal/getAllanimals", base_url);
+  let url = format("{}adminAnimal/getAllanimals", base_url);
   httpService.getResponse(url, "", function (error, data) {
     callback(data.data)
   });
 }
 
 exports.getthings = function (pin ,callback) {
-  let url = format("{}thing/getAllthings", base_url);
+  let url = format("{}adminThing/getAllthings", base_url);
   httpService.getResponse(url, "", function (error, data) {
     callback(data.data)
   });
 }
 
 exports.getplants = function (pin ,callback) {
-  let url = format("{}plant/getAllplants", base_url);
+  let url = format("{}adminPlant/getAllplants", base_url);
   httpService.getResponse(url, "", function (error, data) {
     callback(data.data)
   });
 }
 
+//================game get ===========================
+
+exports.getnamesGame = function (pin ,callback) {
+  let url = format("{}human/getAllNames", base_url);
+  httpService.getResponse(url, "", function (error, data) {
+    callback(data.data)
+  });
+}
+
+exports.getplacesGame = function (pin ,callback) {
+  let url = format("{}place/getAllplaces", base_url);
+  httpService.getResponse(url, "", function (error, data) {
+    callback(data.data)
+  });
+}
+
+exports.getanimalsGame = function (pin ,callback) {
+  let url = format("{}animal/getAllanimals", base_url);
+  httpService.getResponse(url, "", function (error, data) {
+    console.log(data.data);
+    callback(data.data)
+  });
+}
+
+exports.getthingsGame = function (pin ,callback) {
+  let url = format("{}thing/getAllthings", base_url);
+  httpService.getResponse(url, "", function (error, data) {
+    callback(data.data)
+  });
+}
+
+exports.getplantsGame = function (pin ,callback) {
+  let url = format("{}plant/getAllplants", base_url);
+  httpService.getResponse(url, "", function (error, data) {
+    callback(data.data)
+  });
+}
 
 //=======dashboard get api ===============
 
@@ -73,7 +110,7 @@ exports.getwords = function (pin ,callback) {
 
 exports.createName = function (req, callback) {
   //var data=req.body;
-  let url = format("{}human/addHuman", base_url);
+  let url = format("{}adminHuman/addHuman", base_url);
   httpService.postRequest(url, '', req.body, function (data) {
     callback(data.body)
   });
@@ -81,7 +118,7 @@ exports.createName = function (req, callback) {
 
 exports.createPlace = function (req, callback) {
   //var data=req.body;
-  let url = format("{}place/addPlace", base_url);
+  let url = format("{}adminPlace/addPlace", base_url);
   httpService.postRequest(url, '', req.body, function (data) {
     callback(data.body)
   });
@@ -90,7 +127,7 @@ exports.createPlace = function (req, callback) {
 exports.createAnimal = function (req, callback) {
   console.log("idahr prrr aaa raaahhaaa haaiii yeeehhhhh");
   // var data=req.body;
-  let url = format("{}animal/addAnimal", base_url);
+  let url = format("{}adminAnimal/addAnimal", base_url);
   httpService.postRequest(url, '', req.body, function (data) {
     callback(data.body)
   });
@@ -99,7 +136,7 @@ exports.createAnimal = function (req, callback) {
 
 exports.createThing = function (req, callback) {
   //var data=req.body;
-  let url = format("{}thing/addThing", base_url);
+  let url = format("{}adminThing/addThing", base_url);
   httpService.postRequest(url, '', req.body, function (data) {
     callback(data.body)
   });
@@ -107,7 +144,7 @@ exports.createThing = function (req, callback) {
 
 exports.createPlant = function (req, callback) {
   //var data=req.body;
-  let url = format("{}plant/addPlant", base_url);
+  let url = format("{}adminPlant/addPlant", base_url);
   httpService.postRequest(url, '', req.body, function (data) {
     callback(data.body)
   });
