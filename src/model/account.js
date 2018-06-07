@@ -8,6 +8,9 @@ let AccountSchema = new Schema({
         type: String,
         required: true
     },
+    email: {
+        type: String
+    },
     password: String,
     firstName: {
         type: String,

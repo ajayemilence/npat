@@ -17,14 +17,12 @@ module.exports = ({ config, db }) => {
 
     //  'v1/account/register'
     api.post('/register', (req, res) => {
-        let upload = multer({ storage: storage }).single('userPic');
-        upload(req, res, (err) => {
             Account.register(new Account({
-                username: req.body.email,
+                username: req.body.userName,
+                email: req.body.email,
                 firstName: req.body.firstName,
                 lastName: req.body.lastName,
                 role: req.body.role,
-                userPic: (req.file === undefined) ? "" : req.file.filename
             }), req.body.password, (error, account) => {
 
                 if (error) {
@@ -40,7 +38,6 @@ module.exports = ({ config, db }) => {
                 });
             });
         });
-    });
 
 
     // v1/account/login
