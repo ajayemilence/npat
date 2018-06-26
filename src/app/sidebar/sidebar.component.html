@@ -1,0 +1,108 @@
+<!-- <div class="sidenav">
+  <table rules="rows">
+    <tr>
+      <a 
+        style="cursor: pointer"
+        routerLink='/orders'>
+        <span class="glyphicon glyphicon-list" 
+        >
+      </span> Orders</a>
+    </tr>
+  <hr>
+    <tr>
+      <a 
+        style="cursor: pointer"
+        routerLink='/merchants'>
+        <span class="glyphicon glyphicon-home" 
+        >
+      </span> Merchants</a>
+      <hr>
+    </tr>
+    <tr>
+      <a 
+        style="cursor: pointer">
+        <span class="glyphicon glyphicon-user" 
+        >
+      </span> Customers</a>
+    </tr>
+    <hr>
+    <tr>
+      <a 
+        style="cursor: pointer">
+        <span class="glyphicon glyphicon-list" 
+        >
+      </span> Design</a>
+      <hr>
+    </tr>
+    <tr>
+      <a 
+        style="cursor: pointer">
+        <span class="glyphicon glyphicon-cog" 
+        >
+      </span> Setting</a>
+      <hr>
+    </tr>
+    
+  </table>
+     
+     
+    
+    
+    
+</div> -->
+
+
+
+
+
+<div id="sidebar-wrapper">
+  <ul class="sidebar-nav">
+    <li>
+        <a 
+        style="cursor: pointer"
+        routerLink='/orders'>
+      <i class="fa fa-list-ul fa-lg"></i> Orders
+      </a>
+    </li>
+    <hr>
+    <li  data-toggle="collapse" data-target="#products" class="collapsed active">
+      <a 
+      style="cursor: pointer"
+      routerLink='/merchants'>
+    <i class="fa fa-home fa-lg"></i> Merchants <span class="arrow"></span></a>
+    </li>
+    <hr>
+    <ul class="sub-menu collapse" id="products">
+      <li class="active"><a href="#">CSS3 Animation</a></li>
+      <li><a href="#">General</a></li>
+      <li><a href="#">Buttons</a></li>
+      <li><a href="#">Tabs & Accordions</a></li>
+      <li><a href="#">Typography</a></li>
+      <li><a href="#">FontAwesome</a></li>
+      <li><a href="#">Slider</a></li>
+      <li><a href="#">Panels</a></li>
+      <li><a href="#">Widgets</a></li>
+      <li><a href="#">Bootstrap Model</a></li>
+    </ul>
+
+    <li data-toggle="collapse" data-target="#service" class="collapsed">
+      <a href="#"><i class="fa fa-user fa-lg"></i> Customers <span class="arrow"></span></a>
+    </li>  
+    <ul class="sub-menu collapse" id="service">
+      <li>New Service 1</li>
+      <li>New Service 2</li>
+      <li>New Service 3</li>
+    </ul>
+    <hr>
+    <li data-toggle="collapse" data-target="#new" class="collapsed">
+      <a href="#"><i class="fa fa-dashboard fa-lg"></i> Design <span class="arrow"></span></a>
+    </li>
+    <hr>
+    <li>
+      <a href="#">
+      <i class="fa fa-cog fa-lg"></i> Setting
+      </a>
+    </li>
+    <hr>
+  </ul>
+</div>

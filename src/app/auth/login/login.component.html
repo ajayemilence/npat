@@ -1,0 +1,49 @@
+<div class="row" style="margin-top: 60px;">
+  <div class="col-xs-12 col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-3"> 
+      <section class="page-title text-center">
+          <h1 class="text-uppercase">Login<span>Login</span></h1>		
+       </section> 
+      
+      <form (ngSubmit)="onSignin(f)" #f="ngForm" class="login-form ">
+      <div class="form-group">
+        <div class="postsignup">
+             <div class="error" *ngIf="postSubmit" >{{error}}</div>
+         </div>
+  
+      <div class="postsignup">
+          <div class="error" *ngIf="showMessage" >{{message}}</div>
+      </div>
+        <label for="email">Email</label>
+        <input 
+        type="email" 
+        id="email" 
+        name="email" 
+        ngModel 
+        class="form-control input"
+        required
+        email
+        >
+      </div>
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        ngModel 
+        class="form-control input"
+        required
+        >
+      </div>
+      <button class="btn btn-primary login-btn" type="submit" >Sign In</button>
+      <div style="width: 100%; height: 20px; border-bottom: 1px solid #C0BDBD; text-align: center">
+          <span style="font-size: 20px; background-color: #F3F5F6; margin-top:10px; padding: 0 20px;">
+            or
+          </span>
+        </div>
+      <button class="btn btn-primary login-btn" style="margin-top: 20px;" (click)="register()" >Register</button> 
+    </form> 
+  </div>
+</div> 
+  
+  

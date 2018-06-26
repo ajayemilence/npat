@@ -1,0 +1,32 @@
+p, h1, h2, h3, h4, h5, h6, ul, li, body, html, *{
+    margin: 0;
+    padding: 0;
+}
+
+
+.bronze{color:#e96405;}
+.blue{color:#08c5d5;}
+.green{color:#7eb530;}
+.red{color:#ea0001;}
+
+
+:root{
+    --green: #7eb530;
+    --blue: #08c5d5;
+    --red: #ea0001;
+    --dark-gray: #222;
+    font-size: 16px;    
+}
+
+
+*{transition: 0.15s all ease-in; outline:0;}
+
+body{
+font-size: 16px;
+font-family: 'Lato', sans-serif;
+line-height: 1.5;
+color: #222;
+overflow-x: hidden;
+}
+
+

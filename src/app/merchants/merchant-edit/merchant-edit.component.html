@@ -1,0 +1,109 @@
+<div class="row" >
+  <div class="col-xs-12 col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-3"
+       style="margin-top:30px;"> 
+      <form 
+      (ngSubmit)="addMerchant(f)" 
+      #f="ngForm" 
+      class="login-form ">
+      <div class="col-xs-12">
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
+      </div>
+
+      <div class="col-xs-12 col-sm-6">
+        <div class="form-group">
+          <label for="fname">First Name</label>
+          <input 
+          type="text" 
+          id="fname" 
+          name="fname" 
+          ngModel 
+          class="form-control input"
+          required
+          #fname="ngModel"
+          >
+          <span 
+          *ngIf="!fname.valid && fname.touched" 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+      </div>
+     
+      <div class="col-xs-12 col-sm-6">
+        <div class="form-group">
+          <label for="lname">Last Name</label>
+          <input 
+          type="text" 
+          id="lname" 
+          name="lname" 
+          ngModel 
+          class="form-control input"
+          required
+          #lname="ngModel"
+          >
+          <span 
+          *ngIf="!lname.valid && lname.touched" 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+      </div>
+
+      <div class="col-xs-12">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+          type="text" 
+          id="email" 
+          name="email" 
+          ngModel 
+          class="form-control input"
+          required
+          email
+          #email="ngModel"
+          >
+          <span 
+          *ngIf="!email.valid && email.touched" 
+          class="help-block">Enter Valid Email Address!</span>
+        </div>
+      </div>
+      <div class="col-xs-12">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        ngModel 
+        class="form-control input"
+        required
+        minlength="6"
+        #pwd="ngModel"
+        >
+        <span 
+        *ngIf="!pwd.valid && pwd.touched " 
+        class="help-block">Minimum Length 6</span>
+      </div>
+    </div>
+    <div class="col-xs-12">
+      <div class="form-group">
+          <label for="parentAdmin">Parent Admin</label>
+          <input 
+          type="text" 
+          id="parentAdmin" 
+          name="parentAdmin" 
+          ngModel 
+          class="form-control input"
+          required
+          #parentAdmin="ngModel"
+          >
+          <span 
+          *ngIf="!parentAdmin.valid && parentAdmin.touched " 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+    </div>   
+    <div class="col-xs-12">
+        <button class="btn btn-primary " type="submit" >Save</button>
+    </div>  
+    </form> 
+  </div>
+</div> 
+  

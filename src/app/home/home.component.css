@@ -1,0 +1,46 @@
+.home{
+    margin-top: 115px;
+    margin-left: 300px;
+}
+@media only screen and (min-width:992px){
+	.home{
+        margin-top: 115px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+@media only screen and (max-width:991px){
+	.home{
+        margin-top: 115px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+}
+
+
+@media only screen and (max-width:768px){
+	.home{
+        margin-top: 115px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+}
+
+
+@media only screen and (max-width:991px){
+    .home{
+        margin-top: 115px;
+        margin-left:20px;
+        margin-right: 20px;
+    }
+}
+
+
+@media only screen and (max-width:1336px){
+    .home{
+        margin-top: 115px;
+        margin-left:300px;
+    }
+}

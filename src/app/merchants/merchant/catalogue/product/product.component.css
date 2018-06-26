@@ -1,0 +1,13 @@
+h3 i {
+    font-size: 30px;
+    margin-right: 20px;
+}
+
+.info {
+    width: 45%;
+    border-collapse: collapse;
+    /* padding-right: 40px; */
+    margin-top: 20px;
+    border: rgb(63, 63, 63);
+    box-shadow: 0 0 30px -2px rgba(175, 175, 175, 0.5);
+}
