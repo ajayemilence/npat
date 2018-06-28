@@ -10,23 +10,23 @@ import { LocalStorageService } from '../../../shared/local-storage.service';
   styleUrls: ['./catalogue.component.css']
 })
 export class CatalogueComponent implements OnInit {
-  superCategories = [
-     {id: 1, name: 'Sports'},
-     {id: 2, name: 'Food'}
-  ];
+superCategories = [
+    {id: 1, name: 'Sports'},
+    {id: 2, name: 'Food'}
+];
 
-  Categories = [
-    {id: 1, name: 'Italian'},
-    {id: 1, name: 'Maxican'},
- ];
+Categories = [
+  {id: 1, name: 'Italian'},
+  {id: 1, name: 'Maxican'},
+];
 
- subCategories = [
-  {id: 1, name: 'Pasta'}
- ];
+subCategories = [
+{id: 1, name: 'Pasta'}
+];
 
- products = [
-  {id: 1, name: 'Burger'}
- ];
+products = [
+{id: 1, name: 'Burger'}
+];
 
 modalRef: BsModalRef;
 displayImage = 'assets/images/upload.png';

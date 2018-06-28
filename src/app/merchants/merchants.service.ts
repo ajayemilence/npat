@@ -16,14 +16,25 @@ export class MerchantService {
                 private global: GlobalService) { }
 
 
+
+
     addMerchant(data: any) {
+        // const adminId = localStorage.getItem('user-data');
+        // console.log(adminId, 'admin_id');
+
+        const user = this.localStorageService.get('user-data');
+        console.log(user.admin_id);
+
+
         const body = new FormData();
         body.append('merchant_email', data.value.email);
         body.append('merchant_password', data.value.password);
         body.append('merchant_first_name', data.value.fname);
         body.append('merchant_last_name', data.value.lname);
-        body.append('merchant_parent_admin', data.value.parentAdmin);
+        body.append('merchant_parent_admin', user.admin_id);
 
+
+        console.log(data, 'data');
 
         return this.http.post(this.global.serverUrl + 'merchant/en/register',
         body,
@@ -48,6 +59,26 @@ export class MerchantService {
         );
     }
 
+
+    getMerchants(data: any) {
+        const headers = new Headers({
+            'd_token':  JSON.parse(data)
+         });
+
+        return this.http.get(this.global.serverUrl + 'merchant/en/get_all_merchant',
+        {headers: headers})
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
 
 
 }

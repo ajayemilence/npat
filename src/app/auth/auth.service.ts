@@ -24,8 +24,8 @@ export class AuthService {
         body.append('admin_first_name', data.admin_first_name);
         body.append('admin_last_name', data.admin_last_name);
         body.append('admin_phone_no', data.admin_phone_no);
-        body.append('admin_product_type', '');
-        body.append('admin_account_type', '');
+        // body.append('admin_product_type', '');
+        // body.append('admin_account_type', '');
 
         if (data.image === null) {
             console.log('image null');
@@ -34,14 +34,12 @@ export class AuthService {
             console.log('image not null', data.image);
             body.append('admin_profile_pic', data.image, data.image.name );
         }
-
         return this.http.post(this.global.serverUrl + 'admin/en/register',
         body,
         {headers: this.global.requestHeaders}  )
         .map(
             (response: Response) => {
                 const output = response.json();
-                console.log(output, 'output');
                 if (output.success === 200) {
                     localStorage.clear();
                     this.localStorageService.set('token', output.data.token);
@@ -79,11 +77,5 @@ export class AuthService {
         }
     );
    }
-
-    logout() {
-        localStorage.clear();
-    }
-
-
 }
 

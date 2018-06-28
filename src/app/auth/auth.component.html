@@ -1,23 +1,169 @@
-<router-outlet></router-outlet>
+<!-- <router-outlet></router-outlet> -->
+<div class="row" style="margin-top: 60px;">
+  <div 
+    class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3"> 
+    <div class="row  col-xs-8 col-xs-offset-2 border">
+        <button 
+        class="btn btn-default col-xs-6  "
+        (click)="loginPage()"
+        >Login</button>
+        <button 
+        class="btn btn-default col-xs-6"
+        (click)="registerPage()"
+        >Register</button>
 
- 
-<!-- <div class="form" style="margin-top: 120px">
-    <div class="container">
-         <div class="row">
-            <div class="col-sm-12 col-md-8 col-md-offset-2">
-
-                <ul class="tabs tabs-fixed-width tabs-transparent login-form">
-                    <li class="tab list-inline-item">
-                    <a routerLink='/login' routerLinkActive='active'>Sign In</a>
-                    </li>
-                    <li class="tab list-inline-item">
-                    <a  routerLink='/register' routerLinkActive='active'>Sign Up</a>
-                    </li>
-                </ul>
-
-                
-    
+     <div class="row" style="margin-top: 60px;">      
+        <form (ngSubmit)="onSignin(f)" #f="ngForm" *ngIf="showLogin">
+        <div class="form-group">
+            <div class="postsignup">
+                <div class="error" *ngIf="postSubmit" >{{error}}</div>
             </div>
+    
+        <div class="postsignup">
+            <div class="error" *ngIf="showMessage" >{{message}}</div>
         </div>
+            <label for="email">Email</label>
+            <input 
+            type="email" 
+            id="email" 
+            name="email" 
+            ngModel 
+            class="form-control input"
+            required
+            email
+            >
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            ngModel 
+            class="form-control input"
+            required
+            >
+        </div>
+        <button class="btn btn-primary login-btn" type="submit" >Sign In</button>
+        </form> 
+
+        <!-- register -->
+        <form (ngSubmit)="onSignup(f)" #f="ngForm"  *ngIf="showRegister">
+            <div class="form-group text-center">
+                <input  
+                type="file"  
+                id="file-1" 
+                class="inputfile inputfile-1" 
+                name="user-pic" 
+                ngModel
+                accept="image/*"
+                (change)="onFileChange($event.target.files)"
+                >
+                
+                <label for="file-1"> Select an Image
+                    <span class="sr-only"></span>
+                    <img 
+                    id="blah" 
+                    [src]="displayImage"
+                    class="img-responsive img-circle center-block" 
+                    width="100" 
+                    height="100"
+                    >
+                </label>
+            </div>
+            <div class="postsignup">
+                    <div class="error" *ngIf="postSubmit" >{{error}}</div>
+                </div>
+            <!-- <div class="col-xs-12 col-sm-6"> -->
+                <div class="form-group">
+                    <label for="fname">First Name</label>
+                    <input 
+                    type="text" 
+                    id="fname" 
+                    name="fname" 
+                    ngModel 
+                    class="form-control input"
+                    required
+                    #fname="ngModel"
+                    >
+                    <span 
+                    *ngIf="!fname.valid && fname.touched" 
+                    class="help-block">Enter Valid Input!</span>
+                </div>
+            <!-- </div> -->
+            
+            <!-- <div class="col-xs-12 col-sm-6"> -->
+                <div class="form-group">
+                    <label for="lname">Last Name</label>
+                    <input 
+                    type="text" 
+                    id="lname" 
+                    name="lname" 
+                    ngModel 
+                    class="form-control input"
+                    required
+                    #lname="ngModel"
+                    >
+                    <span 
+                    *ngIf="!lname.valid && lname.touched" 
+                    class="help-block">Enter Valid Input!</span>
+                </div>
+            <!-- </div> -->
+        
+            <div class="form-group">
+                
+                <label for="email">Email</label>
+                <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                ngModel 
+                class="form-control input"
+                required
+                email
+                #email="ngModel"
+                >
+                <span 
+                    *ngIf="!email.valid && email.touched" 
+                    class="help-block">Enter Valid Input!</span>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                ngModel 
+                class="form-control input"
+                required
+                #password="ngModel"
+                >
+                <span 
+                    *ngIf="!password.valid && password.touched" 
+                    class="help-block">Enter Valid Input!</span>
+            </div>
+            <div class="form-group">
+                <label for="phoneNumber">Phone Number</label>
+                <input 
+                type="number" 
+                id="phoneNumber" 
+                name="phoneNumber" 
+                ngModel 
+                class="form-control input"
+                required
+                minlength="6"
+                #phoneNumber="ngModel"
+                >
+                <span 
+                    *ngIf="!phoneNumber.valid && phoneNumber.touched" 
+                    class="help-block">Enter Valid Input!</span>
+            </div>    
+
+            <button class="btn btn-primary login-btn" type="submit" >Sign Up</button>
+        </form> 
     </div>
-</div> -->
+    </div>       
+  </div>
+</div> 
+        
+        

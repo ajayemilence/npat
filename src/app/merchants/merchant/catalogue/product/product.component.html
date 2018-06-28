@@ -2,91 +2,53 @@
   <div class="col-xs-12">
     <div class="row">
         <div class="row left inline">
-            <h3><i class="fa fa-caret-left inline fa-lg"></i>Merchant Name</h3>
+            <h3><i 
+              class="fa fa-caret-left inline fa-lg"
+              routerLink="/merchants/merchant/catalogue"
+              ></i>Merchant Name</h3>
         </div>   
     </div>
   </div>
 
-    <div class="col-xs-12">
-      <div class="row info">
-          <div class="col-xs-6">
-            <p>sdaaaaaaaaaaaaaaa</p>
+  <div class="col-xs-12">
+    <div class="row info">
+      <div class="col-xs-5">
+        <img 
+          [src]="productImage"
+          alt="Product Image" 
+          style="max-height:200px; max-width:200px;" 
+          class="img-responsive">
+      </div>
+      <div class="col-xs-7">
+          <div class="row heading">
+            <h3>Product Heading</h3>
+            <h3>Price: $6</h3>
           </div>
-          <div class="col-xs-6">
-              <p>sdaaaaaaaaaaaaaaa</p>
+          <div class="row description">
+            <p>
+                xyzxyzxyzxyzxyzxyzxyxyzxyzxyzxyz
+                xyzxyzxyzxyzxyzxyzxyzxyxyzxyzxyzxyzxyz
+                xyzxyzxyzxyzxyzxyzxyzxyxyzxyzxyzxyzxyz
+            </p>
           </div>
-        </div>
+          <hr>
+          <div class="row inventory">
+            <h5>Inventory</h5>
+            <label class="switch">
+                <input type="checkbox">
+                <span class="slider round"></span>
+              </label>
+          </div>
+          <hr>
+          <div class="row addons">
+              <h5>Varients/Add-ons</h5>
+          </div>
+          <div class="row listAddOns">
+              <h6>No Varients / Add-ons Added</h6>
+              <a>Add</a>
+          </div>
+          <hr>
+      </div>
     </div>
+  </div>
 </div>
-
-<!-- <form
-      (ngSubmit)="addSuperCategory(f)" 
-      #f="ngForm" 
-    >
-    <div class="form-group">
-      <label for="name">Category Name <span class="blue">*</span></label>
-      <input 
-      type="text" 
-      id="name" 
-      name="name" 
-      ngModel 
-      class="form-control input"
-      required
-      #name="ngModel"
-      >
-      <span 
-      *ngIf="!name.valid && name.touched" 
-      class="help-block">Enter Valid Input!</span>
-    </div>
-    <div class="form-group">
-      <label for="discription">Description</label>
-      <input 
-      type="text" 
-      id="discription" 
-      name="discription" 
-      ngModel 
-      class="form-control input"
-      required
-      #discription="ngModel"
-      >
-      <span 
-      *ngIf="!discription.valid && discription.touched " 
-      class="help-block">Enter Valid Input!</span>
-    </div>
-    <div class="form-group">
-        <input  
-        type="file"  
-        id="file-1" 
-        class="inputfile inputfile-1" 
-        name="category-pic" 
-        ngModel
-        accept="image/*"
-        (change)="onFileChange($event.target.files)"
-        >
-        
-        <label for="file-1">Upload Category Image
-          <img 
-          id="blah" 
-          [src]="displayImage"
-          class="img-responsive img-rounded " 
-          width="100" 
-          height="100"
-          >
-        </label>
-        <p>Drag & Drop images, or 
-          <a 
-          type= "file"
-          id="file"
-          name="user-pic" 
-          ngModel
-          (change)="onFileChange($event.target.files)">
-          browse
-        </a> 
-        from computer.</p>
-    </div>
-    <div class="row">
-        <button class="btn btn-modal" type="submit" >Add</button>
-        <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
-    </div>
-</form> -->
-<!-- caret-left -->

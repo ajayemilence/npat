@@ -12,8 +12,7 @@
       </button>
     </div>
     <div class="row">
-      <!-- <table *ngFor="let item of collection" > -->
-          <table>
+      <table>
               <tr>
                 <th>Merchant Id</th>
                 <th>Store Name</th>
@@ -63,15 +62,29 @@
                 <td>Griffin</td>
                 <td>Griffin</td>
               </tr>
-            </table>
-      <!-- </table> -->
-  
+      </table>
+      <!-- <table>
+          <tr>
+            <th>Merchant Id</th>
+            <th>Merchant Name</th>
+            <th>Address</th>
+            <th>Phone No.</th>
+            <th>Email</th>
+          </tr>
+          <tr 
+          routerLink="/merchants/merchant/info"
+          *ngFor="let merchant of merchants">
+            <td class="id">{{ merchant.merchant_id }}</td>
+            <td>{{ merchant.merchant_first_name }} {{ merchant.merchant_last_name }}</td>
+            <td>{{merchant.merchant_address}}</td>
+            <td>{{merchant.merchant_phone_no}}</td>
+            <td>{{merchant.merchant_email}}</td>
+          </tr>
+      </table> -->
   
       <!-- Pagination -->
       <div class="row">
-        <!-- <div class="row">
-            <p class="left">This is 1 to 4 of 3 entries</p>
-        </div> -->
+        
         <div class="pagination pagination-sm right">
           <a href="#">&laquo;</a>
           <a href="#" class="active">1</a>

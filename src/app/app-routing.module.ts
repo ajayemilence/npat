@@ -16,7 +16,7 @@ import { ProductComponent } from './merchants/merchant/catalogue/product/product
 
 const appRoutes: Routes = [
     { path: '',
-    // canActivate: [AuthGuard],
+    canActivate: [AuthGuard],
     component: HomeComponent,
     children: [
         { path: 'orders', component: OrdersComponent},
@@ -32,12 +32,12 @@ const appRoutes: Routes = [
     { path: 'auth',
     // canActivate: [AuthGuard],
     component: AuthComponent,
-    children: [
-        { path: 'login', component: LoginComponent},
-        { path: 'register', component: RegisterComponent}
-    ]
+    // children: [
+    //     { path: 'login', component: LoginComponent},
+    //     { path: 'register', component: RegisterComponent}
+    // ]
     },
-    { path: '**', redirectTo: '/auth/login'} // wild card route
+    { path: '**', redirectTo: '/auth'} // wild card route
 ];
 @NgModule({
    imports: [RouterModule.forRoot(appRoutes)],
