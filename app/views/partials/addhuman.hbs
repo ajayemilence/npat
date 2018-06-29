@@ -3,32 +3,38 @@
 
 
         <!-- Text input-->
-            <div class="form-group ">
-                <label class="col-md-4 control-label ">Letter</label>
-                <div class="col-md-6 inputGroupContainer " style=' width="283px "'>
-                    <div class="input-group ">
-                        <input name="word " placeholder="Enter Human Letter " class="form-control " type="text ">
+<!-- <form action="/" method="post">
+ -->
+            <div class="form-group">
+                <label class="col-md-4 control-label">Letter</label>
+                <div class="col-md-6 inputGroupContainer" style=' width="283px"'>
+                    <div class="input-group">
+                        <input name="word" placeholder="Enter Human Letter " class="form-control" type="text">
                     </div>
                 </div>
             </div>
 
-            <div class="form-group ">
-                <label class="col-md-4 control-label ">Name</label>
-                <div class="col-md-6 inputGroupContainer " style=' width="283px "'>
-                    <div class="input-group ">
+            <div class="form-group">
+                <label class="col-md-4 control-label">Name</label>
+                <div class="col-md-6 inputGroupContainer" style=' width="283px"'>
+                    <div class="input-group">
 
-                    <input name="name " placeholder="Enter Human Name " class="form-control " type="text ">           </div>
+                    <input name="name" placeholder="Enter Human Name " class="form-control" type="text">           </div>
                 </div>
             </div>
-            <div class="form-group ">
-                <label class="col-md-4 control-label ">Gender</label>
-                <div class="col-md-6 inputGroupContainer " style=' width="283px "'>
-                    <div class="input-group ">
-                        <input name="gender " placeholder="Enter gender " class="form-control " type="text ">
-                    </div>
-                </div>
-            </div>
-                <div class="form-group">
+          
+          <div class="form-group">
+    <label class="col-md-4 control-label">Gender </label>
+    <div class="col-md-6 inputGroupContainer" style=' width="283px"'>
+        <div class="input-group">
+            <select name="gender" placeholder=" Enter language">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+            </select>
+        </div>
+    </div>
+</div>
+           <div class="form-group">
     <label class="col-md-4 control-label">Language </label>
     <div class="col-md-6 inputGroupContainer" style=' width="283px"'>
         <div class="input-group">
@@ -39,28 +45,24 @@
         </div>
     </div>
 </div>
-
-
-
         <!-- Button -->
-        <div class="form-group ">
-            <label class="col-md-4 control-label "></label>
-            <div class="col-md-4 ">
-                <button type="submit " class="btn btn-warning ">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspSUBMIT
-                    <span class="glyphicon glyphicon-send "></span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</button>
+        <div class="form-group">
+            <label class="col-md-4 control-label"></label>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-warning">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspSUBMIT
+                    <span class="glyphicon glyphicon-send"></span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</button>
             </div>
         </div>
 
     </fieldset>
 </form>
 
-
 <!-- /.container -->
 
 <script>
     $(document).ready(function () {
 
-      // function bs_input_file() {
+        // function bs_input_file() {
         //     $(".input-file").before(
         //         function () {
         //             if (!$(this).prev().hasClass('input-ghost')) {
@@ -157,5 +159,6 @@
             //         complete: function () { $("#loader_pnl").hide(); }
             //     })
             // });
+    });
+</script>
 
-    </script>

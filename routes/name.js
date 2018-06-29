@@ -29,11 +29,11 @@ eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
 
 
 router.get('/addName', function(req, res, next) {
-    res.render('partials/addName', { layout: false });
+    console.log("yaha pr add name ka hai kya pahuch raha hai");
+    res.render('partials/addhuman', { layout: false });
 });
 
 router.post('/createName', function(req, res) {
-    console.log("yaha create name hai ,  ccccccccc");
     npatService.createName(req, function(data) {
         res.redirect('/name');
     });
