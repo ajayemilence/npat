@@ -6,11 +6,11 @@ var _ = require('underscore');
 
 let config = require('../config');
 
-let Place = require('../model/place');
-let Animal = require('../model/animal');
-let Plant = require('../model/plant');
-let Thing = require('../model/thing');
-let Human = require('../model/human');
+let AdminAnimal = require('../model/adminAnimal');
+let AdminHuman = require('../model/adminHuman');
+let AdminPlace = require('../model/adminPlace');
+let AdminPlant = require('../model/adminPlant');
+let AdminThing = require('../model/adminThing');
 
 
 module.exports = ({ config, db }) => {
@@ -24,7 +24,6 @@ module.exports = ({ config, db }) => {
     api.get('/testing', (req, res) => {
         res.status(200).json({ success: 1, msg: "user is online" });
     });
-
 
 
 
@@ -104,28 +103,28 @@ module.exports = ({ config, db }) => {
         if (rightBot == 1) {
 
 
-            Animal.count({ word: req.query.word }).exec(function(err, count) {
+            AdminAnimal.count({ word: req.query.word }).exec(function(err, count) {
                 var random = Math.floor(Math.random() * count)
-                Animal.findOne({ word: req.query.word }).skip(random).exec(
+                AdminAnimal.findOne({ word: req.query.word }).skip(random).exec(
                     (err, animal) => {
-                        Human.count({ word: req.query.word }).exec(function(err, counthuman) {
+                        AdminHuman.count({ word: req.query.word }).exec(function(err, counthuman) {
                             var randomHuman = Math.floor(Math.random() * counthuman)
-                            Human.findOne({ word: req.query.word }).skip(randomHuman).exec(
+                            AdminHuman.findOne({ word: req.query.word }).skip(randomHuman).exec(
                                 (err, human) => {
 
-                                    Plant.count({ word: req.query.word }).exec(function(err, countplant) {
+                                    AdminPlant.count({ word: req.query.word }).exec(function(err, countplant) {
                                         var randomplant = Math.floor(Math.random() * countplant)
-                                        Plant.findOne({ word: req.query.word }).skip(randomplant).exec(
+                                        AdminPlant.findOne({ word: req.query.word }).skip(randomplant).exec(
                                             (err, plant) => {
 
-                                                Thing.count({ word: req.query.word }).exec(function(err, countthing) {
+                                                AdminThing.count({ word: req.query.word }).exec(function(err, countthing) {
                                                     var randomthing = Math.floor(Math.random() * countthing)
-                                                    Thing.findOne({ word: req.query.word }).skip(randomthing).exec(
+                                                    AdminThing.findOne({ word: req.query.word }).skip(randomthing).exec(
                                                         (err, thing) => {
 
-                                                            Place.count({ word: req.query.word }).exec(function(err, countplace) {
+                                                            AdminPlace.count({ word: req.query.word }).exec(function(err, countplace) {
                                                                 var randomplace = Math.floor(Math.random() * countplace)
-                                                                Place.findOne({ word: req.query.word }).skip(randomplace).exec(
+                                                                AdminPlace.findOne({ word: req.query.word }).skip(randomplace).exec(
                                                                     (err, place) => {
                                                                         // Tada! random user
                                                                         var data = new Object();
@@ -210,9 +209,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     if (type == 'Name') {
                         if (showRight.includes(1)) {
 
-                Human.count({ word: req.query.word }).exec(function(err, count) {
+                AdminHuman.count({ word: req.query.word }).exec(function(err, count) {
                     var humanRandom = Math.floor(Math.random() * count)
-                    Human.findOne({ word: req.query.word }).skip(humanRandom).exec(
+                    AdminHuman.findOne({ word: req.query.word }).skip(humanRandom).exec(
                         (err, human) => {
                             var botWord = human.name;
                             resolve(botWord)
@@ -221,9 +220,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                 });
             } else {
 
-                Human.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
+                AdminHuman.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
                     var humanRandom = Math.floor(Math.random() * count)
-                    Human.findOne({ word: { $ne: req.query.word } }).skip(humanRandom).exec(
+                    AdminHuman.findOne({ word: { $ne: req.query.word } }).skip(humanRandom).exec(
                         (err, human) => {
 
                              var botWord = human.name;
@@ -238,9 +237,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     }
                      else if (type == 'Place') {
                     if (showRight.includes(2)) {
-                Place.count({ word: req.query.word }).exec(function(err, count) {
+                AdminPlace.count({ word: req.query.word }).exec(function(err, count) {
                     var placeRandom = Math.floor(Math.random() * count)
-                    Place.findOne({ word: req.query.word }).skip(placeRandom).exec(
+                    AdminPlace.findOne({ word: req.query.word }).skip(placeRandom).exec(
                         (err, place) => {
 
                             var botWord = place.name;
@@ -249,9 +248,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                         });
                 });
             } else {
-                Place.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
+                AdminPlace.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
                     var placeRandom = Math.floor(Math.random() * count)
-                    Place.findOne({ word: { $ne: req.query.word } }).skip(placeRandom).exec(
+                    AdminPlace.findOne({ word: { $ne: req.query.word } }).skip(placeRandom).exec(
                         (err, place) => {
 
                             var botWord = place.name;
@@ -263,9 +262,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
             }
             else if (type == 'Animal') {
                 if (showRight.includes(3)) {
-                Animal.count({ word: req.query.word }).exec(function(err, count) {
+                AdminAnimal.count({ word: req.query.word }).exec(function(err, count) {
                     var animalRandom = Math.floor(Math.random() * count)
-                    Animal.findOne({ word: req.query.word }).skip(animalRandom).exec(
+                    AdminAnimal.findOne({ word: req.query.word }).skip(animalRandom).exec(
                         (err, animal) => {
 
                             var botWord = animal.name;
@@ -273,9 +272,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                         });
                 });
             } else {
-                Animal.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
+                AdminAnimal.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
                     var animalRandom = Math.floor(Math.random() * count)
-                    Animal.findOne({ word: { $ne: req.query.word } }).skip(animalRandom).exec(
+                    AdminAnimal.findOne({ word: { $ne: req.query.word } }).skip(animalRandom).exec(
                         (err, animal) => {
 
                             var botWord = animal.name;
@@ -286,9 +285,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
             }
             else if (type == 'Thing') {
                 if (showRight.includes(4)) {
-                Thing.count({ word: req.query.word }).exec(function(err, count) {
+                AdminThing.count({ word: req.query.word }).exec(function(err, count) {
                     var animalRandom = Math.floor(Math.random() * count)
-                    Thing.findOne({ word: req.query.word }).skip(animalRandom).exec(
+                    AdminThing.findOne({ word: req.query.word }).skip(animalRandom).exec(
                         (err, thing) => {
 
                             var botWord = thing.name;
@@ -297,9 +296,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                         });
                 });
             } else {
-                Thing.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
+                AdminThing.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
                     var animalRandom = Math.floor(Math.random() * count)
-                    Thing.findOne({ word: { $ne: req.query.word } }).skip(animalRandom).exec(
+                    AdminThing.findOne({ word: { $ne: req.query.word } }).skip(animalRandom).exec(
                         (err, thing) => {
 
                            var botWord = thing.name;
@@ -311,9 +310,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
             }
             else{
                 if (showRight.includes(5)) {
-                Plant.count({ word: req.query.word }).exec(function(err, count) {
+                AdminPlant.count({ word: req.query.word }).exec(function(err, count) {
                     var plantRandom = Math.floor(Math.random() * count)
-                    Plant.findOne({ word: req.query.word }).skip(plantRandom).exec(
+                    AdminPlant.findOne({ word: req.query.word }).skip(plantRandom).exec(
                         (err, plant) => {
 
                             var botWord = plant.name;
@@ -323,9 +322,9 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                 });
                 //console.log("Animal");
             } else {
-                Plant.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
+                AdminPlant.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
                     var plantRandom = Math.floor(Math.random() * count)
-                    Plant.findOne({ word: { $ne: req.query.word } }).skip(plantRandom).exec(
+                    AdminPlant.findOne({ word: { $ne: req.query.word } }).skip(plantRandom).exec(
                         (err, plant) => {
 
                             var botWord = plant.name;
