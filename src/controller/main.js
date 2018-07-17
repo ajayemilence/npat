@@ -34,11 +34,14 @@ module.exports = ({ config, db }) => {
 
         var languageWord ;
 
-        if (req.query.language == "1") {
+        if (req.query.language == '1') {
             languageWord = "Arabian";
         }
-        else {
+        else if(req.query.language == '0') {
             languageWord = "English";
+        }
+        else {
+            return res.json({success : 0 , msg : "Please send launguage code right"});
         }
 
         switch (req.query.round) {
@@ -110,39 +113,58 @@ module.exports = ({ config, db }) => {
         }
 
         if (rightBot == 1) {
-            if(req.query.language = "0") // english
-             {
-                AdminAnimal.count({ word: req.query.word }).exec(function(err, count) {
+
+                AdminAnimal.count({ word: req.query.word , language : languageWord}).exec(function(err, count) {
                 var random = Math.floor(Math.random() * count)
-                AdminAnimal.findOne({ word: req.query.word }).skip(random).exec(
+                AdminAnimal.findOne({ word: req.query.word , language : languageWord}).skip(random).exec(
                     (err, animal) => {
-                        AdminHuman.count({ word: req.query.word }).exec(function(err, counthuman) {
+                        AdminHuman.count({ word: req.query.word , language : languageWord}).exec(function(err, counthuman) {
                             var randomHuman = Math.floor(Math.random() * counthuman)
-                            AdminHuman.findOne({ word: req.query.word }).skip(randomHuman).exec(
+                            AdminHuman.findOne({ word: req.query.word , language : languageWord}).skip(randomHuman).exec(
                                 (err, human) => {
 
-                                    AdminPlant.count({ word: req.query.word }).exec(function(err, countplant) {
+                                    AdminPlant.count({ word: req.query.word , language : languageWord}).exec(function(err, countplant) {
                                         var randomplant = Math.floor(Math.random() * countplant)
-                                        AdminPlant.findOne({ word: req.query.word }).skip(randomplant).exec(
+                                        AdminPlant.findOne({ word: req.query.word , language : languageWord}).skip(randomplant).exec(
                                             (err, plant) => {
 
-                                                AdminThing.count({ word: req.query.word }).exec(function(err, countthing) {
+                                                AdminThing.count({ word: req.query.word , language : languageWord}).exec(function(err, countthing) {
                                                     var randomthing = Math.floor(Math.random() * countthing)
-                                                    AdminThing.findOne({ word: req.query.word }).skip(randomthing).exec(
+                                                    AdminThing.findOne({ word: req.query.word , language : languageWord}).skip(randomthing).exec(
                                                         (err, thing) => {
 
-                                                            AdminPlace.count({ word: req.query.word }).exec(function(err, countplace) {
+                                                            AdminPlace.count({ word: req.query.word , language : languageWord}).exec(function(err, countplace) {
                                                                 var randomplace = Math.floor(Math.random() * countplace)
-                                                                AdminPlace.findOne({ word: req.query.word }).skip(randomplace).exec(
+                                                                AdminPlace.findOne({ word: req.query.word , language : languageWord}).skip(randomplace).exec(
                                                                     (err, place) => {
                                                                         // Tada! random user
                                                                         var data = new Object();
+                                                                        if(human == null) {
+                                                                        data.humanName = "nullWord";
+                                                                        }else {
+                                                                         data.humanName = human.name;
+                                                                         }
+                                                                         if(place == null) {
+                                                                        data.placeName = "nullWord";
+                                                                        }else {
+                                                                         data.placeName = place.name;
+                                                                         }
+                                                                         if(animal == null) {
+                                                                        data.animalName = "nullWord";
+                                                                        }else {
+                                                                         data.animalName = animal.name;
+                                                                         }
+                                                                         if(thing == null) {
+                                                                        data.thingName = "nullWord";
+                                                                        }else {
+                                                                         data.thingName = thing.name;
+                                                                         } 
+                                                                         if(plant == null) {
+                                                                        data.plantName = "nullWord";
+                                                                        }else {
+                                                                         data.plantName = plant.name;
+                                                                         }                                                         
                                                                         
-                                                                        data.humanName = human.name;
-                                                                        data.placeName = place.name;
-                                                                        data.animalName = animal.name;
-                                                                        data.thingName = thing.name;
-                                                                        data.plantName = plant.name;
                                                                         res.status(200).json({ success: 1, msg: 'words shown of given letter', data: data });
                                                                     });
                                                             });
@@ -155,53 +177,6 @@ module.exports = ({ config, db }) => {
                     });
             });
 
-            }
-            // else clause is for arabic
-            else {
-
-            AdminAnimal.count({ word: req.query.word }).exec(function(err, count) {
-                var random = Math.floor(Math.random() * count)
-                AdminAnimal.findOne({ word: req.query.word }).skip(random).exec(
-                    (err, animal) => {
-                        AdminHuman.count({ word: req.query.word }).exec(function(err, counthuman) {
-                            var randomHuman = Math.floor(Math.random() * counthuman)
-                            AdminHuman.findOne({ word: req.query.word }).skip(randomHuman).exec(
-                                (err, human) => {
-
-                                    AdminPlant.count({ word: req.query.word }).exec(function(err, countplant) {
-                                        var randomplant = Math.floor(Math.random() * countplant)
-                                        AdminPlant.findOne({ word: req.query.word }).skip(randomplant).exec(
-                                            (err, plant) => {
-
-                                                AdminThing.count({ word: req.query.word }).exec(function(err, countthing) {
-                                                    var randomthing = Math.floor(Math.random() * countthing)
-                                                    AdminThing.findOne({ word: req.query.word }).skip(randomthing).exec(
-                                                        (err, thing) => {
-
-                                                            AdminPlace.count({ word: req.query.word }).exec(function(err, countplace) {
-                                                                var randomplace = Math.floor(Math.random() * countplace)
-                                                                AdminPlace.findOne({ word: req.query.word }).skip(randomplace).exec(
-                                                                    (err, place) => {
-                                                                        // Tada! random user
-                                                                        var data = new Object();
-                                                                        
-                                                                        data.humanName = human.name;
-                                                                        data.placeName = place.name;
-                                                                        data.animalName = animal.name;
-                                                                        data.thingName = thing.name;
-                                                                        data.plantName = plant.name;
-                                                                        res.status(200).json({ success: 1, msg: 'words shown of given letter', data: data });
-                                                                    });
-                                                            });
-                                                        });
-                                                });
-                                            });
-                                    });
-                                });
-                        });
-                    });
-            });
-        }
 
         } else {
 
@@ -234,7 +209,6 @@ module.exports = ({ config, db }) => {
 
             //npatArr = shuffle(npatArr);
 
-            //console.log(npatArr);
 
             //=================== underscore ==================================
             var rand = Math.floor(Math.random() * npatArr.length);
@@ -258,6 +232,7 @@ module.exports = ({ config, db }) => {
             // 5 == plant;
 
 
+
 var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
 
 
@@ -266,13 +241,18 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     if (type == 'Name') {
                         if (showRight.includes(1)) {
 
-                AdminHuman.count({ word: req.query.word  , "language" : languageWord})
+                AdminHuman.count({ word: req.query.word  , language : languageWord})
                 .exec(function(err, count) {
                     var humanRandom = Math.floor(Math.random() * count)
-                    AdminHuman.findOne({ word: req.query.word , "language" : languageWord})
+                    AdminHuman.findOne({ word: req.query.word , language : languageWord})
                     .skip(humanRandom).exec(
                         (err, human) => {
-                            var botWord = human.name;
+                            if(human == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = human.name;
+                            }
+                            
                             resolve(botWord)
 
                         });
@@ -286,7 +266,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(humanRandom).exec(
                         (err, human) => {
 
-                             var botWord = human.name;
+                             if(human == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = human.name;
+                            }
+                            
                             resolve(botWord)
 
 
@@ -305,7 +290,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(placeRandom).exec(
                         (err, place) => {
 
-                            var botWord = place.name;
+                            if(place == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = place.name;
+                            }
+                            
                             resolve(botWord)
 
                         });
@@ -318,7 +308,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(placeRandom).exec(
                         (err, place) => {
 
-                            var botWord = place.name;
+                            if(place == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = place.name;
+                            }
+                            
                             resolve(botWord)
 
                         });
@@ -334,7 +329,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(animalRandom).exec(
                         (err, animal) => {
 
-                            var botWord = animal.name;
+                            if(animal == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = animal.name;
+                            }
+                            
                             resolve(botWord)
                         });
                 });
@@ -346,7 +346,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(animalRandom).exec(
                         (err, animal) => {
 
-                            var botWord = animal.name;
+                            if(animal == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = animal.name;
+                            }
+                            
                             resolve(botWord)
                         });
                 });
@@ -361,7 +366,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(animalRandom).exec(
                         (err, thing) => {
 
-                            var botWord = thing.name;
+                            if(thing == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = thing.name;
+                            }
+                            
                             resolve(botWord)
 
                         });
@@ -374,7 +384,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(animalRandom).exec(
                         (err, thing) => {
 
-                           var botWord = thing.name;
+                           if(thing == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = thing.name;
+                            }
+
                             resolve(botWord)
 
                         });
@@ -390,7 +405,12 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(plantRandom).exec(
                         (err, plant) => {
 
-                            var botWord = plant.name;
+                            if(plant == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = plant.name;
+                            }
+
                             resolve(botWord)
 
                         });
@@ -404,7 +424,11 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     .skip(plantRandom).exec(
                         (err, plant) => {
 
-                            var botWord = plant.name;
+                            if(plant == null) {
+                                var botWord = "nullWord";
+                            }else {
+                                var botWord = plant.name;
+                            }
                             resolve(botWord)
 
                         });
@@ -434,168 +458,10 @@ Promise.all(NpatBotPromises).then(botWords =>{
       thingName : botWords[3], 
       plantName : botWords[4]}); 
 
-                     return res.json({success: 1, msg: 'wrong words shown of given letter', data: finalBotWords});
+                     return res.json({success: 1, msg: 'words shown of given letter', data: finalBotWords});
                 }).catch(err => {
                     res.json({success: 0, msg:'Unable to get field'});
                 });
-
-
-// {
-//     "success": 1,
-//     "msg": "words shown of given letter",
-//     "data": {
-//         "animalName": "Parot",
-//         "humanName": "Puneet2",
-//         "thingName": "Pencil",
-//         "placeName": "Palce",
-//         "plantName": "Pea"
-//     }
-// }
-
-        //     var myPromiseName =  new Promise((resolve, reject) => {
-        //     if (showRight.includes(1)) {
-
-        //         Human.count({ word: req.query.word }).exec(function(err, count) {
-        //             var humanRandom = Math.floor(Math.random() * count)
-        //             Human.findOne({ word: req.query.word }).skip(humanRandom).exec(
-        //                 (err, human) => {
-
-        //                     resolve(human)
-
-        //                 });
-        //         });
-        //     } else {
-
-        //         Human.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
-        //             var humanRandom = Math.floor(Math.random() * count)
-        //             Human.findOne({ word: { $ne: req.query.word } }).skip(humanRandom).exec(
-        //                 (err, human) => {
-
-        //                      resolve(human)
-
-
-        //                 });
-        //         });
-        //     }
-        // });
-
-        //     var myPromisePlace =  new Promise((resolve, reject) => {
-        //     if (showRight.includes(2)) {
-        //         Place.count({ word: req.query.word }).exec(function(err, count) {
-        //             var placeRandom = Math.floor(Math.random() * count)
-        //             Place.findOne({ word: req.query.word }).skip(placeRandom).exec(
-        //                 (err, place) => {
-
-        //                     resolve(place)
-
-        //                 });
-        //         });
-        //     } else {
-        //         Place.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
-        //             var placeRandom = Math.floor(Math.random() * count)
-        //             Place.findOne({ word: { $ne: req.query.word } }).skip(placeRandom).exec(
-        //                 (err, place) => {
-        //                     resolve(place);
-
-        //                 });
-        //         });
-        //     }
-        // });
-
-
-        //     var myPromiseAnimal =  new Promise((resolve, reject) => {
-        //     if (showRight.includes(3)) {
-        //         Animal.count({ word: req.query.word }).exec(function(err, count) {
-        //             var animalRandom = Math.floor(Math.random() * count)
-        //             Animal.findOne({ word: req.query.word }).skip(animalRandom).exec(
-        //                 (err, animal) => {
-
-        //                     resolve(animal);
-        //                 });
-        //         });
-        //     } else {
-        //         Animal.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
-        //             var animalRandom = Math.floor(Math.random() * count)
-        //             Animal.findOne({ word: { $ne: req.query.word } }).skip(animalRandom).exec(
-        //                 (err, animal) => {
-
-        //                     resolve(animal);
-        //                 });
-        //         });
-        //     }
-        // });
-
-        //     var myPromiseThing =  new Promise((resolve, reject) => {
-        //     if (showRight.includes(4)) {
-        //         Thing.count({ word: req.query.word }).exec(function(err, count) {
-        //             var animalRandom = Math.floor(Math.random() * count)
-        //             Thing.findOne({ word: req.query.word }).skip(animalRandom).exec(
-        //                 (err, thing) => {
-
-        //                     resolve(thing);
-
-        //                 });
-        //         });
-        //     } else {
-        //         Thing.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
-        //             var animalRandom = Math.floor(Math.random() * count)
-        //             Thing.findOne({ word: { $ne: req.query.word } }).skip(animalRandom).exec(
-        //                 (err, thing) => {
-
-        //                     resolve(thing);
-
-        //                 });
-        //         });
-        //     }
-        // });
-
-        //     var myPromisePlant =  new Promise((resolve, reject) => {
-        //     if (showRight.includes(5)) {
-        //         Plant.count({ word: req.query.word }).exec(function(err, count) {
-        //             var plantRandom = Math.floor(Math.random() * count)
-        //             Plant.findOne({ word: req.query.word }).skip(plantRandom).exec(
-        //                 (err, plant) => {
-
-        //                     resolve(plant);
-
-        //                 });
-        //         });
-        //         //console.log("Animal");
-        //     } else {
-        //         Plant.count({ word: { $ne: req.query.word } }).exec(function(err, count) {
-        //             var plantRandom = Math.floor(Math.random() * count)
-        //             Plant.findOne({ word: { $ne: req.query.word } }).skip(plantRandom).exec(
-        //                 (err, plant) => {
-
-        //                     resolve(plant);
-
-        //                 });
-        //         });
-        //     }
-        // });
-
-
-                //     var npatbotWrong = {};
-                //  myPromiseName.then(name =>{
-                //      npatbotWrong.humanName = name.name;
-                //  });
-                //   myPromiseAnimal.then(animal =>{
-                //      npatbotWrong.animalName = animal.name;
-                //  });
-                //    myPromisePlace.then(place =>{
-                //      npatbotWrong.placeName = place.name;
-                //  });
-                //     myPromiseThing.then(thing =>{
-                //         console.log(thing);
-                //      npatbotWrong.thingName = thing.name;
-                //  });
-                //      myPromisePlant.then(plant =>{
-                //      npatbotWrong.plantName = plant.name;
-
-                //      return res.json({success: 1, msg: 'wrong words shown of given letter', data: npatbotWrong});
-                // }).catch(err => {
-                //     res.json({success: 0, msg:'Unable to get field'});
-                // });
 
 
 //==================================khtam ====================
