@@ -336,7 +336,7 @@ response :-
 
 
 
-http://localhost:4012/v1/npat/main?word=P&round=d
+http://localhost:4012/v1/npat/main?word=P&round=d&language=0
 
 
 
@@ -345,21 +345,38 @@ baseUrl/npat/main
  
 **send word and round in query
 
-ex =>   baseUrl/npat/main?word=P&round=d
+ex =>   baseUrl/npat/main?word=P&round=d&language=0
 
+                    word can be A to Z
+                    round can be A to E
+                    language can be 0 or 1   0 means English 1 means Arabic
 
 response : -
 
-
+        if name of given letter can not be found or there is no name 
+        than it will be "nullWord" as shown in example below
 {
     "success": 1,
     "msg": "words shown of given letter",
     "data": {
-        "animalName": "Parot3",
-        "humanName": "Puneet2",
-        "thingName": "Pencil",
-        "placeName": "Palce3",
-        "plantName": "Pea"
+        "humanName": "nullWord",
+        "placeName": "nullWord",
+        "animalName": "nullWord",
+        "thingName": "nullWord",
+        "plantName": "nullWord"
+    }
+}
+    if everything goes well than the example note below example is of round E or 5
+    
+{
+    "success": 1,
+    "msg": "words shown of given letter",
+    "data": {
+        "humanName": "Paras",
+        "placeName": "Poland",
+        "animalName": "Parrot",
+        "thingName": "Pen",
+        "plantName": "PAPAVER"
     }
 }
 
