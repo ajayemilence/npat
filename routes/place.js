@@ -13,7 +13,7 @@ router.get('/', function(req, res) {
     	var data2 = data.forEach((eachdata) => {
 eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
             });
-        res.render('place', { words: data , title: 'Places', rootPath: process.env.IMAGES_ROOT_PATH});
+        res.render('place', { words: data , title: 'Places by admin', rootPath: process.env.IMAGES_ROOT_PATH});
     });
 });
 

@@ -14,7 +14,7 @@ router.get('/', function(req, res) {
     	var data2 = data.forEach((eachdata) => {
 eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
             });
-        res.render('thing', { words: data , title: 'Things', rootPath: process.env.IMAGES_ROOT_PATH});
+        res.render('thing', { words: data , title: 'Things by admin', rootPath: process.env.IMAGES_ROOT_PATH});
     });
 });
 

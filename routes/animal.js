@@ -16,7 +16,7 @@ router.get('/', function(req, res) {
 eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
             });
     	//console.log(data2);
-        res.render('animal', { words: data , title: 'Animals', rootPath: process.env.IMAGES_ROOT_PATH});
+        res.render('animal', { words: data , title: 'Animals by admin', rootPath: process.env.IMAGES_ROOT_PATH});
     });
 });
 
