@@ -74,7 +74,7 @@ module.exports = ({ config, db }) => {
         let upload = multer({ storage: storage }).single('csvFile');
         upload(req, res, (err) => {
             if(err){
-                return res.status(500).json({success : 0 , msg : "error in uploading" error : err})
+                return res.status(500).json({success : 0 , msg : "error in uploading" , error : err})
             }
 
             var csvFileName = req.file.filename;

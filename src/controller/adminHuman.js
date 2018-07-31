@@ -36,7 +36,7 @@ app.use('/image', express.static(__dirname + '../uploads'));
         let upload = multer({ storage: storage }).single('csvFile');
         upload(req, res, (err) => {
             if(err){
-                return res.status(500).json({success : 0 , msg : "error in uploading" error : err})
+                return res.status(500).json({success : 0 , msg : "error in uploading" , error : err})
             }
 
 //             const csvFilePath='<path to csv file>'
