@@ -50,7 +50,7 @@ app.use('/image', express.static(__dirname + '../uploads'));
 
             var csvFileName = req.file.filename;
 
-            fs.createReadStream('src/uploads/' + csvFileName)
+            fs.createReadStream('/root/npatAPI/src/uploads/' + csvFileName)
             .pipe(csv())
             .on('data', function(data) {
                 // body...

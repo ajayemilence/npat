@@ -80,7 +80,7 @@ module.exports = ({ config, db }) => {
 
             var csvFileName = req.file.filename;
 
-            fs.createReadStream('src/uploads/' + csvFileName)
+            fs.createReadStream('/root/npatAPI/src/uploads/' + csvFileName)
             .pipe(csv())
             .on('data', function(data) {
                 // body...
