@@ -6,6 +6,13 @@ let moment = require('moment');
 let config = require('../config');
 let adminPlant = require('../model/adminPlant');
 
+let storage = require('../middleware/storage');
+
+var session = require('express-session');
+var flash = require('connect-flash');
+var csv = require("fast-csv");
+var fs = require('fs');
+
 
 module.exports = ({ config, db }) => {
     let api = express.Router();
@@ -55,6 +62,51 @@ module.exports = ({ config, db }) => {
             }
         });
     });
+
+            //==============csv file uplodation ==========================
+
+
+    api.post('/csvsample', (req, res) => {
+
+        let upload = multer({ storage: storage }).single('csvFile');
+        upload(req, res, (err) => {
+            if(err){
+                return res.status(500).json({success : 0 , msg : "error in uploading"})
+            }
+
+            var csvFileName = req.file.filename;
+
+            fs.createReadStream('src/uploads/' + csvFileName)
+            .pipe(csv())
+            .on('data', function(data) {
+                // body...
+                let plant = new adminPlant({
+                    word: data[0],
+                    name: data[1],
+                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: data[2],
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                });
+                plant.save((error, plant) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
+                });
+                //===
+                console.log(data[2] , "11111111111111");
+            })
+            .on('end', function(data) {
+                res.json({ success: 1, msg: "csv file uploaded" });
+                console.log('read finished');
+            })
+
+        });
+    });
+
+    //===========================================
 
 
     api.get('/getAllplants', (req, res) => {

@@ -342,7 +342,7 @@ http://localhost:4012/v1/npat/main?word=P&round=d&language=0
 
 =========================== FOR get words================================
 baseUrl/npat/main
- 
+
 **send word and round in query
 
 ex =>   baseUrl/npat/main?word=P&round=d&language=0
@@ -366,6 +366,7 @@ response : -
         "plantName": "nullWord"
     }
 }
+
     if everything goes well than the example note below example is of round E or 5
     
 {

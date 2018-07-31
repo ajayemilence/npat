@@ -2,36 +2,101 @@ let express = require('express');
 let mongoose = require('mongoose');
 let multer = require('multer');
 let moment = require('moment');
+let path = require('path');
+
+let app = express();
+
 
 let config = require('../config');
 let adminHuman = require('../model/adminHuman');
 
+let storage = require('../middleware/storage');
+
+var session = require('express-session');
+var flash = require('connect-flash');
+var csv = require("fast-csv");
+var fs = require('fs');
 
 module.exports = ({ config, db }) => {
     let api = express.Router();
 
 
-    // add human ============================>
 
-    // api.post('/addHuman', (req, res) => {
-    //     let human = new Human({
-    //         name: req.body.name,
-    //         word: req.body.word,
-    //         type: req.body.type,
-    //         gender: req.body.gender,
-    //         createdAt: moment().local().valueOf(),
-    //         updatedAt: moment().local().valueOf(),
-    //         language: req.body.language
-    //     });
-    //     human.save((error, human) => {
-    //         if (error) {
-    //             res.json({ success: 0, msg: error });
-    //         }
+    //var csvfile = __dirname + "/files/name.csv";
+    //var stream = fs.createReadStream(csvfile);
 
-    //         res.status(200).json({ success: 1, msg: 'human info added', data: human });
 
-    //     });
-    // });
+    // ======csv file uplodation =================
+
+
+app.use('/image', express.static(__dirname + '../uploads'));
+
+    api.post('/csvsample', (req, res) => {
+
+        let upload = multer({ storage: storage }).single('csvFile');
+        upload(req, res, (err) => {
+            if(err){
+                return res.status(500).json({success : 0 , msg : "error in uploading"})
+            }
+
+//             const csvFilePath='<path to csv file>'
+// const csv=require('csvtojson')
+// csv()
+// .fromFile(csvFilePath)
+// .then((jsonObj)=>{
+//     console.log(jsonObj);
+  
+// });
+
+            var csvFileName = req.file.filename;
+
+            fs.createReadStream('src/uploads/' + csvFileName)
+            .pipe(csv())
+            .on('data', function(data) {
+                // body...
+                let human = new adminHuman({
+                    name: data[2],
+                     word: req.body.word,
+                    type: req.body.type,
+                    gender: req.body.gender,
+                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                    createdAt: moment().local().valueOf(),
+                    updatedAt: moment().local().valueOf(),
+                    language: req.body.language,
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                });
+                human.save((error, human) => {
+                    if (error) {
+                        res.json({ success: 0, msg: error });
+                    }
+                });
+                //===
+
+                console.log(data[2] , "11111111111111");
+            })
+            .on('end', function(data) {
+                res.json({ success: 1, msg: "csv file uploaded" });
+                console.log('read finished');
+            })
+
+        });
+    });
+
+
+
+// app.use('/image', express.static(__dirname + '/uploads'));
+
+
+
+
+
+
+
+
+
+
+
 
 
     api.post('/addHuman', (req, res) => {
@@ -42,16 +107,16 @@ module.exports = ({ config, db }) => {
 
             if (human == null || !human) {
 
-               let human = new adminHuman({
+                let human = new adminHuman({
                     name: req.body.name,
                     word: req.body.word,
                     type: req.body.type,
                     gender: req.body.gender,
-                    createdBy : (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
                     createdAt: moment().local().valueOf(),
                     updatedAt: moment().local().valueOf(),
                     language: req.body.language,
-                    upVote: (req.body.upVote === undefined ) ? 0 : req.body.upVote,
+                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
                     downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
                 });
 
@@ -64,12 +129,12 @@ module.exports = ({ config, db }) => {
 
                 });
             } else {
-                 human.upVote = human.upVote + req.body.upVote;
+                human.upVote = human.upVote + req.body.upVote;
                 human.downVote = human.downVote + req.body.downVote;
 
                 human.save((err, human) => {
                     if (err) {
-                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote" , Error : err})
+                        return res.status(201).json({ success: 0, msg: " error occurred while saving the upvote", Error: err })
                     }
                     return res.status(200).json({ success: 1, msg: " human word info added upvoted", data: human })
                 });
@@ -78,7 +143,7 @@ module.exports = ({ config, db }) => {
         });
     });
 
-    
+
 
 
 
@@ -173,3 +238,47 @@ module.exports = ({ config, db }) => {
 
     return api;
 };
+
+//csv file import
+
+
+// $(function(){
+
+//     /** Click on Fetch data and display in HTML table **/
+
+//     $("#fetchdata").on('click', function(){
+
+//         $.get( "/fetchdata", function( data ) {
+
+//             var products = data['data'];
+
+//             $("#trdata").html('');
+
+//             $("#message").hide();
+
+//             var string = '';
+
+//             $.each(products, function(index, product ) {
+
+//                 string += '<tr><td>'+(index+1)+'</td><td>'+product['_id']+'</td><td>'+product['name']+'</td><td>'+product['category']+'</td><td>'+product['price']+'</td><td>'+product['manufacturer']+'</td></tr>';
+
+//             });
+
+//             $("#trdata").html(string);
+
+//         });
+//     });
+
+//     /** Import data after click on a button */
+
+//     $("#importdata").on('click', function(){
+
+//         $.get( "/import", function( data ) {
+
+//             $("#message").show().html(data['success']);
+
+//         });
+
+//     });
+
+// });

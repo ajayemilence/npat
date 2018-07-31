@@ -36,8 +36,8 @@ module.exports = ({ config, db }) => {
                     if (error) {
                         res.json({ success: 0, msg: error });
                     }
-
-                    res.status(200).json({ success: 1, msg: 'animal info added', data: animal });
+                    "http://localhost:4012/v1/npat/main?word=Z&round=A&language=0"
+                    //res.status(200).json({ success: 1, msg: 'animal info added', data: animal });
 
                 });
             } else {

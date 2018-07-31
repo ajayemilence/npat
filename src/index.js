@@ -12,8 +12,6 @@ let config = require('./config');
 let routes = require('./routes');
 
 
-
-
 //  parse application /json
 app.use(bodyParser.json({
 	limit: config.bodyLimit
