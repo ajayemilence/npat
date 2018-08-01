@@ -16,7 +16,14 @@
 
 .navbar-default .navbar-nav{margin-top: 57px;}
 /*menu links*/
-.navbar-default .navbar-nav>li>a{color:#fff; font-family: 'Oswald', sans-serif; font-size: 1.6rem; position: relative; padding: 15px 10px; margin:0 5px;}
+.navbar-default .navbar-nav>li>a{
+    color:#fff; 
+    font-family: 'Oswald', sans-serif; 
+    font-size: 1.6rem; 
+    position: relative; 
+    padding: 15px 10px; 
+    margin:0 5px;
+}
 .navbar-default .navbar-nav > li > a:after{
     content: "";
     width:0%;
@@ -37,23 +44,22 @@
 
 /*navbar-brand logo*/
 .navbar-brand{
+    float: left;
     padding: 0;
     margin-top: 40px;
-    margin-left: 20px;
+    margin-left: 50px;
     color:#fff;
-    font-size: 35px;
+    font-size: 40px;
     font-family: 'Oswald', sans-serif;
 }
 .navbar-brand.brand-1{
     padding: 0;
     margin-top: 13px;
     z-index: 1;
-    position: relative;
+    position: absolute;
 
     
 }
-
-
 
 
 
@@ -69,7 +75,7 @@ a#login:after, a#signup:after{content:none;}
 }
 .dropdown-menu>li>a {
     padding: 10px 20px; 
-    font-size: 18px;line-height: 1.5;
+    font-size: 16px;line-height: 1.5;
     border-bottom: 1px solid #aaa;
     font-family: 'Oswald', sans-serif;
     text-transform: uppercase;
@@ -113,20 +119,20 @@ section{margin: 50px 0;}
 
 .dropdown-menu>li>a {
     padding: 10px 20px; 
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.5;
     border-bottom: 1px solid #aaa;
     font-family: 'Oswald', sans-serif; 
     text-transform: uppercase;
 }
 .dropdown-menu>li:last-child>a{ 
-    border:none; 
+    border:none;  
 }
 
 /*custom hover menu*/
 .dropdown-hover-menu {
     background-color: white;
-    border-radius: 20px;
+    /* border-radius: 20px; */
     overflow: hidden;
     padding: 0;
     position: absolute;
@@ -134,7 +140,7 @@ section{margin: 50px 0;}
 }
 .dropdown-hover-menu>li>a {
     padding: 10px 20px;
-    font-size: 18px;
+    font-size: 16px;
     line-height: 1.5;
     border-bottom: 1px solid #aaa;
     font-family: 'Oswald', sans-serif;
@@ -227,4 +233,13 @@ section{margin: 50px 0;}
         left: 0;
         right: 0;
     }
+}
+
+
+.bars {
+    float : left;
+    color: #fff;
+    font-size: 40px;
+    margin-left: 10px;
+    margin-top: 30px;
 }

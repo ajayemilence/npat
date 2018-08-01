@@ -8,25 +8,187 @@ p, h1, h2, h3, h4, h5, h6, ul, li, body, html, *{
 .blue{color:#08c5d5;}
 .green{color:#7eb530;}
 .red{color:#ea0001;}
-
+.skyblue{color:#49b6d6}
+.black{color: #333333}
+.warm-grey{color: #8f8f8f}
+.cool-grey{color: #a7afba}
 
 :root{
     --green: #7eb530;
     --blue: #08c5d5;
     --red: #ea0001;
     --dark-gray: #222;
-    font-size: 16px;    
+    --skyblue: #49b6d6;
+    --black: #333333;
+    --warm-grey: #8f8f8f;
+    --cool-grey: #a7afba;
 }
 
 
-*{transition: 0.15s all ease-in; outline:0;}
+/* *{transition: 0.15s all ease-in; outline:0;} */
 
-body{
+/* body{
 font-size: 16px;
 font-family: 'Lato', sans-serif;
 line-height: 1.5;
 color: #222;
 overflow-x: hidden;
+} */
+
+
+.example-container {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+  }
+  
+  .example-toolbar {
+    background: #49b6d6;
+    position: fixed;
+    z-index: 2;
+  }
+  
+  h1.example-app-name {
+    margin-left: 8px;
+    font-family: 'Magettas';
+    font-weight: bold;
+    font-size: 40px;
+  }
+  
+  .example-sidenav-container {
+    flex: 1;
+    margin-top:150px;
+  }
+  
+  .example-is-mobile .example-sidenav-container {
+    flex: 1 0 auto;
+  }
+  
+
+.nav-options {
+  float: right;
+  margin-left: 800px;
+  color: white;
 }
 
+.nav-options a {
+  color: white;
+}
+
+.nav-options a:hover {
+  /* color: rgb(78, 174, 223); */
+  transform: translateY(4px);
+  background: transparent
+}
+.sidenav-style {
+  background: #333333;
+}
+
+.sidenav-style a {
+  color: white;
+}
+
+.sidenav-style a .pull-left{
+  padding: 5px;
+  font-family: 'SFMedium';
+  font-size: 20px;
+  font-weight: medium;
+}
+
+.sidenav-style a:hover {
+    color: #49b6d6;
+}
+
+.dropdown-menu>li>a {
+  color: #333333;
+  padding: 10px 20px; 
+  font-size: 16px;
+  line-height: 1.5;
+  border-bottom: 1px solid #aaa;
+  font-family: 'Oswald', sans-serif; 
+  text-transform: uppercase;
+}
+.dropdown-menu>li:last-child>a{ 
+  border:none;  
+}
+
+.dropdown-hover-menu {
+  background-color: white;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  white-space: nowrap;
+}
+.dropdown-hover-menu>li>a {
+  padding: 10px 20px;
+  font-size: 16px;
+  line-height: 1.5;
+  border-bottom: 1px solid #aaa;
+  font-family: 'Oswald', sans-serif;
+  text-transform: uppercase;
+  display: block;
+  background-color: transparent; 
+}
+.dropdown-hover-menu>li>a:hover {
+  background-color: #f5f5f5;
+}
+.dropdown:hover .dropdown-hover-menu {
+  display: block;
+}
+
+
+.subList {
+  list-style-type: none;
+  margin-left: 20px;
+  margin-top: -5px;
+  padding: 5px;
+  font-family: 'SFMedium';
+  font-size: 15px;
+}
+
+.example-card {
+  padding: 5px;
+  font-family: 'SFMedium';
+  font-size: 20px;
+  font-weight: medium;
+  background: #444444;
+}
+.example-card:hover {
+  color: #49b6d6;
+}
+.card-title {
+  padding: 5px;
+  font-family: 'SFMedium';
+  font-size: 20px;
+  font-weight: medium;
+  background: #444444;
+}
+
+.card-title:hover {
+  color: #49b6d6;
+}
+
+
+.sideNavCard {
+  padding: 5px;
+  background: #444444;
+  color: white;
+  
+  font-size: 20px;
+}
+.sideNavCard:hover {
+  color: #49b6d6;
+  background-color: #444444;
+  cursor: pointer;
+
+}
+
+.subList li {
+  margin-top: 10px;
+  font-size: 14px;
+}
 

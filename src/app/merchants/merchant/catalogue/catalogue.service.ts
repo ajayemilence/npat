@@ -1,0 +1,546 @@
+import { Injectable } from '@angular/core';
+import { Http, Headers, Response } from '@angular/http';
+import 'rxjs/add/operator/map';
+import {Observable} from 'rxjs/Observable';
+import 'rxjs/add/operator/catch';
+import 'rxjs/add/observable/throw';
+import { LocalStorageService } from '../../../shared/local-storage.service';
+import { GlobalService } from '../../../shared/global.service';
+import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { ColdObservable } from 'rxjs/testing/ColdObservable';
+
+@Injectable()
+export class CatalogueService {
+    inventory = '0';
+    loggedIn = false;
+    merchantInfo;
+    // private messageSource = new BehaviorSubject('default message');
+    // currentMessage = this.messageSource.asObservable();
+    constructor(private http: Http,
+                private localStorageService: LocalStorageService,
+                private global: GlobalService) { }
+
+
+
+
+    addProduct(data: any) {
+        // const adminId = localStorage.getItem('user-data');
+        // console.log(adminId, 'admin_id');
+
+        const token = localStorage.getItem('token');
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+         });
+        if (data.form.inventory === true) {
+                this.inventory = '1';
+        }
+
+        const body = new FormData();
+        body.append('pricing_super_category', '21');
+        body.append('pricing_sub_category_id', '');
+        body.append('pricing_category', '');
+        body.append('product_name', data.form.name);
+        body.append('product_inventory', this.inventory);
+        body.append('pricing_product_stock', data.form);
+        body.append('product_pricing_price', data.form.price);
+        body.append('product_description', data.form.discription);
+
+
+        // product_image
+        if (data.image === null) {
+            console.log('image null');
+            body.append('product_image', '');
+        } else {
+            console.log('image not null', data.image);
+            body.append('product_image', data.image, data.image.name );
+        }
+
+        console.log(data, 'data');
+
+        return this.http.post(this.global.serverUrl + 'product/en/add_product',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                console.log(output, 'output');
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    addSuperCategory(data: any) {
+        const token = localStorage.getItem('token');
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            // 'Authorization': this.global.basicAuth
+         });
+
+        const admin = JSON.parse(localStorage.getItem('user-data'));
+        const adminID = (admin.admin_id === undefined) ? admin.merchant_parent_admin : admin.admin_id;
+        console.log(adminID, 'adminID');
+        const merchantID = (admin.admin_id !== undefined) ?  data.merchantID : admin.merchant_id;
+        console.log(merchantID, '0000' , adminID);
+        const body = new FormData();
+        body.append('super_category_name', data.form.name);
+        body.append('super_category_description', data.form.discription);
+        body.append('admin_id', adminID);
+        body.append('merchant_id' , merchantID);
+
+        // Super Category Image
+        if (data.image === null) {
+            body.append('super_category_image', '');
+        } else {
+            body.append('super_category_image', data.image, data.image.name );
+        }
+
+        return this.http.post(this.global.serverUrl + 'super_category/en/add_super_category',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    addCategory(data: any) {
+        const token = localStorage.getItem('token');
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            // 'Authorization': this.global.basicAuth
+         });
+        const user = JSON.parse(localStorage.getItem('user-data'));
+        const body = new FormData();
+        body.append('category_name', data.form.name);
+        body.append('category_parent_super', data.superID);
+        body.append('category_description', data.form.discription);
+
+        // Super Category Image
+        if (data.image === null) {
+            body.append('category_image', '');
+        } else {
+            body.append('category_image', data.image, data.image.name );
+        }
+
+        body.append('merchant_id', (user.merchant_id !== undefined) ? user.merchant_id : data.merchantID);
+        console.log(user.merchant_id, data.merchantID, 'merchantIDDD');
+        return this.http.post(this.global.serverUrl + 'category/en/add_category',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    addSubCategory(data: any) {
+        const token = localStorage.getItem('token');
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            // 'Authorization': this.global.basicAuth
+         });
+
+        const user = JSON.parse(localStorage.getItem('user-data'));
+        const body = new FormData();
+
+        body.append('sub_category_name', data.form.name);
+        body.append('sub_category_parent', data.catID);
+        body.append('sub_category_description', data.form.discription);
+
+        // Super Category Image
+        if (data.image === null) {
+            body.append('sub_category_image', '');
+        } else {
+            body.append('sub_category_image', data.image, data.image.name );
+        }
+        body.append('merchant_id', (user.merchant_id !== undefined) ? user.merchant_id : data.merchantID);
+
+        console.log( user.merchant_id, data.merchantID, data);
+        return this.http.post(this.global.serverUrl + 'sub_category/en/add_sub_category',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    getSuperCategory() {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            // 'Authorization': this.global.basicAuth
+        });
+        if (user !== null) {
+            if (user.merchant_id !== undefined) {
+            // Merchant catalogue
+                console.log('merchant Catalogue API');
+                return this.http.get(this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id=' + user.merchant_id ,
+                {headers: headers}  )
+                .map(
+                    (response: Response) => {
+                        const output = response.json();
+                        return output;
+                    }
+                ).catch(
+                    (error: Response) => {
+                        console.log('error', error);
+                        const output = error.json();
+                        return Observable.throw('Something went wrong', output);
+                    }
+                );
+            } else if (user.admin_id !== undefined) {
+            // Admin catalogue
+            console.log('Admin Catalogue API');
+                return this.http.get(this.global.serverUrl + 'admin/en/get_all_category_admin',
+                {headers: headers}  )
+                .map(
+                    (response: Response) => {
+                        const output = response.json();
+                        return output;
+                    }
+                ).catch(
+                    (error: Response) => {
+                        console.log('error', error);
+                        const output = error.json();
+                        return Observable.throw('Something went wrong', output);
+                    }
+                );
+
+            }
+        }
+    }
+
+
+    // Edit
+
+    editSuperCategory(data: any) {
+        console.log('In Edit Super Category service', data);
+        const token = localStorage.getItem('token');
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            // 'Authorization': this.global.basicAuth
+         });
+
+        const body = new FormData();
+        body.append('super_category_name', data.form.name);
+        body.append('super_category_description', data.form.discription);
+        body.append('super_category_id', data.categoryID);
+        // Super Category Image
+        if (data.image === null) {
+            body.append('super_category_image', data.form.categoryPic);
+        } else {
+            body.append('super_category_image', data.image, data.image.name );
+        }
+        console.log('user' , JSON.parse(localStorage.getItem('user-data')));
+        return this.http.put(this.global.serverUrl + 'super_category/en/update_super_category',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+
+    editCategory(data: any) {
+        console.log('In Edit Super Category service');
+        const token = localStorage.getItem('token');
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+         });
+
+        const body = new FormData();
+        body.append('category_name', data.form.name);
+        body.append('category_description', data.form.discription);
+        body.append('category_id', data.categoryID);
+        body.append('category_parent_super', data.superID);
+        // Super Category Image
+        if (data.image === null) {
+            body.append('category_image', data.form.categoryPic);
+        } else {
+            body.append('category_image', data.image, data.image.name );
+        }
+
+        return this.http.put(this.global.serverUrl + 'category/en/update_category',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+
+    editSubCategory(data: any) {
+        console.log('In Edit Super Category service');
+        const token = localStorage.getItem('token');
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+         });
+
+        const body = new FormData();
+        body.append('sub_category_name', data.form.name);
+        body.append('sub_category_description', data.form.discription);
+        body.append('sub_category_id', data.categoryID);
+        body.append('sub_category_parent', data.superID);
+        // Super Category Image
+        if (data.image === null) {
+            body.append('sub_category_image', data.form.categoryPic);
+        } else {
+            body.append('sub_category_image', data.image, data.image.name );
+        }
+
+        return this.http.put(this.global.serverUrl + 'sub_category/en/update_sub_category',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+
+
+    // get Product
+    getSuperCategoryProduct(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+        });
+        if (user !== null) {
+            // super category
+
+            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_super_category=' + data.ID,
+            {headers: headers}  )
+            .map(
+                (response: Response) => {
+                    const output = response.json();
+                    return output;
+                }
+            ).catch(
+                (error: Response) => {
+                    console.log('error', error);
+                    const output = error.json();
+                    return Observable.throw('Something went wrong', output);
+                }
+            );
+
+
+        }
+    }
+
+
+    getCategoryProduct(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+        });
+        if (user !== null) {
+            // super category
+
+            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_category=' + data.ID,
+            {headers: headers}  )
+            .map(
+                (response: Response) => {
+                    const output = response.json();
+                    return output;
+                }
+            ).catch(
+                (error: Response) => {
+                    console.log('error', error);
+                    const output = error.json();
+                    return Observable.throw('Something went wrong', output);
+                }
+            );
+
+
+        }
+    }
+
+
+    getSubCategoryProduct(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+        });
+        if (user !== null) {
+            // super category
+
+            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_sub_category_id=' + data.ID,
+            {headers: headers}  )
+            .map(
+                (response: Response) => {
+                    const output = response.json();
+                    return output;
+                }
+            ).catch(
+                (error: Response) => {
+                    console.log('error', error);
+                    const output = error.json();
+                    return Observable.throw('Something went wrong', output);
+                }
+            );
+
+
+        }
+    }
+
+
+    // list super Categories for marchant
+
+    listSuperCategories(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            // 'Authorization': this.global.basicAuth
+        });
+        // Merchant catalogue
+        console.log(user.merchant_parent_admin , 'adminID', user.merchant_id, 'merchantID');
+        const merchantID = (user.merchant_id === undefined) ? data : user.merchant_id;
+        const adminID = (user.merchant_id === undefined) ? user.admin_id : user.merchant_parent_admin;
+        return this.http.get(this.global.serverUrl + '/super_category/en/get_all_super_category' +
+        '?super_category_admin=' + adminID +
+        '&merchant_id=' + merchantID +
+        '&last_id=' + '&limit='
+        ,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+
+    }
+
+    // try again
+    addSelectedSuperCategories(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        });
+
+
+
+        const merchantID = (user.merchant_id === undefined) ? data.merchantID : user.merchant_id;
+        console.log(merchantID, 'merchantID');
+        const body = new URLSearchParams();
+        body.append('super_category_ids', data.superCategories);
+
+        return this.http.post(this.global.serverUrl + 'merchant/en/select_super_category?user_id=' + merchantID,
+        body.toString(),
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    getAllCategoriesMerchant(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+        });
+        const merchantID = (user.merchant_id !== undefined) ? user.merchant_id : data;
+        return this.http.get(this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id=' + merchantID,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+}
+

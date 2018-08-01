@@ -1,27 +1,51 @@
 <div class="row" >
-  <div class="col-xs-12 col-sm-10 col-md-6 col-sm-offset-1 col-md-offset-3"
+  <div class="info col-xs-10 col-xs-offset-1 col-md-8 col-sm-10 col-sm-offset-1"
        style="margin-top:30px;"> 
       <form 
-      (ngSubmit)="addMerchant(f)" 
+      (ngSubmit)="editMerchant(f)" 
       #f="ngForm" 
       class="login-form ">
+
+      <div class="form-group text-center">
+          <input  
+          type="file"  
+          id="file-1" 
+          class="inputfile inputfile-1" 
+          name="user-pic" 
+          ngModel
+          accept="image/*"
+          (change)="onFileChange($event.target.files)"
+          >
+          
+          <label for="file-1"> Select an Image
+              <span class="sr-only"></span>
+              <img 
+              id="blah" 
+              [src]="displayImage"
+              class="img-responsive img-circle center-block" 
+              width="100" 
+              height="100"
+              >
+          </label>
+      </div>
       <div class="col-xs-12">
         <div class="postsignup">
             <div class="error" *ngIf="postSubmit" >{{error}}</div>
         </div>
       </div>
 
-      <div class="col-xs-12 col-sm-6">
+      <div class="col-xs-12">
         <div class="form-group">
-          <label for="fname">First Name</label>
+          <label for="fname">Store Name</label>
           <input 
           type="text" 
           id="fname" 
           name="fname" 
           ngModel 
+          [(ngModel)]="this.currentMerchant.merchant_first_name"
           class="form-control input"
-          required
           #fname="ngModel"
+          placeholder="Enter Store Name"
           >
           <span 
           *ngIf="!fname.valid && fname.touched" 
@@ -29,17 +53,18 @@
         </div>
       </div>
      
-      <div class="col-xs-12 col-sm-6">
+      <div class="col-xs-12">
         <div class="form-group">
-          <label for="lname">Last Name</label>
+          <label for="lname">Vendor name</label>
           <input 
           type="text" 
           id="lname" 
           name="lname" 
           ngModel 
           class="form-control input"
-          required
           #lname="ngModel"
+          [(ngModel)]="this.currentMerchant.merchant_last_name"
+          placeholder="Enter Vendor Name"
           >
           <span 
           *ngIf="!lname.valid && lname.touched" 
@@ -49,57 +74,77 @@
 
       <div class="col-xs-12">
         <div class="form-group">
-          <label for="email">Email</label>
+          <label for="displayName">Display Name</label>
           <input 
           type="text" 
-          id="email" 
-          name="email" 
+          id="displayName" 
+          name="displayName" 
           ngModel 
+          [(ngModel)]="this.currentMerchant.merchant_display_name"
           class="form-control input"
-          required
-          email
-          #email="ngModel"
+          #displayName="ngModel"
+          placeholder="Enter Display Name"
           >
           <span 
-          *ngIf="!email.valid && email.touched" 
-          class="help-block">Enter Valid Email Address!</span>
+          *ngIf="!displayName.valid && displayName.touched" 
+          class="help-block">Enter Valid Input!</span>
         </div>
       </div>
       <div class="col-xs-12">
-      <div class="form-group">
-        <label for="password">Password</label>
-        <input 
-        type="password" 
-        id="password" 
-        name="password" 
-        ngModel 
-        class="form-control input"
-        required
-        minlength="6"
-        #pwd="ngModel"
-        >
-        <span 
-        *ngIf="!pwd.valid && pwd.touched " 
-        class="help-block">Minimum Length 6</span>
-      </div>
-    </div>
-    <!-- <div class="col-xs-12">
-      <div class="form-group">
-          <label for="parentAdmin">Parent Admin</label>
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number</label>
           <input 
           type="text" 
-          id="parentAdmin" 
-          name="parentAdmin" 
+          id="phoneNumber" 
+          name="phoneNumber" 
           ngModel 
           class="form-control input"
-          required
-          #parentAdmin="ngModel"
+          minlength="10"
+          #phoneNumber="ngModel"
+          [(ngModel)]="this.currentMerchant.merchant_phone_no"
+          placeholder="Enter Phone Number"
           >
           <span 
-          *ngIf="!parentAdmin.valid && parentAdmin.touched " 
+          *ngIf="!phoneNumber.valid && phoneNumber.touched " 
+          class="help-block">Enter Valid Phone Number</span>
+        </div>
+        </div>
+
+      <div class="col-xs-12">
+          <div class="form-group">
+              <label for="url">Shop Url</label>
+              <input 
+              type="text" 
+              id="" 
+              name="url" 
+              [(ngModel)]="this.currentMerchant.merchant_description"
+              ngModel 
+              class="form-control input"
+              placeholder="Enter Shop Url"
+              >
+            </div>
+        </div>
+    <div class="col-xs-12">
+      <div class="form-group">
+          <label for="address">Address</label>
+          <input 
+          type="text" 
+          id="address" 
+          name="address" 
+          ngModel 
+          class="form-control input"
+          [(ngModel)]="this.currentMerchant.merchant_address"
+          autocorrect="off" 
+          autocapitalize="off" 
+          spellcheck="off" 
+          #address="ngModel"
+          #search
+          >
+          <span 
+          *ngIf="!address.valid && address.touched " 
           class="help-block">Enter Valid Input!</span>
         </div>
-    </div>    -->
+    </div>
     <div class="col-xs-12">
         <button class="btn btn-primary " type="submit" >Save</button>
     </div>  
@@ -107,3 +152,16 @@
   </div>
 </div> 
   
+
+
+<!--    
+ <div class="container">
+  <h1>Google Maps Places Autocomplete Using Angular 2</h1>
+  <div class="form-group">
+ <input 
+ id="address"
+ type="text" placeholder="Search for Location" 
+ autocorrect="off" autocapitalize="off" spellcheck="off" 
+ class="form-control" #search>
+  </div>
+  </div> -->

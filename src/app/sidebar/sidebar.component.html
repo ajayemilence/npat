@@ -1,61 +1,4 @@
-<!-- <div class="sidenav">
-  <table rules="rows">
-    <tr>
-      <a 
-        style="cursor: pointer"
-        routerLink='/orders'>
-        <span class="glyphicon glyphicon-list" 
-        >
-      </span> Orders</a>
-    </tr>
-  <hr>
-    <tr>
-      <a 
-        style="cursor: pointer"
-        routerLink='/merchants'>
-        <span class="glyphicon glyphicon-home" 
-        >
-      </span> Merchants</a>
-      <hr>
-    </tr>
-    <tr>
-      <a 
-        style="cursor: pointer">
-        <span class="glyphicon glyphicon-user" 
-        >
-      </span> Customers</a>
-    </tr>
-    <hr>
-    <tr>
-      <a 
-        style="cursor: pointer">
-        <span class="glyphicon glyphicon-list" 
-        >
-      </span> Design</a>
-      <hr>
-    </tr>
-    <tr>
-      <a 
-        style="cursor: pointer">
-        <span class="glyphicon glyphicon-cog" 
-        >
-      </span> Setting</a>
-      <hr>
-    </tr>
-    
-  </table>
-     
-     
-    
-    
-    
-</div> -->
-
-
-
-
-
-<div id="sidebar-wrapper">
+<!-- <div id="sidebar-wrapper">
   <ul class="sidebar-nav">
     <li>
         <a 
@@ -105,4 +48,121 @@
     </li>
     <hr>
   </ul>
+</div> -->
+
+<!-- <nav 
+   class="navbar navbar-default sidebar" 
+   role="navigation">
+    <div class="container-fluid">
+    <div class="collapse navbar-collapse" 
+    id="bs-sidebar-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li>
+        <a routerLink='/orders'>Orders
+          <span 
+            style="font-size:16px;" 
+            class="pull-right hidden-xs showopacity glyphicon glyphicon-menu-hamburger"
+          ></span></a></li>
+        <li class="dropdown">
+          <a routerLink='/merchants'
+          class="dropdown-toggle" 
+          data-toggle="dropdown">Merchants 
+          <span class="glyphicon glyphicon-menu-down"></span>
+          <span 
+          style="font-size:16px;" 
+          class="pull-right hidden-xs showopacity glyphicon glyphicon-home"
+          ></span></a>
+          <ul class="dropdown-menu forAnimate" role="menu">
+            <li><a href="#">Crear</a></li>
+            <li><a href="#">Modificar</a></li>
+            <li><a href="#">Reportar</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Separated link</a></li>
+            <li class="divider"></li>
+            <li><a href="#">Informes</a></li>
+          </ul>
+        </li>          
+        <li ><a >Customers
+          <span 
+             style="font-size:16px;" 
+             class="pull-right hidden-xs showopacity glyphicon glyphicon-user"
+             ></span></a></li>        
+        <li ><a >Design<span 
+          style="font-size:16px;" 
+          class="pull-right hidden-xs showopacity glyphicon glyphicon-dashboard"
+          ></span></a></li>
+        <li ><a >Setting<span 
+          style="font-size:16px;" 
+          class="pull-right hidden-xs showopacity glyphicon glyphicon-cog"
+          ></span></a></li>
+      </ul>
+    </div>
+  </div>
+</nav> -->
+
+
+<!-- ===== -->
+
+<!-- <div class="example-container" [class.example-is-mobile]="mobileQuery.matches">
+  <mat-toolbar 
+      color="primary" 
+      class="example-toolbar">
+    <button mat-icon-button (click)="snav.toggle()"><mat-icon>menu</mat-icon></button>
+    <h1 class="example-app-name">ECommerce</h1>
+  </mat-toolbar>
+
+  <mat-sidenav-container 
+  class="example-sidenav-container"
+  [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+    <mat-sidenav 
+    #snav [mode]="mobileQuery.matches ? 'over' : 'side'"
+    [fixedInViewport]="mobileQuery.matches" 
+    fixedTopGap="56"
+                 >
+      <mat-nav-list>
+        <a mat-list-item routerLink="." *ngFor="let nav of fillerNav">{{nav}}</a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <p *ngFor="let content of fillerContent">{{content}}</p>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
 </div>
+ -->
+
+
+
+
+
+
+ <div 
+ class="example-container" 
+ [class.example-is-mobile]="mobileQuery.matches">
+  <mat-toolbar color="primary" class="example-toolbar">
+    <button mat-icon-button (click)="snav.toggle()">
+    <mat-icon>menu</mat-icon></button>
+    <h1 class="example-app-name">ECommerce</h1>
+    
+  </mat-toolbar>
+
+  <mat-sidenav-container 
+  class="example-sidenav-container"
+                         
+  [style.marginTop.px]="mobileQuery.matches ? 56 : 0">
+    <mat-sidenav 
+    #snav [mode]="mobileQuery.matches ? 'side' : 'over'"
+    [fixedInViewport]="mobileQuery.matches" fixedTopGap="56">
+      <mat-nav-list>
+        <a mat-list-item routerLink="." 
+        *ngFor="let nav of fillerNav">{{nav}}</a>
+      </mat-nav-list>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+      <p *ngFor="let content of fillerContent">{{content}}</p>
+    </mat-sidenav-content>
+  </mat-sidenav-container>
+</div>
+
+

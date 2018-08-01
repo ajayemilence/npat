@@ -77,5 +77,44 @@ export class AuthService {
         }
     );
    }
+
+
+//    signupMechant(data: any) {
+//     const user = this.localStorageService.get('user-data');
+//     // console.log(user.admin_id);
+
+
+//     const body = new FormData();
+//     body.append('merchant_email', data.form.email);
+//     body.append('merchant_password', data.form.password);
+//     body.append('merchant_first_name', data.form.fname);
+//     body.append('merchant_last_name', data.form.lname);
+//     // body.append('merchant_parent_admin', user.admin_id);
+//     body.append('merchant_description', data.form.url);
+//     body.append('merchant_address', data.place);
+//     body.append('merchant_phone_no', data.form.phoneNumber);
+//     // body.append('merchant_lat', data.lat);
+//     // body.append('merchant_long', data.lng);
+
+
+//     console.log(data, 'data');
+
+//     return this.http.post(this.global.serverUrl + 'merchant/en/register',
+//     body,
+//     {headers: this.global.requestHeaders}  )
+//     .map(
+//         (response: Response) => {
+//             const output = response.json();
+//             console.log(output, 'output');
+//             return output;
+//         }
+//     ).catch(
+//         (error: Response) => {
+//             console.log('error', error);
+//             const output = error.json();
+//             return Observable.throw('Something went wrong', output);
+//         }
+//     );
+//    }
 }
 

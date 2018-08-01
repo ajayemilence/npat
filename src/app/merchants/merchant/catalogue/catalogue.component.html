@@ -1,271 +1,696 @@
 <div class="row">
-    <div class="col-xs-12">
-        <div class="row">
-            <div class="row left" style="margin-top: 40px;">
-                <h2>Merchant Name</h2>
-            </div>
-              <div class="row right" style="margin-top: 20px;">
-                  <button 
-                  class="btn btn-rounded btndownload"
+  <div class="col-xs-12 col-sm-12 ">
+      <div class="row">
+          <div class="row left" style="margin-top: 40px;">
+              <h2>{{MerchantNameHeading}}</h2>
+          </div>
+            <div class="row right" style="margin-top: 20px;">
+                <!-- <button 
+                class="btn btn-rounded btndownload"
+                >
+                <i class="fa fa-download"></i>
+                </button> -->
+       </div>
+           
+   </div>
+</div>
+<!-- <div *ngIf="showSuperLoading" class="InterimLoader">
+  <div class="loaderParent">
+    <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
+</div>
+</div> -->
+ 
+<div id="main">
+  <div class="col1" >
+    <div class="mainRow">
+     <div class="heading" >
+          <h3 class="left">Super Category ({{totalSuperCategory}})</h3>
+          <button 
+              class="btn btn-rounded btnnew2 right"
+              (click)="openModal(template, ListSuperCategory)"
+          >
+          <i class="fa fa-plus"></i>
+          </button>
+      </div>
+      <div class="row col-xs-12 list" >
+          <div 
+          *ngIf="categoriesLoading"
+          class="loader"></div>
+          <!-- another try -->
+          <!-- <tree-root [nodes]="nodes" [options]="options">
+              <ng-template #treeNodeTemplate let-node let-index="index">
+                  <span [ngClass]="node.data.classes">{{ node.data.name }}</span>
+              </ng-template>
+          </tree-root> -->
+
+        <!-- another try -->
+        <!-- <ul class="list-group listLevel1">
+              
+          <li
+          style="width: 100%"
+          class="list-group-item" 
+          *ngFor="let item of list" 
+          (click)="listClick($event, item)">
+            {{item.name}}
+            <ul 
+            *ngIf="item.folders?.length > 0 && item.showSubfolders" 
+            [ngClass]="{ 'subfolder': selectedItem == item }"
+            
+            >
+            <li
+            *ngFor="let sub-item of item.folders"
+            (click)="listClick($event, item)"
+            > {{sub-item}}</li>
+            
+            </ul>
+          </li>
+              
+        </ul> -->
+        <!-- another try -->
+          <!-- <ul class="list-group listLevel1">
+              <ng-template #recursiveList let-list>
+                <li
+                style="width: 100%"
+                class="list-group-item" 
+                *ngFor="let item of list" 
+                (click)="listClick($event, item)">
+                  {{item.name}}
+                  <ul 
+                  *ngIf="item.folders?.length > 0 && item.showSubfolders" 
+                  [ngClass]="{ 'subfolder': selectedItem == item }"
+                  class="borderless"
                   >
-                  <i class="fa fa-download"></i>
-                  </button>
-                  <button 
-                    class="btn btn-rounded btnAdd right"
-                    routerLink="/merchants/new"
+                  <ng-container 
+                    *ngTemplateOutlet="recursiveList; context:{ $implicit: item.folders }">
+                  </ng-container>
+                  </ul>
+                </li>
+              </ng-template>
+              <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: list }"></ng-container>
+            </ul> -->
+
+        <!-- another try -->
+           <!-- <div id="MainMenu">
+              <div class="list-group ">
+               <ul>
+                  
+                <a *ngFor="let category of superCategories"> 
+                  <app-super-categories
+                    *ngFor="let category of superCategories"
+                    [super]="category"></app-super-categories>
+                    <a 
+                    href="#demo3" 
+                    class="list-group-item " 
+                    data-toggle="collapse" 
+                    data-parent="#MainMenu"
+                    
+                    >{{category.super_category_name}}<i class="fa fa-caret-down"></i></a>
+                    <div class="collapse" id="demo3">
+                      <a href="#SubMenu1" class="list-group-item" data-toggle="collapse" data-parent="#SubMenu1">Subitem 1 <i class="fa fa-caret-down"></i></a>
+                      <div class="collapse list-group-submenu" id="SubMenu1">
+                        <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 1 a</a>
+                        <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 2 b</a>
+                        <a href="#SubSubMenu1" class="list-group-item" data-toggle="collapse" data-parent="#SubSubMenu1">Subitem 3 c <i class="fa fa-caret-down"></i></a>
+                        <div class="collapse list-group-submenu list-group-submenu-1" id="SubSubMenu1">
+                          <a href="#" class="list-group-item" data-parent="#SubSubMenu1">Sub sub item 1</a>
+                          <a href="#" class="list-group-item" data-parent="#SubSubMenu1">Sub sub item 2</a>
+                        </div>
+                        <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 4 d</a>
+                      </div>
+                      <a href="javascript:;" class="list-group-item">Subitem 2</a>
+                      <a href="javascript:;" class="list-group-item">Subitem 3</a>
+                    </div>
+                </a>
+                
+              </ul> 
+              </div>
+            </div> -->
+         
+
+            <!-- another with main menu -->
+
+            <!-- <div id="MainMenu">
+              <div class="list-group">
+                  <div id="MainMenu">
+                      <div class="list-group">
+                        <a 
+                        *ngFor="let category of superCategories"
+                        href="#demo3" 
+                        class="list-group-item list-group-item-success" 
+                        data-toggle="collapse" data-parent="#MainMenu">
+                        Item 3 
+                        <i 
+                        style="float: right"
+                        class="fa fa-ellipsis-v"></i>
+
+                        <div class="collapse" id="demo3">
+                          <a href="#SubMenu1" class="list-group-item" data-toggle="collapse" data-parent="#SubMenu1">Subitem 1 <i class="fa fa-caret-down"></i></a>
+                          <div class="collapse list-group-submenu" id="SubMenu1">
+                            <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 1 a</a>
+                            <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 2 b</a>
+                            <a href="#SubSubMenu1" class="list-group-item" data-toggle="collapse" data-parent="#SubSubMenu1">Subitem 3 c <i class="fa fa-caret-down"></i></a>
+                            <div class="collapse list-group-submenu list-group-submenu-1" id="SubSubMenu1">
+                              <a href="#" class="list-group-item" data-parent="#SubSubMenu1">Sub sub item 1</a>
+                              <a href="#" class="list-group-item" data-parent="#SubSubMenu1">Sub sub item 2</a>
+                            </div>
+                            <a href="#" class="list-group-item" data-parent="#SubMenu1">Subitem 4 d</a>
+                          </div>
+                          <a href="javascript:;" class="list-group-item">Subitem 2</a>
+                          <a href="javascript:;" class="list-group-item">Subitem 3</a>
+                        </div>
+                      </a>
+                      </div>
+                    </div>
+                
+              </div>
+            </div> -->
+      
+        <!-- another with accordin -->
+
+        <!-- <button 
+        *ngFor="let category of superCategories"
+        class="sub-accordion">{{category.super_category_name}}</button>
+        <div class="panel">
+          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+        </div> -->
+
+
+
+
+        <!-- MatExpansionModule -->
+
+        <!-- <mat-accordion> 
+            <mat-expansion-panel 
+            class="accordion" 
+            *ngFor="let category of superCategories">
+              <mat-expansion-panel-header>
+                <mat-panel-title style="font-size: 25px;">
+                  {{category.super_category_name}}
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              <ul>
+                <ng-template #recursiveList let-list>
+                  <li 
+                  *ngFor="let item of list" 
+                  (click)="listClick($event, item, category.super_category_name)">
+                    {{item.name}}
+                    <ul 
+                    *ngIf="item.folders?.length > 0 && item.showSubfolders" 
+                    [ngClass]="{ 'subfolder': selectedItem == item }"
                     >
-                    <i class="fa fa-plus"></i>
-                    Merchant
-                  </button>
+                      <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.folders }"></ng-container>
+                    </ul>
+                  </li>
+                </ng-template>
+                <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: list }"></ng-container>
+              </ul>
+            
+            </mat-expansion-panel>
+          </mat-accordion>  -->
+      <!-- One more try ===================== -->
+      <!-- <div class="col-sm-12" style="margin-top: 20px !important">
+
+        <div class="col-sm-12 opt1">
+          <div 
+          *ngFor="let super of superCategories"
+          class="row">
+            <h5>
+              <a 
+              class="col-sm-12 font-weight-normal">{{super.super_category_name}}</a>
+            </h5>
+            <i class="fa fa-angle-down ind" data-toggle="collapse" href="#collapseExample"></i>
+          </div>
+        </div>
+        <div class="col-sm-12 collapse opt1" id="collapseExample">
+          <div class="row">
+            <h6>
+              <p class="dropdown-item col-sm-10">Pepper </p>
+            </h6>
+            <i class="fa fa-angle-down ind arrow" data-toggle="collapse" href="#innerCollapse"></i>
+          </div>
+        </div>
+        <div class="collapse col-sm-12" id="innerCollapse">
+          <div class="row">
+            <h6>
+              <a class="dropdown-item opt">Black Pepper</a>
+              <a class="dropdown-item opt">White Pepper</a>
+            </h6>
+          </div>
+        </div>
+      
+      </div>
+       -->
+       
+      
+      
+      <!-- ========= -->
+
+
+    <!-- <div class="border-box" id="panels">
+      <div  
+        class="quarter-panel panel" 
+        *ngFor="let super of superCategories;let i1 = index">
+          <div 
+          data-parent="#panels" 
+          data-toggle="collapse" 
+          [attr.data-target]="'#openPanel'+ i1" 
+          class="row display-inline-mode"
+          >
+          <h4   
+          [ngClass]="{'flipped': isActive[i1] }" 
+          (click)="isActive=[];isActive[i1] = !isActive[i1];"
+          >{{super.name}}</h4>  &nbsp;&nbsp;&nbsp;
+          </div>
+          <div class="collapse" id="openPanel{{i1}}">
+              <div class="panel-body"
+              *ngFor="let category of Categories;let i2 = index"
+              (click)="listClick($event, category, i2)"
+              >{{category.name}}
+              <ul>
+                <ng-template #recursiveList let-list>
+                  <li *ngFor="let item of subCategories">
+                    {{item.name}}
+                  </li>
+                </ng-template>
+                <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: list }"></ng-container>
+              </ul>
+                
+            
+            
+              </div>
+          </div>
+      </div>
+    </div> -->
+
+    <div *ngIf="!categoriesLoading">
+        <mat-card 
+        class="example-card" 
+        *ngFor="let super of superCategories; let i = index" 
+       >
+        <mat-card-header  >
+          <mat-card-title >
+              <div class="pull-left title">
+                  <h4 
+                  (click)="headerClicked(i)"
+                  (click)="showProducts(super)"
+                  [ngClass]="{'active' :  i === collapsed}"
+                  class="list-group-item-heading titleHead">{{ super.super_category_name }}</h4>
+                  <div class="example-header-image pull-right dropdown titleBtn">
+                      <!-- <button 
+                        class="btn btn-rounded btnlist right dropdown-hover"
+                      >
+                      <i class="fa fa-ellipsis-v"></i>
+            
+                      <ul class="dropdown-menu dropdown-hover-menu">
+                        <li  
+                        (click)="addCategoryModel(template2,super)"
+                        *ngIf=" super.super_category_hasChild !== 2">
+                        <a >Category
+                          <i class="fa fa-plus right"></i>
+                      </a></li>
+                      <li
+                      *ngIf="super.super_category_hasChild !== 1"
+                      routerLink = '/catalogue/product/new'
+                      ><a >Product
+                        <i class="fa fa-plus right"></i>
+                    </a></li>
+                      <li (click)="editSuperCategory(super, template)"><a >Edit
+                        <i class="fa fa-pencil right"></i>
+                    </a></li>
+                        <li>
+                          <a 
+                          >Delete 
+                            <i class="fa fa-trash right"></i>
+                          </a></li>
+                        <li><a >Disable
+                            <i class="fa fa-ban right"></i>
+                        </a></li>
+                      </ul>
+            
+                      </button> -->
+            
+                      <button 
+                      style="margin-left: 17px;"
+                      mat-icon-button [matMenuTriggerFor]="menu">
+                          <mat-icon>more_vert</mat-icon>
+                        </button>
+                        <mat-menu #menu="matMenu" class="menu">
+                            <button
+                            class="menuOption"
+                            mat-menu-item
+                            (click)="addCategoryModel(template2,super)"
+                            *ngIf=" super.super_category_hasChild !== 2">
+                            <mat-icon class="menuOption"> <i class="fa fa-plus right"></i></mat-icon>
+                            <!-- <i class="fa fa-plus right"></i> -->
+                            <span>Category</span>
+                            </button>
+                            <button
+                            class="menuOption"
+                            mat-menu-item
+                            *ngIf="super.super_category_hasChild !== 1"
+                            routerLink = '/catalogue/product/new'>
+                            <mat-icon class="menuOption"><i class="fa fa-plus right"></i></mat-icon>
+                            <span>Product</span>
+                            </button>
+                            <button
+                            *ngIf='categoryEditAllowded'
+                            class="menuOption"
+                            mat-menu-item
+                            (click)="editSuperCategory(super, template)">
+                              <mat-icon class="menuOption"> <i class="fa fa-pencil right"></i></mat-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button 
+                            *ngIf='categoryEditAllowded'
+                            class="menuOption"
+                            mat-menu-item>
+                              <mat-icon class="menuOption"><i class="fa fa-trash right"></i></mat-icon>
+                              <span>Delete</span>
+                            </button>
+                            <button 
+                            class="menuOption"
+                            mat-menu-item>
+                              <mat-icon
+                              class="menuOption"
+                              > <i class="fa fa-ban right"></i></mat-icon>
+                              <span>Disable</span>
+                            </button>
+                        </mat-menu> 
+                  </div>
               </div>
               
-          </div>
-    </div>
-
-
-
-    <div class="col-xs-6" >
-      <div class="row info2">
-
-        <div class="row">
-          <div class="heading left">
-            <h3>Super Category (2)</h3>
-          </div>
-          <button 
-              class="btn btn-rounded btnnew right"
-              (click)="openModal(template)"
-          >
-          <i class="fa fa-plus"></i>
-          </button>
+          </mat-card-title>
           
-        </div>
-        
-        <div class="row col-xs-12 list">
-          <a            
-            *ngFor="let category of superCategories"
-            class="list-group-item clearfix">
-          <div class="pull-left">
-            <h4 class="list-group-item-heading">{{ category.name }}</h4>
-          </div>
-          <div class="pull-right dropdown">
-            <button 
-              class="btn btn-rounded btnlist right dropdown-hover"
-            >
-            <i class="fa fa-ellipsis-v"></i>
-
-            <ul class="dropdown-menu dropdown-hover-menu">
-              <li>
-                <a 
-                (click)="addProduct(productTemplate)"
-                >Add Products 
-                  <i class="fa fa-plus right"></i>
-                </a></li>
-              <li>
-                <a 
-                (click)="addCategory(template)"
-                >Add Category 
-                <i class="fa fa-plus right"></i>
-              </a></li>
-              <li><a href="/">Edit
-                  <i class="fa fa-pencil right"></i>
-              </a></li>
-              <li><a href="/">Delete
-                  <i class="fa fa-trash right"></i>
-              </a></li>
-              <li><a href="/">Disable
-                  <i class="fa fa-ban right"></i>
-              </a></li>
-            </ul>
-
-            </button>
-
-
-          </div>
-          </a>
-        </div>
-
-      </div>
-      
-      <div class="row info2">
-
-        <div class="row">
-          <div class="heading left">
-            <h3>Category (2)</h3>
-          </div>
-          <button 
-              (click)="addCategory(template)"
-              class="btn btn-rounded btnnew right"
-          >
-          <i class="fa fa-plus"></i>
-          </button>
+        </mat-card-header>
+       
+        <mat-card-content *ngIf="i === collapsed" class="cardContent">
+          <ul style="margin-left: -20px; margin-top: 10px">
+              <li 
+              *ngFor="let category of super.category; let i2 = index"
+              > 
+              <h5
+                style="font-weight: bold;cursor: pointer;"
+                (click)="subHeaderClicked(i2)"
+                (click)="showProducts(category)"
+                >{{ category.category_name }}</h5>
+                <div 
+                class="pull-right dropdown" 
+                style="float: right; margin-left: 160px; margin-top: -30px; margin-right: -10px;">
+                <button 
+                style=" margin-top:-10px; margin-right: 10px;"
+                mat-icon-button [matMenuTriggerFor]="menu">
+                    <mat-icon>more_vert</mat-icon>
+                  </button>
+                  <mat-menu #menu="matMenu" >
+                      <button
+                      mat-menu-item
+                      (click)="addSubCategoryModel(template3,super,category)"
+                      *ngIf="category.category_hasChild !== 2">
+                        <mat-icon> <i class="fa fa-plus right"></i></mat-icon>
+                        <span>Sub Category</span>
+                      </button>
+                      <button
+                      mat-menu-item
+                      *ngIf="category.category_hasChild !== 1"
+                      routerLink = '/catalogue/product/new'>
+                        <mat-icon><i class="fa fa-plus right"></i></mat-icon>
+                        <span>Product</span>
+                      </button>
+                      <button
+                      *ngIf='categoryEditAllowded'
+                      mat-menu-item
+                      (click)="editCategoryDetail(category, template2, super)">
+                        <mat-icon> <i class="fa fa-pencil right"></i></mat-icon>
+                        <span>Edit</span>
+                      </button>
+                      <button 
+                      *ngIf='categoryEditAllowded'
+                      mat-menu-item>
+                        <mat-icon><i class="fa fa-trash right"></i></mat-icon>
+                        <span>Delete</span>
+                      </button>
+                      <button mat-menu-item>
+                        <mat-icon> <i class="fa fa-ban right"></i></mat-icon>
+                        <span>Disable</span>
+                      </button>
+                  </mat-menu>   
+                <!-- <button 
+                      class="btn btn-rounded btnlist right dropdown-hover"
+                    >
+                    <i class="fa fa-ellipsis-v"></i>
           
-        </div>
-        
-        <div class="row col-xs-12 list">
-          <a            
-            *ngFor="let category of Categories"
-            class="list-group-item clearfix">
-          <div class="pull-left">
-            <h4 class="list-group-item-heading">{{ category.name }}</h4>
-          </div>
-          <div class="pull-right dropdown">
-              <button 
-                class="btn btn-rounded btnlist right dropdown-hover"
-              >
-              <i class="fa fa-ellipsis-v"></i>
-  
-              <ul class="dropdown-menu dropdown-hover-menu">
-                <li><a 
-                    (click)="addProduct(productTemplate)"
-                    >Add Products 
-                      <i class="fa fa-plus right"></i>
+                    <ul class="dropdown-menu dropdown-hover-menu">
+                      <li
+                      (click)="addSubCategoryModel(template3,super,category)"
+                      >
+                      <a 
+                      *ngIf="category.category_hasChild !== 2"
+                      >Sub Category
+                        <i class="fa fa-plus right"></i>
                     </a></li>
-                  <li>
-                    <a 
-                    (click)="addSubCategory(template)"
-                    >Add Category 
-                    <i class="fa fa-plus right"></i>
+                    <li><a 
+                      *ngIf="category.category_hasChild !== 1"
+                      routerLink = '/catalogue/product/new'
+                      >Product
+                      <i class="fa fa-plus right"></i>
                   </a></li>
-                  <li><a href="/">Edit
+                    <li (click)="editCategoryDetail(category, template2, super)"><a >Edit
                       <i class="fa fa-pencil right"></i>
                   </a></li>
-                  <li><a href="/">Delete
-                      <i class="fa fa-trash right"></i>
-                  </a></li>
-                  <li><a href="/">Disable
-                      <i class="fa fa-ban right"></i>
-                  </a></li>
-              </ul>
-  
-              </button>
-  
-  
-            </div>
-          </a>
-        </div>
-
-      </div>
-
-
-      <div class="row info2">
-
-        <div class="row">
-          <div class="heading left">
-            <h3>Sub Category (1)</h3>
-          </div>
-          <button 
-              (click)="addSubCategory(template)"
-              class="btn btn-rounded btnnew right"
-          >
-          <i class="fa fa-plus"></i>
-          </button>
+                      <li>
+                        <a 
+                        >Delete 
+                          <i class="fa fa-trash right"></i>
+                        </a></li>
+                      <li><a >Disable
+                          <i class="fa fa-ban right"></i>
+                      </a></li>
+                    </ul>
           
-        </div>
-        
-        <div class="row col-xs-12 list">
-          <a            
-            *ngFor="let category of subCategories"
-            class="list-group-item clearfix">
+                    </button> -->
+          
+          
+                </div>
+                <ul 
+                style="margin-left: -20px; margin-top: 10px"
+                *ngIf="i2 === subCollapsed">
+                    <li 
+                    style="cursor: pointer; margin: 10px;"
+                    (click)="showProducts(sub)"
+                    *ngFor="let sub of category.Sub_Category"> 
+                        {{ sub.sub_category_name }}
+                        <div 
+                        class="pull-right dropdown" 
+                        style="float: right; margin-left: 160px; margin-top: -30px; margin-right: -10px;">
+
+                        <button 
+                        style=" padding: 2px; margin-left: 3px;"
+                        mat-icon-button [matMenuTriggerFor]="menu">
+                            <mat-icon>more_vert</mat-icon>
+                          </button>
+                          <mat-menu #menu="matMenu">
+                            <button
+                            *ngIf='categoryEditAllowded'
+                            mat-menu-item
+                            (click)="editSubCategoryDetail(sub, template3, category)">
+                              <mat-icon> <i class="fa fa-pencil right"></i></mat-icon>
+                              <span>Edit</span>
+                            </button>
+                            <button 
+                            *ngIf='categoryEditAllowded'
+                            mat-menu-item>
+                              <mat-icon><i class="fa fa-trash right"></i></mat-icon>
+                              <span>Delete</span>
+                            </button>
+                            <button mat-menu-item>
+                              <mat-icon> <i class="fa fa-ban right"></i></mat-icon>
+                              <span>Disable</span>
+                            </button>
+                          </mat-menu>
+                            <!-- <button 
+                              class="btn btn-rounded btnlist right dropdown-hover"
+                            >
+                            <i class="fa fa-ellipsis-v"></i>
+                  
+                            <ul class="dropdown-menu dropdown-hover-menu">
+                            <li (click)="editSubCategoryDetail(sub, template3, category)"><a >Edit
+                              <i class="fa fa-pencil right"></i>
+                          </a></li>
+                              <li>
+                                <a 
+                                >Delete 
+                                  <i class="fa fa-trash right"></i>
+                                </a></li>
+                              <li><a >Disable
+                                  <i class="fa fa-ban right"></i>
+                              </a></li>
+                            </ul>
+                  
+                        </button> -->
+              
+              
+                    </div>
+                    </li>
+                </ul>
+              </li>
+            </ul>
+        </mat-card-content>
+      </mat-card>  
+
+    </div>
+    
+  </div>
+      
+
+    </div>
+  </div>
+
+  <!-- products list -->
+  <div class="col2" >
+    <div class="mainRow">
+      <div class="heading">
+           <h3 class="left">Product ({{totalProducts}})</h3>
+           <button 
+               *ngIf="mode !== 0"
+               class="btn btn-rounded btnnew2 right"
+               (click)="productScreen()"
+           >
+           <i class="fa fa-plus"></i>
+           </button>
+       </div>
+       <div class="row col-xs-12 list" *ngIf="productListLoading">
+          <div class="loader"></div>    
+      </div>
+       <div class="row col-xs-12 list" *ngIf="!productListLoading">
+         <div class="row" *ngIf="NoProductListToShow"></div>
+        <div *ngIf="!NoProductListToShow">
+            <a         
+            style="cursor: default"   
+            *ngFor="let product of products"
+            class="list-group-item clearfix"
+            >
           <div class="pull-left">
-            <h4 class="list-group-item-heading">{{ category.name }}</h4>
+            <h4
+            (click)="showProduct(product)" 
+            class="list-group-item-heading">{{ product.product_name }}</h4>
           </div>
           <div class="pull-right dropdown">
-              <button 
+              <!-- <button 
                 class="btn btn-rounded btnlist right dropdown-hover"
               >
               <i class="fa fa-ellipsis-v"></i>
-  
+    
               <ul class="dropdown-menu dropdown-hover-menu">
-                <li><a 
-                  (click)="addProduct(productTemplate)"
-                  >Add Products 
-                    <i class="fa fa-plus right"></i>
+                <li>
+                  <a 
+                  >Delete 
+                    <i class="fa fa-trash right"></i>
                   </a></li>
                 <li><a href="/">Edit
                     <i class="fa fa-pencil right"></i>
-                </a></li>
-                <li><a href="/">Delete
-                    <i class="fa fa-trash right"></i>
                 </a></li>
                 <li><a href="/">Disable
                     <i class="fa fa-ban right"></i>
                 </a></li>
               </ul>
-  
-              </button>
-  
-  
+    
+              </button> -->
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <mat-icon>more_vert</mat-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <button 
+                  (click)="productScreen(product)"
+                  mat-menu-item>
+                    <mat-icon><i class="fa fa-pencil right"></i></mat-icon>
+                    <span>Edit</span>
+                  </button>
+                  <button mat-menu-item>
+                      <mat-icon><i class="fa fa-trash right"></i></mat-icon>
+                      <span>Delete</span>
+                    </button>
+                  <button mat-menu-item>
+                    <mat-icon><i class="fa fa-ban right"></i></mat-icon>
+                    <span>Disable</span>
+                  </button>
+                </mat-menu>
+    
             </div>
           </a>
         </div>
-
-      </div>
-      
+       
+       
     </div>
-
-
-
-
-<!-- Product -->
+ 
+     </div>
     
-    <div class="col-xs-6 info">
-      <div class="row">
-        <div class="heading left">
-          <h3>Product (1)</h3>
-        </div>
-        <button 
-            (click)="addProduct(productTemplate)"
-            class="btn btn-rounded btnnew right"
-        >
-        <i class="fa fa-plus"></i>
-        </button>
-        
+  </div>  
+  <!-- Product Detail -->
+  <div class="col3" >
+    <div class="mainRow">
+      <div class="heading">
+           <h3 class="left">Product Detail</h3>
+       </div>
+       <div 
+       class="row col-xs-12 listProduct" 
+       *ngIf="!showSuperLoading"
+       >
+      <hr>  
+      <div class="row col-xs-12 list" *ngIf="productDetailLoading">
+          <div class="loader"></div>    
       </div>
-      
-      <div class="row list" style="margin-right: 15px;">
-        <a            
-          *ngFor="let category of products"
-          class="list-group-item clearfix"
-          routerLink="/merchants/merchant/catalogue/product"
-          >
-        <div class="pull-left">
-          <h4 class="list-group-item-heading">{{ category.name }}</h4>
+      <div class="wrapper" *ngIf="!productDetailLoading">
+        <div class="row" *ngIf="NoProductToShow">
         </div>
-        <div class="pull-right dropdown">
-            <button 
-              class="btn btn-rounded btnlist right dropdown-hover"
-            >
-            <i class="fa fa-ellipsis-v"></i>
+        <div *ngIf="!NoProductToShow">
+          <img 
+          [src]="productImage"
+          alt="Product Image" 
+          style="max-height:100px; max-width:100px; float: left; margin-right: 15px;" 
+          class="img-responsive"
+          >
+        <div class="row headingProduct">
+          <h3>{{productName}}</h3>
+          <h3>Price: $ {{productPrice}}</h3>
+        </div>
 
-            <ul class="dropdown-menu dropdown-hover-menu">
-              <li>
-                <a 
-                >Delete 
-                  <i class="fa fa-trash right"></i>
-                </a></li>
-              <li><a href="/">Edit
-                  <i class="fa fa-pencil right"></i>
-              </a></li>
-              <!-- <li><a href="/">Add-ons
-                  <i class="fa fa-cog right"></i>
-              </a></li> -->
-              <li><a href="/">Disable
-                  <i class="fa fa-ban right"></i>
-              </a></li>
-            </ul>
 
-            </button>
+        <div class="rowProduct description">
+            <p>
+               {{productDesc}}
+            </p>
+        </div>
+        <hr>
+          <div class="row inventory">
+            <h5 >Inventory</h5>
+            <label class="switch" >
+                <input type="checkbox">
+                <span class="slider round"></span>
+              </label>
+          </div>
+          <hr>
+          <div class="row addons">
+              <h5>Varients/Add-ons</h5>
+          </div>
+          <div class="row listAddOns">
+              <h6>No Varients / Add-ons Added</h6>
+              <a>Add</a>
+          </div>
+          <hr>
+
+        </div>
 
 
           </div>
-        </a>
-      </div> 
     </div>
-  </div> 
+    </div>
+ 
+     </div>
+  </div>
+</div>
 
-
-
-  <ng-template #template class="model">
+<!-- // super category -->
+<ng-template #template class="model">
       <div class="modal-header">
         <h4 class="modal-title pull-left title-model">{{templateTitle}}</h4>
       </div>
@@ -281,6 +706,7 @@
           id="name" 
           name="name" 
           ngModel 
+          [(ngModel)]="this.currentSuperCategoryName"
           class="form-control input"
           required
           #name="ngModel"
@@ -289,27 +715,25 @@
           *ngIf="!name.valid && name.touched" 
           class="help-block">Enter Valid Input!</span>
         </div>
-        <div class="form-group">
+        <div 
+          class="form-group">
           <label for="discription">Description</label>
           <input 
           type="text" 
           id="discription" 
           name="discription" 
+          [(ngModel)]="this.currentSuperCategoryDesc"
           ngModel 
           class="form-control input"
-          required
           #discription="ngModel"
           >
-          <span 
-          *ngIf="!discription.valid && discription.touched " 
-          class="help-block">Enter Valid Input!</span>
         </div>
         <div class="form-group">
             <input  
             type="file"  
             id="file-1" 
             class="inputfile inputfile-1" 
-            name="category-pic" 
+            name="categoryPic" 
             ngModel
             accept="image/*"
             (change)="onFileChange($event.target.files)"
@@ -324,27 +748,222 @@
               height="100"
               >
             </label>
-            <p>Drag & Drop images, or 
-              <!-- <a 
-              type= "file"
-              id="file"
-              name="user-pic" 
-              ngModel
-              (change)="onFileChange($event.target.files)"> -->
-              browse
-            <!-- </a>  -->
-            from computer.</p>
+            <p>Drag & Drop images, or browse from computer.</p>
         </div>
         <div class="row">
-            <button class="btn btn-modal" type="submit" >Add</button>
+            <button class="btn btn-modal" type="submit" >Save</button>
             <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
         </div>
     </form>
   </div>
 </ng-template>
 
+<!-- category -->
+<ng-template #template2 class="model">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left title-model">
+        {{templateTitle}} </h4>
+    </div>
+    <div class="modal-body">
+      <form
+        (ngSubmit)="addCategory(f)" 
+        #f="ngForm" 
+      >
+      <div class="form-group">
+        <label for="name">Category Name <span class="blue">*</span></label>
+        <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        ngModel 
+        class="form-control input"
+        required
+        [(ngModel)]="this.currentSuperCategoryName"
+        #name="ngModel"
+        >
+        <span 
+        *ngIf="!name.valid && name.touched" 
+        class="help-block">Enter Valid Input!</span>
+      </div>
+      <div 
+          class="form-group">
+          <label for="discription">Description</label>
+          <input 
+          type="text" 
+          id="discription" 
+          name="discription" 
+          ngModel 
+          [(ngModel)]="this.currentSuperCategoryDesc"
+          class="form-control input"
+          #discription="ngModel"
+          >
+          <span 
+          *ngIf="!discription.valid && discription.touched " 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+      <div class="form-group">
+          <input  
+          type="file"  
+          id="file-1" 
+          class="inputfile inputfile-1" 
+          name="category-pic" 
+          ngModel
+          accept="image/*"
+          (change)="onFileChange($event.target.files)"
+          >
+          
+          <label for="file-1">Upload Category Image
+            <img 
+            id="blah" 
+            [src]="displayImage"
+            class="img-responsive img-rounded " 
+            width="100" 
+            height="100"
+            >
+          </label>
+          <p>Drag & Drop images, or browse from computer.</p>
+      </div>
+      <div class="row">
+          <button class="btn btn-modal" type="submit" >Add</button>
+          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+      </div>
+  </form>
+</div>
+</ng-template>
 
-<ng-template #productTemplate class="model">
+<!-- sub category -->
+<ng-template #template3 class="model">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left title-model">
+        {{templateTitle}}</h4>
+    </div>
+    <div class="modal-body">
+      <form
+        (ngSubmit)="addSubCategory(f)" 
+        #f="ngForm" 
+      >
+      <div class="form-group">
+        <label for="name">Category Name <span class="blue">*</span></label>
+        <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        ngModel 
+        [(ngModel)]="this.currentSuperCategoryName"
+        class="form-control input"
+        required
+        #name="ngModel"
+        >
+        <span 
+        *ngIf="!name.valid && name.touched" 
+        class="help-block">Enter Valid Input!</span>
+      </div>
+      <div 
+          class="form-group">
+          <label for="discription">Description</label>
+          <input 
+          type="text" 
+          id="discription" 
+          name="discription" 
+          ngModel 
+          [(ngModel)]="this.currentSuperCategoryDesc"
+          class="form-control input"
+          #discription="ngModel"
+          >
+          <span 
+          *ngIf="!discription.valid && discription.touched " 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+      <div class="form-group">
+          <input  
+          type="file"  
+          id="file-1" 
+          class="inputfile inputfile-1" 
+          name="category-pic" 
+          ngModel
+          accept="image/*"
+          (change)="onFileChange($event.target.files)"
+          >
+          
+          <label for="file-1">Upload Category Image
+            <img 
+            id="blah" 
+            [src]="displayImage"
+            class="img-responsive img-rounded " 
+            width="100" 
+            height="100"
+            >
+          </label>
+          <p>Drag & Drop images, or browse from computer.</p>
+      </div>
+      <div class="row">
+          <button class="btn btn-modal" type="submit" >Add</button>
+          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+      </div>
+  </form>
+</div>
+</ng-template>
+
+<!-- List super categories -->
+<ng-template #ListSuperCategory class="model">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left title-model">Select Super Category</h4>
+      <button 
+              class="btn btn-rounded btnNewSuperCategory right"
+              (click)="openModalSecond(template)"
+          >
+        <i class="fa fa-plus"></i>
+        Add Super Category
+        </button>
+    </div>
+    <div class="modal-body">
+      <form
+        (ngSubmit)="selectSuperCategory(f)" 
+        #f="ngForm" 
+      >
+      <div class="form-group">
+        <label 
+        for="superCategory">Super Category : </label>
+
+        <select 
+        name="superCategory" 
+        class="form-control"
+        ngModel
+        (change)="onSuperCategoryChange($event.target.value)"
+        >
+        <option disabled>--Select--</option>
+            <option 
+            selected
+            *ngFor="let super of listSuperCategories; let i = index"
+            [value]="i"
+            >{{super.super_category_name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="superCategories">Selected Super Categories</label>
+        <mat-chip-list #chipList >
+          <mat-chip 
+          style="margin: 5px;"
+          *ngFor="let fruit of fruits" [selectable]="selectable"
+                   [removable]="removable" (remove)="remove(fruit)">
+            {{fruit.super_category_name}}
+            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+          </mat-chip>
+        </mat-chip-list>
+      
+      </div>
+    <div class="row">
+          <button class="btn btn-modal" type="submit" >Save</button>
+          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+      </div>
+  </form>
+</div>
+</ng-template>
+
+
+
+<!-- product -->
+<!-- <ng-template #productTemplate class="model">
     <div class="modal-header">
       <h4 class="modal-title pull-left title-model">Add Product to Category</h4>
     </div>
@@ -378,12 +997,7 @@
         ngModel 
         placeholder="Enter Dicription"
         class="form-control input"
-        required
-        #discription="ngModel"
         >
-        <span 
-        *ngIf="!discription.valid && discription.touched " 
-        class="help-block">Enter Valid Input!</span>
       </div>
       
       <div class="form-group">
@@ -461,4 +1075,5 @@
       </div>
   </form>
 </div>
-</ng-template>
+</ng-template> -->
+

@@ -1,54 +1,57 @@
-<div class="row">
-  <div class="col-xs-12">
-    <div class="row">
-        <div class="row left inline">
-            <h3><i 
-              class="fa fa-caret-left inline fa-lg"
-              routerLink="/merchants/merchant/catalogue"
-              ></i>Merchant Name</h3>
-        </div>   
-    </div>
-  </div>
 
-  <div class="col-xs-12">
-    <div class="row info">
-      <div class="col-xs-5">
-        <img 
-          [src]="productImage"
-          alt="Product Image" 
-          style="max-height:200px; max-width:200px;" 
-          class="img-responsive">
-      </div>
-      <div class="col-xs-7">
-          <div class="row heading">
-            <h3>Product Heading</h3>
-            <h3>Price: $6</h3>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- ======================================================== -->
+<!-- dropdown nested lists -->
+<!-- <div class="border-box" id="panels">
+      <div  
+        class="quarter-panel panel" 
+        *ngFor="let super of superCategories;let i1 = index">
+          <div 
+          data-parent="#panels" 
+          data-toggle="collapse" 
+          [attr.data-target]="'#openPanel'+ i1" 
+          class="row display-inline-mode"
+          >
+          <h4   
+          [ngClass]="{'flipped': isActive[i1] }" 
+          (click)="isActive=[];isActive[i1] = !isActive[i1];"
+          >{{super.name}}</h4>  &nbsp;&nbsp;&nbsp;
           </div>
-          <div class="row description">
-            <p>
-                xyzxyzxyzxyzxyzxyzxyxyzxyzxyzxyz
-                xyzxyzxyzxyzxyzxyzxyzxyxyzxyzxyzxyzxyz
-                xyzxyzxyzxyzxyzxyzxyzxyxyzxyzxyzxyzxyz
-            </p>
+          <div class="collapse" id="openPanel{{i1}}">
+              <div class="panel-body"
+              *ngFor="let category of Categories;let i2 = index"
+              (click)="listClick($event, category, i2)"
+              >{{category.name}}
+              <ul>
+                <ng-template #recursiveList let-list>
+                  <li *ngFor="let item of subCategories">
+                    {{item.name}}
+                  </li>
+                </ng-template>
+                <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: list }"></ng-container>
+              </ul>
+                
+            
+            
+              </div>
           </div>
-          <hr>
-          <div class="row inventory">
-            <h5>Inventory</h5>
-            <label class="switch">
-                <input type="checkbox">
-                <span class="slider round"></span>
-              </label>
-          </div>
-          <hr>
-          <div class="row addons">
-              <h5>Varients/Add-ons</h5>
-          </div>
-          <div class="row listAddOns">
-              <h6>No Varients / Add-ons Added</h6>
-              <a>Add</a>
-          </div>
-          <hr>
       </div>
     </div>
-  </div>
-</div>
+ -->
+

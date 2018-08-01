@@ -1,10 +1,15 @@
+.authPage {
+    background-color: #B6B8C4
+}
+
 /*login-from*/
-.login-form{
+.border{
     background-color:#FCFCFC;
-    width:100%;
+    /* width:100%; */
     padding:50px;
+    margin-top: 40px;
     box-shadow: 0 0 30px -7px rgba(0,0,0,0.5);
-  }
+}
    
   
   /*page title*/
@@ -82,7 +87,7 @@
   input.ng-invalid {
     border: 1px border-style red;
   }
-  
+   
 
   /* Input File */
   input[type=file] {

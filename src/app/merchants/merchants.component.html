@@ -1,6 +1,7 @@
 <div class="row">
-  <div class="col-xs-12 col-md-8 col-sm-12"
-       style="margin-top:30px;">
+  <div class="col-xs-12 col-md-10 col-sm-10 col-sm-offset-1"
+       style="margin-top:30px;
+              width:90%">
     <div class="row list-inline">
         <h3 class="left">Merchants</h3>
         <button 
@@ -11,88 +12,63 @@
         Merchant
       </button>
     </div>
+
+    <section  *ngIf="isLoading">
+        <div class="loading">Loading&#8230;</div>
+    </section>
+
     <div class="row">
-      <table>
-              <tr>
-                <th>Merchant Id</th>
-                <th>Store Name</th>
-                <th>Address</th>
-                <th>Phone No.</th>
-                <th>Email</th>
-              </tr>
-              <tr routerLink="/merchants/merchant/info">
-                <td class="id">Peter</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-              </tr>
-              <tr>
-                <td class="id">Lois</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-              </tr>
-              <tr>
-                <td class="id">Peter</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-              </tr>
-              <tr>
-                <td class="id">Peter</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-              </tr>
-              <tr>
-                <td class="id">Peter</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-              </tr>
-              <tr>
-                <td class="id">Peter</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-                <td>Griffin</td>
-              </tr>
-      </table>
-      <!-- <table>
-          <tr>
+        <table>
+          <tr 
+          class="container-inner ">
             <th>Merchant Id</th>
-            <th>Merchant Name</th>
+            <th>Store Name</th>
+            <th>Email</th>
             <th>Address</th>
             <th>Phone No.</th>
-            <th>Email</th>
           </tr>
-          <tr 
-          routerLink="/merchants/merchant/info"
-          *ngFor="let merchant of merchants">
-            <td class="id">{{ merchant.merchant_id }}</td>
-            <td>{{ merchant.merchant_first_name }} {{ merchant.merchant_last_name }}</td>
-            <td>{{merchant.merchant_address}}</td>
-            <td>{{merchant.merchant_phone_no}}</td>
-            <td>{{merchant.merchant_email}}</td>
-          </tr>
-      </table> -->
+          <ng-container *ngIf="!isLoading">
+              <tr 
+              *ngFor="let merchant of merchants"
+              routerLink="/merchants/merchant/info"
+              (click)="info(merchant)"
+              >
+                <td class="id">{{ merchant.merchant_id }}</td>
+                <td>{{ merchant.merchant_first_name}}</td>
+                <td>{{merchant.merchant_email}}</td>
+                <td>{{merchant.merchant_address}}</td>
+                <td>{{merchant.merchant_phone_no}}</td>
+                
+              </tr>
+          </ng-container>
+          
+      </table>
   
       <!-- Pagination -->
-      <div class="row">
+      <mat-paginator 
+              class="paginator"
+              [length]="length"
+              [pageSize]="pageSize"
+              (page)="pageEvent = changePage($event)">
+      </mat-paginator>
+
+
+
+      <!-- <div class="row">
         
         <div class="pagination pagination-sm right">
+            
           <a href="#">&laquo;</a>
-          <a href="#" class="active">1</a>
-          <a href="#">2</a>
-          <a href="#">3</a>
+          <a 
+          (click)="changePage()" 
+          class="active"
+          *ngFor="let page of countArray"
+          >{{page}}</a>
           <a href="#">&raquo;</a>
         </div>
-      </div>
+      </div> -->
+      
+    
     </div>
     
 
@@ -102,23 +78,11 @@
 </div>
 
 
-<!-- <ul class="pagination pagination-sm">
-        
-    <li class="page-item">
-        <a class="page-link" href="#" aria-label="Previous">
-            <span aria-hidden="true">&laquo;</span>
-            <span class="sr-only">Previous</span>
-        </a>
-    </li>
 
-    <li class="page-item"><a class="page-link" href="#">1</a></li>
-    <li class="page-item"><a class="page-link" href="#">2</a></li>
-    <li class="page-item"><a class="page-link" href="#">3</a></li>
-
-    <li class="page-item">
-        <a class="page-link" href="#" aria-label="Next">
-            <span aria-hidden="true">&raquo;</span>
-            <span class="sr-only">Next</span>
-        </a>
-    </li>
-</ul> -->
+<!-- <mat-paginator 
+class="paginator"
+[length]="length"
+[pageSize]="pageSize"
+[pageSizeOptions]="pageSizeOptions"
+(page)="pageEvent = changePage($event)">
+</mat-paginator> -->

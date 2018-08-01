@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { RegisterComponent } from './auth/register/register.component';
-import { LoginComponent } from './auth/login/login.component';
 import { AuthComponent } from './auth/auth.component';
 import { AuthGuard } from './shared/auth-guard.service';
 import { HomeComponent } from './home/home.component';
@@ -12,7 +10,11 @@ import { MerchantEditComponent } from './merchants/merchant-edit/merchant-edit.c
 import { MerchantComponent } from './merchants/merchant/merchant.component';
 import { CatalogueComponent } from './merchants/merchant/catalogue/catalogue.component';
 import { ProductComponent } from './merchants/merchant/catalogue/product/product.component';
-
+import { ProductEditComponent } from './merchants/merchant/catalogue/product-edit/product-edit.component';
+import { MerchantAuthComponent } from './merchant-auth/merchant-auth.component';
+import { MerchantNewComponent } from './merchants/merchant-new/merchant-new.component';
+import { RequestComponent } from './request/request.component';
+import { MerchantCatelogueComponent } from './merchant-catelogue/merchant-catelogue.component';
 
 const appRoutes: Routes = [
     { path: '',
@@ -21,10 +23,15 @@ const appRoutes: Routes = [
     children: [
         { path: 'orders', component: OrdersComponent},
         { path: 'merchants', component: MerchantsComponent},
-        { path: 'merchants/new', component: MerchantEditComponent},
+        { path: 'merchants/new', component: MerchantNewComponent},
+        { path: 'merchants/edit', component: MerchantEditComponent},
         { path: 'merchants/merchant/info', component: MerchantComponent},
         { path: 'merchants/merchant/catalogue', component: CatalogueComponent},
-        { path: 'merchants/merchant/catalogue/product', component: ProductComponent}
+        // { path: 'merchants/merchant/catalogue/product', component: ProductComponent},
+        { path: 'catalogue', component: CatalogueComponent},
+        { path: 'catalogue/product/new', component: ProductEditComponent},
+        { path: 'catalogue/product/edit', component: ProductEditComponent},
+        {path: 'requests', component: RequestComponent}
     ]
     },
 
@@ -32,10 +39,9 @@ const appRoutes: Routes = [
     { path: 'auth',
     // canActivate: [AuthGuard],
     component: AuthComponent,
-    // children: [
-    //     { path: 'login', component: LoginComponent},
-    //     { path: 'register', component: RegisterComponent}
-    // ]
+    },
+    { path: 'merchant/auth',
+    component: MerchantAuthComponent,
     },
     { path: '**', redirectTo: '/auth'} // wild card route
 ];

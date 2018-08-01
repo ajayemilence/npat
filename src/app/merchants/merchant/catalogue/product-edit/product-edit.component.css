@@ -1,0 +1,293 @@
+.productForm {
+    padding: 30px;
+    border: #333333;
+    box-shadow: 0 0 30px -3px rgba(175, 175, 175, 0.5);
+}
+
+
+.dropzone {
+    min-height: 100px;
+    min-width: auto;
+    display: table;
+    width: 100%;
+    background-color: white;
+    border: dotted 1px #aaa;
+  }
+  
+  .text-wrapper {
+    display: table-cell;
+    vertical-align: middle;
+  }
+  
+  .centered {
+    font-family: sans-serif;
+    font-size: 1.3em;
+    font-weight: bold;
+    text-align:center;
+  }
+  .limit {
+    font-family: sans-serif;
+    font-size: 12px;
+    color: #aaa;
+    text-align:center;
+    margin-left: -80px;
+  }
+
+.btn.btnnew2 {
+    background-color: #49b6d6;
+    border: none;
+    color: white;
+    border-radius: 50px;
+    font-size: 18px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 0px #FFFFFE;
+    position: relative;
+}
+
+.btn.btnnew2:hover{
+    background-color: #49b6d6; 
+    color:#fff;
+    transform:translateY(4px);
+    box-shadow: 0 1.5px 0 0px #B6B6B5;
+}
+
+
+.btn.btnnew {
+  background-color: #444444;
+  border: none;
+  color: white;
+  border-radius: 50px;
+  font-size: 18px;
+  margin-right: 10px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0px #FFFFFE;
+  position: relative;
+}
+
+.btn.btnnew:hover{
+  background-color: #444444; 
+  color:#fff;
+  transform:translateY(4px);
+  box-shadow: 0 1.5px 0 0px #B6B6B5;
+}
+
+input.ng-invalid.ng-touched{
+  border: 1px solid #F07D7D;
+}
+
+.error {
+  color: red;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #faffbd;
+text-align: center;
+} 
+
+
+.btn.btn-modal{
+  height: auto;
+  color: #333333;
+  font-size: 16px;
+  border-radius: 45px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0px #FFFFFE;
+  position: relative;
+}
+
+.btn.btn-modal:hover{
+  background-color: #B6B6B5; 
+  color:#fff;
+  transform:translateY(4px);
+  box-shadow: 0 1px 0 0px #B6B6B5;
+}
+
+.input-group-addon {
+  background: transparent
+}
+
+.table {
+  width: 100%;
+  border: #333333;
+  box-shadow: 0 0 30px -3px rgba(175, 175, 175, 0.5);
+}
+.table-name {
+  width: 25%;
+}
+
+.table-value {
+  width: 65%;
+}
+/* drop image */
+/* .title{
+  text-align: center;
+  font-family: 'Lato', sans-serif;
+}
+.afu-container{
+  background-color: #BABABA;
+  margin-top: 3vh;
+  border: 4px solid rgb(139, 136, 136);
+  border-radius: 6px;
+}
+.border{
+  border: 2px solid rgb(140, 145, 142);
+  border-radius: 6px;
+  padding: 10px;
+  margin: 10px;
+} */
+
+/* mat-form-field label {
+  color: red;
+}
+
+mat-form-field.mat-form-field label {
+  color: pink;
+} */
+
+.blue{
+  color: #49b6d6; 
+}
+
+ul {
+  list-style-type: none;
+}
+
+/* The container */
+.container {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+  border-color: rgba(175, 175, 175, 0.5);
+  border-style: solid;
+  border-width: 0.5px;
+  box-shadow: 0 0 30px -3px rgba(175, 175, 175, 0.5);
+}
+
+/* Hide the browser's default checkbox */
+.container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+.checkbox {
+   font-size: 20px;
+}
+input[type="checkbox"]{
+  width: 15px; /*Desired width*/
+  height: 15px; /*Desired height*/
+  background-color: transparent
+}
+
+
+/* Remove margins and padding from the list */
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+/* Style the list items */
+ul li {
+  cursor: pointer;
+  position: relative;
+  padding: 12px 8px 12px 40px;
+  list-style-type: none;
+  background: #eee;
+  font-size: 18px;
+  transition: 0.2s;
+  
+  /* make the list items unselectable */
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Set all odd list items to a different color (zebra-stripes) */
+ul li:nth-child(odd) {
+  background: #dfdede;
+}
+
+/* Darker background-color on hover */
+ul li:hover {
+  background: #ddd;
+}
+
+/* When clicked on, add a background color and strike out text */
+ul li.checked {
+  background: #888;
+  color: #fff;
+}
+
+/* Add a "checked" mark when clicked on */
+ul li.checked::before {
+  content: '';
+  position: absolute;
+  border-color: #fff;
+  border-style: solid;
+  border-width: 0 2px 2px 0;
+  top: 10px;
+  left: 16px;
+  transform: rotate(45deg);
+  height: 15px;
+  width: 7px;
+}
+
+/* Style the header */
+.header {
+  background-color: transparent;
+  padding: 30px 40px;
+  color: white;
+  text-align: center;
+}
+
+/* Clear floats after the header */
+.header:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+#myInput {
+  margin: 0;
+  border: none;
+  border-radius: 0;
+  width: 75%;
+  padding: 10px;
+  float: left;
+  color: #444444;
+  font-size: 16px;
+  border: 1px solid rgba(175, 175, 175, 0.5);
+}
+
+/* Style the "Add" button */
+.addBtn {
+  padding: 10px;
+  width: 25%;
+  background: #d9d9d9;
+  color: #555;
+  float: left;
+  text-align: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: 0.3s;
+  border-radius: 0;
+}
+
+.addBtn:hover {
+  background-color: #bbb;
+}
+
+.modal-body {
+  height: auto;
+}
+
+tr {
+  padding: 20px;
+}
+

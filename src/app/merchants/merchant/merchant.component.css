@@ -28,7 +28,7 @@ hr {
     border-top: 1px solid #ccc;
     color: rgba(184, 184, 184, 0.6);
     margin-left: -17px;
-    margin-right: -377px;
+    margin-right: -15px;
 }
 
 hr.line{
@@ -38,24 +38,26 @@ hr.line{
     border-top: 1px solid rgb(230, 229, 229);
     color: rgb(218, 218, 218);
     margin-left: -17px;
-    margin-right: -17px;
+    margin-right: -12px;
 }
 
 
 
 .container-outer { 
-    overflow: scroll; 
-    width:900px; 
-    height: 380px; 
+    /* overflow: scroll;  */
+    width:80%; 
+    height: 100%; 
 }
 .container-inner { 
-    width: 980px; 
+    width: 100%; 
+    height: 100%;
+    margin-bottom: 40px;
 }
 
 .info {
-    width: 95%;
+    width: 100%;
+    /* height: 90%; */
     border-collapse: collapse;
-    /* padding-right: 40px; */
     margin-top: 20px;
     border: rgb(63, 63, 63);
     box-shadow: 0 0 30px -3px rgba(175, 175, 175, 0.5);
@@ -105,7 +107,7 @@ td {
 }
 .right{
     float: right;
-    margin-right: 10px;
+    margin-right: 5px;
 }
 
 .heading {

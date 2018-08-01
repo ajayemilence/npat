@@ -1,1 +1,294 @@
-<router-outlet></router-outlet>
+<!-- <div 
+  *ngIf="admin"
+  class="example-container" 
+  [class.example-is-mobile]="mobileQuery.matches">
+ <mat-toolbar color="primary" class="example-toolbar">
+   
+   <button mat-icon-button (click)="snav.toggle()">
+   <mat-icon>menu</mat-icon></button>
+   <h1 class="example-app-name">Nearr</h1>
+
+   <div class="nav-options">
+      <div class="collapse navbar-collapse"
+      style="top: 0px; position: relative;"
+      >
+        <ul 
+          class="nav navbar-nav navbar-right menu-right"
+          style="
+          display:inline-block;
+          margin-right: 20px;
+          margin-top: -0px;"
+          >
+            <li>
+              <img 
+                  src="assets/images/logo.jpg" 
+                  alt="E Commerce" 
+                  style="margin-top:10px; max-height:50px; max-width:50px; cursor: pointer;" 
+                  class="img-responsive img-circle"
+                  href="/"
+                  >   
+            </li>
+          <li><a 
+            style="cursor: pointer; font-size: 16px; font-family: 'SFMedium'; margin-top: 3px; " >
+            user name</a></li>
+            <li class="dropdown">
+              <a class="dropdown-hover"><i 
+                style="font-size: 10px; margin-left: -20px;"
+                class="glyphicon glyphicon-menu-down"></i></a>
+                <ul class="dropdown-menu dropdown-hover-menu">
+                  <li><a (click)="logout()">Logout</a></li>
+                  <li><a (click)="editProfile()">Edit Profile</a></li>
+                </ul>
+              </li>  
+        </ul>
+      </div>
+   </div>
+   
+ </mat-toolbar>
+
+ <mat-sidenav-container 
+ class="example-sidenav-container"
+ [style.marginTop.px]="mobileQuery.matches ? 56 : 0"
+ >
+   <mat-sidenav 
+   #snav [mode]="mobileQuery.matches ? 'side' : 'over'"
+   [fixedInViewport]="mobileQuery.matches" 
+   fixedTopGap="56"
+   class="sidenav-style"
+   style="width: 204px">
+     <mat-nav-list >
+        <mat-card ></mat-card>
+
+      <mat-card routerLink="/orders" 
+      class="sideNavCard">
+          <i class="fa fa-list-ul" style="margin-right: 12px; margin-left: 22px;"></i>  
+          Orders
+      </mat-card>
+      <mat-card routerLink="/merchants"
+      *ngIf="merchant == false" 
+      class="sideNavCard">
+          <i class="fa fa-home" style="margin-right: 12px; margin-left: 22px;"></i>  
+          Merchants
+      </mat-card>
+      <mat-card routerLink="/orders"
+      *ngIf="merchant == false" 
+      class="sideNavCard">
+          <i class="fa fa-user" style="margin-right: 12px; margin-left: 22px;"></i>  
+          Customer
+      </mat-card>
+
+      <mat-card routerLink="/orders"
+      *ngIf="merchant == false" 
+      class="sideNavCard">
+          <i class="fa fa-tachometer" style="margin-right: 12px; margin-left: 22px;"></i>  
+          Design
+      </mat-card>
+      
+      <mat-card routerLink="/catalogue" class="sideNavCard">
+
+        <i class="fa fa-tachometer" style="margin-right: 12px; margin-left: 22px;"></i>  
+            Catalogue
+      </mat-card>
+      
+      
+
+
+
+        <mat-card class="example-card" >
+          <mat-card-header>
+        
+            <mat-card-title 
+            class="card-title"
+            style="font-size: 16px; color: white"
+            (click)="showSubList()"
+            >
+              <i class="fa fa-user" style="margin-right: 12px; margin-left: 12px;"></i> 
+              Requests
+              <span 
+              style="margin-left: 25px; margin-top: 4px;"
+              class="pull-right showopacity glyphicon glyphicon-menu-down"
+              ></span>
+            </mat-card-title>
+        
+          </mat-card-header>
+        
+          <mat-card-content *ngIf="RequestClicked">
+            
+             <ul class="subList" >
+                <li><a (click)="ShowRequest(1)">Super Categories</a></li>
+                <li><a (click)="ShowRequest(2)">Categories</a></li>
+                <li><a (click)="ShowRequest(3)">Sub Categories</a></li>
+                <li><a (click)="ShowRequest(4)">Products</a></li>
+             </ul>
+        
+        
+          </mat-card-content>
+        
+        </mat-card>
+        
+
+      <a mat-list-item 
+      routerLink="/orders">
+      <i class="fa fa-cog" style="margin-right: 12px; margin-left: 12px;"></i>  
+      Setting</a>
+     </mat-nav-list>
+   </mat-sidenav>
+
+   <mat-sidenav-content>
+     <router-outlet></router-outlet>
+   </mat-sidenav-content>
+ </mat-sidenav-container>
+</div>
+
+<div *ngIf="!admin " >
+ <router-outlet></router-outlet>
+</div>
+ -->
+
+
+ <div 
+  *ngIf="admin"
+  class="example-container" 
+  [class.example-is-mobile]="mobileQuery.matches">
+ <mat-toolbar color="primary" class="example-toolbar">
+   
+   <button mat-icon-button (click)="snav.toggle()">
+   <mat-icon>menu</mat-icon></button>
+   <h1 class="example-app-name">Nearr</h1>
+
+   <div class="nav-options">
+      <div class="collapse navbar-collapse"
+      style="top: 0px; position: relative;"
+      >
+        <ul 
+          class="nav navbar-nav navbar-right menu-right"
+          style="
+          display:inline-block;
+          margin-right: 20px;
+          margin-top: -0px;"
+          >
+            <li>
+              <img 
+                  src="assets/images/logo.jpg" 
+                  alt="E Commerce" 
+                  style="margin-top:10px; max-height:50px; max-width:50px; cursor: pointer;" 
+                  class="img-responsive img-circle"
+                  href="/"
+                  >   
+            </li>
+          <li><a 
+            style="cursor: pointer; font-size: 16px; font-family: 'SFMedium'; margin-top: 3px; " >
+            user name</a></li>
+            <li class="dropdown">
+              <a class="dropdown-hover"><i 
+                style="font-size: 10px; margin-left: -20px;"
+                class="glyphicon glyphicon-menu-down"></i></a>
+                <ul class="dropdown-menu dropdown-hover-menu">
+                  <li><a (click)="logout()">Logout</a></li>
+                  <li><a (click)="editProfile()">Edit Profile</a></li>
+                </ul>
+              </li>  
+        </ul>
+      </div>
+   </div>
+   
+ </mat-toolbar>
+
+ <mat-sidenav-container 
+ class="example-sidenav-container"
+ [style.marginTop.px]="mobileQuery.matches ? 56 : 0"
+ >
+   <mat-sidenav 
+   #snav [mode]="mobileQuery.matches ? 'side' : 'over'"
+   [fixedInViewport]="mobileQuery.matches" 
+   fixedTopGap="56"
+   class="sidenav-style"
+   style="width: 204px">
+     <mat-nav-list>
+       <a mat-list-item></a>
+       <a mat-list-item routerLink="/orders"
+       >
+        <!-- <span 
+        class="pull-left showopacity glyphicon glyphicon-menu-hamburger"
+        ></span> -->
+        <i class="fa fa-list-ul" style="margin-right: 4px;"></i>
+         Orders</a>
+      <a mat-list-item routerLink="/merchants" 
+      *ngIf="merchant == false"
+      >
+      <!-- <span 
+      class="pull-left showopacity glyphicon glyphicon-home"
+      ></span> -->
+      <i class="fa fa-home" style="margin-right: 4px;"></i>
+      Merchants</a>
+      <a mat-list-item routerLink="/orders">
+      <!-- <span 
+      class="pull-left showopacity glyphicon glyphicon-user"
+      ></span> -->
+      <i class="fa fa-user" style="margin-right: 4px;"></i>
+      Customer</a>
+      <a mat-list-item 
+      routerLink="/orders"
+      *ngIf="merchant == false"
+      >
+      <!-- <span 
+        class="pull-left showopacity glyphicon glyphicon-dashboard"
+        ></span> -->
+        <i class="fa fa-tachometer" style="margin-right: 4px;"></i>  
+      Design</a>
+      <a mat-list-item 
+      routerLink="/catalogue"
+      >
+        <!-- <span 
+          class="pull-left showopacity glyphicon glyphicon-dashboard"
+          ></span> -->
+          <i class="fa fa-tachometer" style="margin-right: 4px;"></i>  
+        Catalogue</a>
+        <div 
+        *ngIf="merchant == false"
+        class="panel sideNavCard"
+        style="background: transparent"
+        >
+            <div class="panel-heading ">
+                <h4 class="panel-title" 
+                data-toggle="collapse" 
+                data-parent="#accordion" 
+                href="#collapse">
+                    <i class="fa fa-user" 
+                    style="margin-right: 12px; margin-left: 12px;"></i>   
+                  Requests
+                  <span 
+                  style="margin-left: 25px; margin-top: 2px;"
+                  class="pull-right showopacity glyphicon glyphicon-menu-down"
+                  ></span>
+                </h4>
+            </div>
+            <div id="collapse" class="panel-collapse collapse">
+                <ul class="subList" >
+                    <li><a (click)="ShowRequest(1)">Super Categories</a></li>
+                    <li><a (click)="ShowRequest(2)">Categories</a></li>
+                    <li><a (click)="ShowRequest(3)">Sub Categories</a></li>
+                    <li><a (click)="ShowRequest(4)">Products</a></li>
+                </ul>
+            </div>
+        </div>
+      <a mat-list-item routerLink="/orders">
+      <!-- <span 
+        class="pull-left showopacity glyphicon glyphicon-cog"
+        ></span> -->
+        <i class="fa fa-cog" style="margin-right: 4px;"></i>  
+      Setting</a>
+      
+     </mat-nav-list>
+   </mat-sidenav>
+
+   <mat-sidenav-content>
+     <router-outlet></router-outlet>
+   </mat-sidenav-content>
+ </mat-sidenav-container>
+</div>
+
+<div *ngIf="!admin " >
+ <router-outlet></router-outlet>
+</div>
+

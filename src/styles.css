@@ -1,1 +1,29 @@
 /* You can add global styles to this file, and also import other style files */
+
+@import '~@angular/material/prebuilt-themes/indigo-pink.css';
+/* Tree Component  */
+@import '~angular-tree-component/dist/angular-tree-component.css';
+
+body,html{
+    height: 100%;
+    /* background-color: rgb(218, 218, 218); */
+ }
+
+@font-face {
+   font-family: Magettas;
+   src: url(/assets/fonts/Magettas\ Bold\ DEMO.otf) format("opentype");
+}
+
+@font-face {
+    font-family: SFBold;
+    src: url(/assets/fonts/SF-Pro-Text-Bold.otf) format("opentype");
+}
+
+@font-face {
+    font-family: SFMedium;
+    src: url(/assets/fonts/SF-Pro-Text-Medium.otf) format("opentype");
+}
+@font-face {
+    font-family: SFSemiBold;
+    src: url(/assets/fonts/SF-Pro-Text-Semibold.otf) format("opentype");
+}

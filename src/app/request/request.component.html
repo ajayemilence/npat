@@ -1,0 +1,337 @@
+<div class="row">
+  <div
+  style=" width: 80%;" 
+  class="col-xs-12 col-md-8 col-md-offset-1">
+  
+  <div class="row left" style="margin-top: 10px; margin-left: 5px;">
+      <h2 
+      class="col-xs-12">{{Heading}}</h2>
+  </div>
+
+  <section  *ngIf="isLoading">
+        <div class="loading">Loading&#8230;</div>
+    </section>
+
+  
+  <div class="RequestForm" *ngIf="!isLoading">
+      <mat-accordion
+      *ngIf="show === 1">
+        <mat-expansion-panel *ngFor="let request of superCategoryRequests">
+          <mat-expansion-panel-header (click)="headerClicked()">
+            <mat-panel-title>
+              {{request.merchant_first_name}}
+            </mat-panel-title>
+            <mat-panel-description>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+      
+          <div class="container" >
+            <table class="table table-hover">
+             
+              <tbody>
+                <tr 
+                
+                *ngFor='let super of request.requested_super_category'>
+                  <td class="tableRow">{{super.super_category_name}}</td>
+                  <td class="tableRow">{{super.super_category_description}}</td>
+                  <td class="tableRowImage">
+                   <img 
+                    [src]="super.super_category_image ? 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/' + super.super_category_image : displayImage" 
+                    alt="image" 
+                    border="3" 
+                    height="60" 
+                    width="60" 
+                    class="img-responsive"
+                  /></td>
+                  <td class="button"><button 
+                    class="btn btnAccept"
+                    (click)="requestStatus(super.super_category_id,1)"
+                     >Approve</button></td>
+                  <td class="button"><button
+                    class="btn btnReject"
+                    (click)="requestStatus(super.super_category_id,0)"
+                    >Reject</button></td>
+                  <td class="button"><button
+                    (click)="editCategory(request, super, template)"
+                    class="btn btnEdit"
+                    >    <i class="fa fa-pencil"></i>    </button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </mat-expansion-panel>
+        
+      </mat-accordion>
+    
+      <!-- categories accordion -->
+      <mat-accordion 
+      *ngIf="show === 2">
+      <mat-expansion-panel *ngFor="let request of superCategoryRequests">
+        <mat-expansion-panel-header (click)="headerClicked()">
+          <mat-panel-title>
+            {{request.merchant_first_name}}
+          </mat-panel-title>
+          <mat-panel-description>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+    
+        <div class="container" >
+          <table class="table table-hover">
+           
+            <tbody>
+              <tr 
+              
+              *ngFor='let super of request.requested_category'>
+                <td class="tableRow">{{super.category_name}}</td>
+                <td class="tableRow">{{super.category_description}}</td>
+                <td class="tableRowImage">
+                 <img 
+                  [src]="super.category_image ? 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/' + super.category_image : displayImage" 
+                  alt="image" 
+                  border="3" 
+                  height="60" 
+                  width="60" 
+                  class="img-responsive"
+                /></td>
+                <td class="button"><button 
+                  class="btn btnAccept"
+                  (click)="requestStatus(super.category_id,1)"
+                   >Approve</button></td>
+                <td class="button"><button
+                  class="btn btnReject"
+                  (click)="requestStatus(super.category_id,0)"
+                  >Reject</button></td>
+                <td class="button"><button
+                  (click)="editCategory(request, super, template)"
+                  class="btn btnEdit"
+                  >    <i class="fa fa-pencil"></i>    </button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </mat-expansion-panel>
+          
+      </mat-accordion>
+
+      <mat-accordion
+         *ngIf="show === 3">
+            <mat-expansion-panel *ngFor="let request of superCategoryRequests">
+              <mat-expansion-panel-header (click)="headerClicked()">
+                <mat-panel-title>
+                  {{request.merchant_first_name}}
+                </mat-panel-title>
+                <mat-panel-description>
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+          
+              <div class="container">
+                <table class="table table-hover">
+                 
+                  <tbody>
+                    <tr 
+                    
+                    *ngFor='let super of request.requested_category'>
+                      <td class="tableRow">{{super.sub_category_name}}</td>
+                      <td class="tableRow">{{super.sub_category_description}}</td>
+                      <td class="tableRowImage">
+                       <img 
+                        [src]="super.sub_category_image ? 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/' + super.sub_category_image : displayImage" 
+                        alt="image" 
+                        border="3" 
+                        height="60" 
+                        width="60" 
+                        class="img-responsive"
+                      /></td>
+                      <td class="button"><button 
+                        class="btn btnAccept"
+                        (click)="requestStatus(super.sub_category_id,1)"
+                         >Approve</button></td>
+                      <td class="button"><button
+                        class="btn btnReject"
+                        (click)=requestStatus(super.sub_category_id,0)
+                        >Reject</button></td>
+                      <td class="button"><button
+                        (click)="editCategory(request, super, template)"
+                        class="btn btnEdit"
+                        ><i class="fa fa-pencil"></i></button></td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </mat-expansion-panel>
+            
+        </mat-accordion>
+          
+      <!-- product accordion -->  
+      <!-- <mat-accordion
+             *ngIf="show === 4">
+              <mat-expansion-panel *ngFor="let request of superCategoryRequests">
+                <mat-expansion-panel-header>
+                  <mat-panel-title>
+                    {{request.merchant_first_name}}
+                  </mat-panel-title>
+                  <mat-panel-description>
+                  </mat-panel-description>
+                </mat-expansion-panel-header>
+            
+                <div class="container">
+                  <table class="table table-hover">
+                   
+                    <tbody>
+                      <tr *ngFor='let super of request.requested_super_category'>
+                        <td class="tableRow">{{super.super_category_name}}</td>
+                        <td class="tableRow">{{super.super_category_description}}</td>
+                        <td class="tableRowImage">
+                         <img 
+                          [src]="super.super_category_image ? 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/' + super.super_category_image : displayImage" 
+                          alt="image" 
+                          border="3" 
+                          height="60" 
+                          width="60" 
+                          class="img-responsive"
+                        /></td>
+                        <td class="button"><button 
+                          class="btn btnAccept"
+                          (click)="requestStatus(1)"
+                           >Approve</button></td>
+                        <td class="button"><button
+                          class="btn btnReject"
+                          (click)=requestStatus(0)
+                          >Reject</button></td>
+                        <td class="button"><button
+                          class="btn btnEdit"
+                          >    <i class="fa fa-pencil"></i>    </button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </mat-expansion-panel>
+              
+          </mat-accordion> -->
+       
+  </div>
+  </div>
+</div>
+
+
+<!-- super category template -->
+<ng-template #template class="model">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left title-model">{{templateTitle}}</h4>
+    </div>
+    <div class="modal-body">
+
+      <div class="row" *ngIf="postSubmit">
+          <h1>{{error}}</h1>
+      </div>
+
+      <form
+        (ngSubmit)="editCategoryForm(f)" 
+        #f="ngForm" 
+      >
+      <div class="form-group">
+        <label for="name">Category Name <span class="blue">*</span></label>
+        <input 
+        type="text" 
+        id="name" 
+        name="name" 
+        ngModel 
+        [(ngModel)]="this.currentCategoryName"
+        class="form-control input"
+        required
+        #name="ngModel"
+        >
+        <span 
+        *ngIf="!name.valid && name.touched" 
+        class="help-block">Enter Valid Input!</span>
+      </div>
+      <div 
+        class="form-group">
+        <label for="discription">Description</label>
+        <input 
+        type="text" 
+        id="discription" 
+        name="discription" 
+        [(ngModel)]="this.currentCategoryDesc"
+        ngModel 
+        class="form-control input"
+        #discription="ngModel"
+        >
+      </div>
+      <div class="form-group">
+          <input  
+          type="file"  
+          id="file-1" 
+          class="inputfile inputfile-1" 
+          name="categoryPic" 
+          ngModel
+          accept="image/*"
+          (change)="onFileChange($event.target.files)"
+          >
+          
+          <label for="file-1">Upload Category Image
+            <img 
+            id="blah" 
+            [src]="displayImage"
+            class="img-responsive img-rounded " 
+            width="100" 
+            height="100"
+            >
+          </label>
+          <p>Drag & Drop images, or browse from computer.</p>
+      </div>
+      <div class="row">
+          <button class="btn btn-modal" type="submit" >Save</button>
+          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+      </div>
+  </form>
+</div>
+</ng-template>
+<!-- // default -->
+      <!-- <mat-accordion 
+      *ngIf="show !== 1">
+          <mat-expansion-panel *ngFor="let request of requests">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{request}}
+              </mat-panel-title>
+              <mat-panel-description>
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+        
+            <div class="container">
+                <table class="table table-hover">
+             
+                    <tbody>
+                      <tr *ngFor='let row of array2'>
+                        <td class="tableRow">John</td>
+                        <td class="tableRow">Doe</td>
+                        <td class="tableRowImage"><img 
+                          [src]="displayImage" 
+                          alt="image" 
+                          border="3" 
+                          height="60" 
+                          width="60" 
+                          class="img-responsive"
+                        /></td>
+                        <td class="tableRow">john@example.com</td>
+                        <td class="button"><button 
+                          class="btn btnAccept"
+                          (click)="requestStatus(1)"
+                           >Approve</button></td>
+                        <td class="button"><button
+                          class="btn btnReject"
+                          (click)=requestStatus(0)
+                          >Reject</button></td>
+                        <td class="button"><button
+                          class="btn btnEdit"
+                          >    <i class="fa fa-pencil"></i>    </button></td>
+                      </tr>
+                    </tbody>
+                </table>
+            </div>
+          </mat-expansion-panel>
+          
+      </mat-accordion> -->
+      <!-- sub categories accordion -->
+      
