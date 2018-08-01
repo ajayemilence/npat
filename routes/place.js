@@ -23,7 +23,7 @@ router.get('/game', function(req, res) {
         var data2 = data.forEach((eachdata) => {
 eachdata.createdAt =  moment(eachdata.createdAt).format("l") //"2013-03-10"
             });
-        res.render('gamePlace', { words: data , title: 'Places by game', rootPath: process.env.IMAGES_ROOT_PATH});
+        res.render('gamePlace', { words: data , title: 'Places by users', rootPath: process.env.IMAGES_ROOT_PATH});
     });
 });
 
@@ -37,6 +37,24 @@ router.post('/createPlace', function(req, res) {
         res.redirect('/place');
     });
 });
+
+
+// csv===
+
+
+router.post('/addPlaceCsv', function(req, res) {
+    console.log(req , "addPlae hai yah aaaa prrrr");
+
+    npatService.addPlaceCsv(req, function(data) {
+        //console.log(data , "dattaaaa");
+        res.redirect('/place');
+    });
+});
+
+router.get('/addCsv', function(req, res, next) {
+    res.render('partials/addPlaceCsv', { layout: false });
+});
+
 
  module.exports = router;
 

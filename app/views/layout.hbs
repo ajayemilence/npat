@@ -29,13 +29,19 @@
     $.widget.bridge('uibutton', $.ui.button);
   </script>
   <script>
-    $(document).ajaxError(function (xhr, status, error) {
+    $(document).ajaxError(function (xhr, status, error, success) {
       if(status.status==401){
          window.location.href="401"
+      }else if (status.status==200){
+        console.log(xhr);
+        console.log(error , "eeeeeeerrrrr");
+        
+        showMessage("Added successfully.", "success");
+         setTimeout(function () { location.reload(); }, 2000);
       }
       else{
       showMessage('Oops, something went wrong. Please try again later.', "error");
-      setTimeout(function () { location.reload(); }, 2000);
+       setTimeout(function () { location.reload(); }, 2000);
       }
       
     });
@@ -96,25 +102,6 @@
                     </li> -->
 
 
-
-<!-- 
- <div class="message-box animated fadeIn" data-sound="alert" id="mb-signout">
-            <div class="mb-container">
-                <div class="mb-middle">
-                    <div class="mb-title"><span class="fa fa-sign-out"></span> Log <strong>Out</strong> ?</div>
-                    <div class="mb-content">
-                        <p>Are you sure you want to log out?</p>
-                        <p>Press No if you want to continue work. Press Yes to logout.</p>
-                    </div>
-                    <div class="mb-footer">
-                        <div class="pull-right">
-                            <a href="logout" class="btn btn-success btn-lg">Yes</a>
-                            <button class="btn btn-default btn-lg mb-control-close">No</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div> -->
 
 
           </ul>

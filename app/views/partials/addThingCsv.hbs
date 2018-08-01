@@ -1,0 +1,125 @@
+<form class="well form-horizontal" action=" " method="post" id="contact_form" enctype="multipart/form-data">
+    <fieldset>
+
+
+        <!-- Text input-->
+
+
+        <div class="form-group">
+                <label class="col-md-4 control-label">CSV File</label>
+                <div class="col-md-6 inputGroupContainer">
+                    <div class="input-group">
+                        <input type="file" name="csvFile"> {{!--
+                        <div class="input-group input-file" name="csvFile">
+                            <input type="text" class="form-control" placeholder='Choose a file...' />
+                            <span class="input-group-btn">
+                                <button class="btn btn-default btn-choose" type="button">Choose</button>
+                            </span>
+                        </div> --}}
+                    </div>
+                </div>
+            </div>
+
+        <!-- Button -->
+        <div class="form-group">
+            <label class="col-md-4 control-label"></label>
+            <div class="col-md-4">
+                <button type="submit" class="btn btn-warning">&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbspSUBMIT
+                    <span class="glyphicon glyphicon-send"></span>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp</button>
+            </div>
+        </div>
+
+    </fieldset>
+</form>
+
+
+<!-- /.container -->
+
+<script>
+    $(document).ready(function () {
+
+        function bs_input_file() {
+            $(".input-file").before(
+                function () {
+                    if (!$(this).prev().hasClass('input-ghost')) {
+                        var element = $("<input type='file' class='input-ghost' style='visibility:hidden; height:0'>");
+                        element.attr("name", $(this).attr("name"));
+                        element.change(function () {
+                            element.next(element).find('input').val((element.val()).split('\\').pop());
+                        });
+                        $(this).find("button.btn-choose").click(function () {
+                            element.click();
+                        });
+                        $(this).find("button.btn-reset").click(function () {
+                            element.val(null);
+                            $(this).parents(".input-file").find('input').val('');
+                        });
+                        $(this).find('input').css("cursor", "pointer");
+                        $(this).find('input').mousedown(function () {
+                            $(this).parents('.input-file').prev().click();
+                            return false;
+                        });
+                        return element;
+                    }
+                }
+            );
+        }
+
+        $(function () {
+            bs_input_file();
+        });
+
+        
+        $('#contact_form').bootstrapValidator({
+            // To use feedback icons, ensure that you use Bootstrap v3.1.0 or later
+            feedbackIcons: {
+                valid: 'glyphicon glyphicon-ok',
+                invalid: 'glyphicon glyphicon-remove',
+                validating: 'glyphicon glyphicon-refresh'
+            },
+            fields: {
+                scriptFile: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select a file'
+                        }
+                    }
+                }
+            }
+        })
+
+
+
+            .on('success.form.bv', function (e) {
+                console.log('yaha success hai html ka');
+
+                $('#contact_form').data('bootstrapValidator').resetForm();
+                e.preventDefault();
+                var $form = $(e.target);
+                var bv = $form.data('bootstrapValidator');
+                var formData = new FormData(document.getElementById('contact_form'));
+                // Use Ajax to submit form data
+                $.ajax({
+                    type: 'POST',
+                    url: '/thing/addThingCsv',
+                    data: formData,
+                    dataType: 'json',
+                    processData: false,
+                    contentType: false,
+                    mimeType: 'multipart/form-data',
+                    success: function (data) {
+                        if (status.status==200) {
+                             $('#modalPopup').modal('hide');
+                            showMessage("Added successfully.", "success")
+                            $('table > tbody > tr:first').before(data.content);
+                        }
+                        else
+                             showMessage(data.message, "error")
+                    },
+                    beforeSend: function () { $("#loader_pnl").show(); },
+                    complete: function () { $("#loader_pnl").hide(); }
+                })
+            });
+    });
+</script>
+

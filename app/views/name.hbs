@@ -41,11 +41,14 @@ input[type=text]:focus {
     width: 100%;
 }
 
-
+#btn_csv {
+  background-color : purple;
+  margin-top: -47px;
+}
 </style>
 
 <div>
-<Button id="btn_add_new_name" class="btn btn-primary pull-right new-item" disabled><i class="glyphicon glyphicon-file" style="font-size:15px;"></i> Add Human CSV</Button>
+<Button id="btn_csv" class="btn btn-primary pull-right new-item"><i class="glyphicon glyphicon-file" style="font-size:15px;"></i></Button>
 </div>
 <a href="../name/game" class="btn btn-info pull-right gamebutton"></span>Users words</a>
 <a href="#" class="btn btn-primary pull-right gamebutton">Admin words</a>
@@ -237,6 +240,17 @@ $(document).ready(function() {
         });
     });
 });
+
+
+$(document).ready(function() {
+    $('#btn_csv').click(function() {
+        $(".modal-body").load("/name/addCsv", function(responseTxt, statusTxt, xhr) {
+            $('.modal-title').text('Add Name Csv File');
+            $('#modalPopup').modal('show');
+        });
+    });
+});
+
 
 </script>
 

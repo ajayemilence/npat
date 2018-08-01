@@ -67,15 +67,26 @@ exports.DeleteRequest = function (url, token, callback) {
 // }
 
 
-exports.uploadFormRequest=function(url,/*methodType,*/ form, callback) {   
-    var options = { method: 'POST',
+exports.uploadFormRequest=function(url,methodType, form, callback) {
+console.log(form , "httttppppppppppppppppppp requessssssst");   
+    var options = { method: methodType,
     url: url,
-    headers: {'content-type': 'multipart/form-data;'  }, formData: form };
+     headers: {'content-type': 'multipart/form-data;'  }, formData: form };
+      //formData: form };
     request(options, function (error, response, body) {
+        console.log(error , "yaha tkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk hai");
         callback({error:error,body:JSON.parse(body),response:response});
     });
 }
 
+// exports.uploadFormRequest=function(url,/*methodType,*/ form, callback) {   
+//     var options = { method: 'POST',
+//     url: url,
+//     headers: {'content-type': 'multipart/form-data;'  }, formData: form };
+//     request(options, function (error, response, body) {
+//         callback({error:error,body:JSON.parse(body),response:response});
+//     });
+// }
 
 function getHeader(token){
     return {

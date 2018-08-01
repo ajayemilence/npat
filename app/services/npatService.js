@@ -149,3 +149,58 @@ exports.createPlant = function (req, callback) {
     callback(data.body)
   });
 }
+
+//================== add csv files =========================
+
+
+exports.addPlantCsv = function (req, callback) {
+  var data = req.body;
+  data.csvFile = req.body;
+  let url = format("{}adminPlant/csvsample", base_url);
+  httpService.uploadFormRequest(url,'POST',data, function (data) {
+    callback(data.body)
+  });
+}
+
+exports.addAnimalCsv = function (req, callback) {
+  var data = req.body;
+  data.csvFile = req.body;
+  let url = format("{}adminAnimal/csvsample", base_url);
+  httpService.uploadFormRequest(url,'POST',data, function (data) {
+    callback(data.body)
+  });
+}
+
+exports.addNameCsv = function (req, callback) {
+  var data = req.body;
+  data.csvFile = req.body;
+  let url = format("{}adminHuman/csvsample", base_url);
+  httpService.uploadFormRequest(url,'POST',data, function (data) {
+    callback(data.body)
+  });
+}
+
+
+exports.addPlaceCsv = function (req, callback) {
+  console.log("serviceeessss  here");
+  var data = req.body;
+  data.csvFile = req.body;
+  //console.log(data , "data");
+  let url = format("{}adminPlace/csvsample", base_url);
+  console.log(url , "urllllllllll");
+  httpService.uploadFormRequest(url,'POST',data, function (data) {
+    console.log(data , "dataaaaa");
+    callback(data.body)
+  });
+}
+
+exports.addThingCsv = function (req, callback) {
+  var data = req.body;
+  data.csvFile = req.body;
+  let url = format("{}adminThing/csvsample", base_url);
+  httpService.uploadFormRequest(url,'POST', data, function (data) {
+    callback(data.body)
+  });
+}
+
+
