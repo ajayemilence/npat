@@ -142,12 +142,22 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAllAnimals', (req, res) => {
-        adminAnimal.find({}, (err, names) => {
+        if(req.query.lastId == "" || req.query.lastId == undefined){
+        adminAnimal.find({}).sort({$natural : -1}).limit(2).exec((err, names) => {
             if (err) {
                 res.json({ success: 0, msg: "error occurred while retriving the animals" });
             }
             return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
         });
+        }
+        else {
+            adminAnimal.find({ _id : {$lt : req.query.lastId} } ).limit(15).exec((err, names) => {
+                if(err) {
+                    return res.json({success : 0 , msg : "error while retriving" , error : err});
+                }
+                return res.status(200).json({success : 1 , msg : "successfully" , data : names});
+            });
+        }
     });
 
     api.post('/upVote', (req, res) => {

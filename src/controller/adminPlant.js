@@ -110,13 +110,32 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAllplants', (req, res) => {
-        adminPlant.find({}, (err, names) => {
+        if(req.query.lastId == "" || req.query.lastId == undefined){
+        adminPlant.find({}).sort({$natural : -1}).limit(2).exec((err, names) => {
             if (err) {
                 res.json({ success: 0, msg: "error occurred while retriving the plants" });
             }
             return res.status(200).json({ success: 1, msg: "succesfully get all names ", data: names });
         });
+        }
+        else {
+            adminPlant.find({ _id : {$lt : req.query.lastId} } ).limit(15).exec((err, names) => {
+                if(err) {
+                    return res.json({success : 0 , msg : "error while retriving" , error : err});
+                }
+                return res.status(200).json({success : 1 , msg : "successfully" , data : names});
+            });
+        }
     });
+
+
+
+
+
+
+
+
+
 
 
     api.put('/updateplant/:id', (req, res) => {

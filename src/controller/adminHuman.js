@@ -150,13 +150,27 @@ app.use('/image', express.static(__dirname + '../uploads'));
 
 
     api.get('/getAllNames', (req, res) => {
-        adminHuman.find({}, (err, names) => {
+        if(req.query.lastId == "" || req.query.lastId == undefined) {
+        adminHuman.find({}).sort({$natural : -1}).limit(2).exec((err, names) => {
             if (err) {
                 res.json({ success: 0, msg: "error occurred while retriving the names of human" });
             }
             return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
         });
+    }
+    else {
+            adminHuman.find({ _id : {$lt : req.query.lastId} } ).limit(15).exec((err, names) => {
+                if(err) {
+                    return res.json({success : 0 , msg : "error while retriving" , error : err});
+                }
+                return res.status(200).json({success : 1 , msg : "successfully" , data : names});
+            });
+        }
     });
+
+
+    
+
 
     api.put('/updateHuman/:id', (req, res) => {
         adminHuman.findById(req.params.id, (err, human) => {

@@ -112,13 +112,28 @@ module.exports = ({ config, db }) => {
     //===========================================
 
     api.get('/getAllthings', (req, res) => {
-        adminThing.find({}, (err, names) => {
+        if(req.query.lastId == "" || req.query.lastId == undefined){
+        adminThing.find({}).sort({$natural : -1}).limit(2).exec((err, names) => {
             if (err) {
                 res.json({ success: 0, msg: "error occurred while retriving the things" });
             }
             return res.status(200).json({ success: 1, msg: "successfully get all names ", data: names });
         });
+        }
+        else {
+            adminThing.find({ _id : {$lt : req.query.lastId} } ).limit(15).exec((err, names) => {
+                if(err) {
+                    return res.json({success : 0 , msg : "error while retriving" , error : err});
+                }
+                return res.status(200).json({success : 1 , msg : "successfully" , data : names});
+            });
+        }
     });
+
+
+
+
+
 
 
     api.put('/updatething/:id', (req, res) => {
