@@ -12,7 +12,9 @@ import { MerchantAuthService } from './merchant-auth.service';
   styleUrls: ['./merchant-auth.component.css']
 })
 export class MerchantAuthComponent implements OnInit {
-
+  newNumber = '';
+  newPwd = '';
+  newEmail = '';
   showRegister = false;
   showLogin = true;
   postSubmit = false;
@@ -27,7 +29,9 @@ export class MerchantAuthComponent implements OnInit {
   lat;
   lng;
   place;
-
+  ErrorMsg;
+  showErrorMsg;
+  // validEmail = 'true';
   constructor(private router: Router,
               private route: ActivatedRoute,
               private localStorageService: LocalStorageService,
@@ -38,6 +42,15 @@ export class MerchantAuthComponent implements OnInit {
 
 
   ngOnInit() {
+    const newMerchant = JSON.parse(localStorage.getItem('new-merchant'));
+    if (newMerchant !== null) {
+        this.newNumber = newMerchant.phoneNumber;
+        this.newPwd = newMerchant.password;
+        this.newEmail = newMerchant.email;
+        this.showRegister = true;
+        this.showLogin = false;
+        this.postSubmit = false;
+    }
     if (this.searchElement !== undefined) {
       this.mapsAPILoader.load().then(
         () => {
@@ -77,7 +90,7 @@ loginPage() {
 
 // Sign In
 onSignin(form: NgForm) {
-  console.log('in signin', form);
+
   if (form.valid === false) {
     // console.log
     this.postSubmit = true;
@@ -85,9 +98,8 @@ onSignin(form: NgForm) {
   } else {
     this.merchantAuthService.signin(form.value).subscribe(
         (response) => {
-          console.log(response);
+
           // if response 2 verify account
-          console.log(response.message);
           if (response.success === 200) {
            localStorage.clear();
 
@@ -97,7 +109,13 @@ onSignin(form: NgForm) {
 
             form.reset();
             // navigating to profile
-            this.router.navigate(['/']);
+            if (response.data.documents === 0) {
+              this.router.navigate(['/verify']);
+              this.merchantAuthService.setAddDocRequest();
+            } else {
+              this.router.navigate(['/']);
+            }
+
           } else {
             this.showMessage = true;
             this.message = 'Invalid Email or Password';
@@ -123,31 +141,67 @@ onFileChange(file: FileList) {
 
 onSignup(form: NgForm) {
 
-  console.log(form, 'register');
-  if (form.valid === false) {
+
+  if (this.showErrorMsg ===  true) {
+    this.postSubmit = true;
+    this.error = 'Email Already Registered, Choose Another One! ';
+  } else if (form.valid === false) {
     // console.log
     this.postSubmit = true;
     this.error = 'Mandatory Parameter Missing';
+  } else {
+    this.localStorageService.set('new-merchant' , form.value);
+
+    const data = form.value.phoneNumber;
+    this.merchantAuthService.sendPin(data).subscribe(
+      (response) => {
+        console.log(response);
+          if (response.success === 200) {
+              localStorage.clear();
+              this.localStorageService.set('pin', response.data);
+              this.localStorageService.set('new-merchant' , form.value);
+              this.router.navigate(['/verify']);
+          } else if (response.output.payload.statusCode === 1102) {
+            this.postSubmit = true;
+            this.error = 'Phone Number already Registered, try with some another number. ';
+          } else {
+            console.log(response);
+            this.postSubmit = true;
+            this.error = 'Something went wrong, please try again later! ';
+          }
+      }, (error) => {
+          console.log(error);
+          this.postSubmit = true;
+          this.error = 'Something went wrong, please try again later! ';
+      }
+    );
+
   }
-  this.merchantAuthService.signup(form)
-  .subscribe(
-    (response) => {
-      console.log(response, 'response');
-    if (response.success === 200) {
-      this.postSubmit = false;
-      this.router.navigate(['/']);
-      form.reset();
-      this.displayImage = 'assets/images/profile-pic.png';
-    } else {
-      this.postSubmit = true;
-      this.error = response.output.payload.message;
-    }
-    },
-    (error) => {
-      console.log('error', error);
-    }
-  );
 }
+
+  onSearchEmail(searchValue: string ) {
+
+
+    // autocomplete
+     this.merchantAuthService.checkEmail(searchValue).subscribe(
+     (response) => {
+
+      if (response.success === 200 ) {
+        this.showErrorMsg = false;
+          // this.validEmail = 'true';
+      } else if (response.output.statusCode === 1102 &&
+        response.output.payload.message === 'This email is already registered. Please try logging in.' ) {
+          this.showErrorMsg = true;
+          this.ErrorMsg = 'Email Already Taken!';
+          // this.validEmail = 'false';
+      }
+
+     },
+     (error) => {
+       console.log(error);
+     }
+   );
+  }
 
 
 }

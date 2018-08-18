@@ -16,14 +16,17 @@ export class HomeComponent implements OnInit {
     this.router.navigate([this.router.url]);
     if (this.router.url === '/') {
       const user = JSON.parse(localStorage.getItem('user-data'));
-      console.log(user);
+
+      // location.reload();
       if (user !== null) {
         if (user.merchant_id !== undefined) {
+
           // this.merchant = true;
           this.router.navigate(['catalogue']);
         } else if (user.admin_id !== undefined) {
           // this.merchant = false;
-          this.router.navigate(['orders']);
+
+          this.router.navigate(['merchants']);
         }
       }
     }

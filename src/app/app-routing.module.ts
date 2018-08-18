@@ -15,6 +15,9 @@ import { MerchantAuthComponent } from './merchant-auth/merchant-auth.component';
 import { MerchantNewComponent } from './merchants/merchant-new/merchant-new.component';
 import { RequestComponent } from './request/request.component';
 import { MerchantCatelogueComponent } from './merchant-catelogue/merchant-catelogue.component';
+import { ProductRequestsComponent } from './request/product-requests/product-requests.component';
+import { VerificationComponent } from './verification/verification.component';
+import { VerifyMerchantComponent } from './verify-merchant/verify-merchant.component';
 
 const appRoutes: Routes = [
     { path: '',
@@ -31,7 +34,9 @@ const appRoutes: Routes = [
         { path: 'catalogue', component: CatalogueComponent},
         { path: 'catalogue/product/new', component: ProductEditComponent},
         { path: 'catalogue/product/edit', component: ProductEditComponent},
-        {path: 'requests', component: RequestComponent}
+        { path: 'requests', component: RequestComponent},
+        { path: 'requests/merchants', component: VerifyMerchantComponent},
+        { path: 'requests/products', component: ProductRequestsComponent},
     ]
     },
 
@@ -43,10 +48,13 @@ const appRoutes: Routes = [
     { path: 'merchant/auth',
     component: MerchantAuthComponent,
     },
+    { path: 'verify',
+    component: VerificationComponent,
+    },
     { path: '**', redirectTo: '/auth'} // wild card route
 ];
 @NgModule({
-   imports: [RouterModule.forRoot(appRoutes)],
+   imports: [RouterModule.forRoot(appRoutes, { useHash: true })],
    exports: [RouterModule]
 })
 export class AppRoutingModule {

@@ -1,0 +1,145 @@
+<div class="row merchantList" style="margin-top: 40px">
+  <div class="col-xs-5 col1 ">
+    <a
+      style="cursor: pointer;"
+      (click)="getMerchantDetail(i)"
+      *ngFor='let merchant of merchants; let i = index;'
+      class="list-group-item clearfix">
+    
+      <img
+      [src]="merchant.merchant_profile_pic ? 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/' + merchant.merchant_profile_pic : displayImage" 
+        class="w3-bar-item w3-circle col-xs-2" 
+        >
+    <div class="pull-left col-xs-6" style="margin-top: 5px; ">
+      <h4 class="list-group-item-heading">{{merchant.merchant_display_name}}</h4>
+      <h6 class="list-group-item-text">{{merchant.merchant_first_name}}</h6>
+    </div>
+    </a>
+    <a 
+    *ngIf=showviewmore
+    (click)=viewmore()
+    style="font-size: 12px; text-align: center;"><h4>viewmore</h4></a>
+  </div>
+
+
+  <div class="col-xs-8 " >
+    <div class="row col2" *ngIf="selectedMerchant !== undefined">
+      <div class="row" style="padding-left: 40px;">
+          <div class="row">
+            <div class="row col-xs-9" >
+              <h1 style="margin-top: 30px;">{{selectedMerchant.merchant_display_name}}</h1>
+              <h4 style="margin-top: 10px;">{{selectedMerchant.merchant_first_name}}</h4>
+              <!-- <h4 style="margin-top:20px;">{{selectedMerchant.merchant_address}}</h4> -->
+            </div>
+            <div class="row col-xs-3">
+                <button
+                (click)="verifyMerchant(selectedMerchant)"
+                class="btn btn-verify"
+                [disabled]="!DocumentsProvided"
+                >Verify</button>
+                <!-- <img
+                [src]="selectedMerchant.merchant_profile_pic ? 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/' + merchant.merchant_profile_pic : displayImage" 
+                class="selectedMerchantImage" 
+                > -->
+            </div>
+          </div>
+          <div class="row" *ngIf=" DocumentsProvided === false"><h4>No Documents Provided</h4></div>
+          <div class="row"  *ngIf=" DocumentsProvided === true">
+              <h4 class="verifyDetail"> <strong> License Number: {{selectedMerchant.Documents.merchant_licence_id}}</strong></h4>
+              <div class="row container-image">
+                  <img
+                  [src]="licenceImageOne" 
+                  class="selectedMerchantlicence col-xs-6" 
+                  (click)="enlargeImage(licenceImageOne, 'LicenceImage', myModal)"
+                  >
+                  <img
+                  [src]="licenceImageTwo " 
+                  class="selectedMerchantlicence col-xs-6"
+                  (click)="enlargeImage(licenceImageTwo, 'LicenceImage', myModal)" 
+                  >
+              </div>
+              
+
+              <h4 class="verifyDetail"><strong>PAN Number: {{selectedMerchant.Documents.merchant_pan_id}} </strong></h4>
+              <div class="row container-image ">
+                  <img
+                  [src]="PanImage" 
+                  class="selectedMerchantlicence col-xs-6" 
+                  (click)="enlargeImage(PanImage, 'PanImage', myModal)"
+                  >
+              </div>
+
+                <h4 class="verifyDetail"><strong>GST Number: {{selectedMerchant.Documents.merchant_gst_id}}</strong> </h4>
+                <div class="row container-image ">
+                    <img
+                    [src]="GSTImage" 
+                    class="selectedMerchantlicence col-xs-6" 
+                    (click)="enlargeImage(GSTImage, 'GSTImage', myModal)"
+                    >
+                </div>
+                
+                <div class="row">
+                    <h4 style="padding: 30px" class="verifyDetail"><strong> Additional Documents: </strong></h4>
+                    <div class="col-xs-3">
+                       
+                        <div class="row container-image ">
+                            <img
+                            [src]="addOne" 
+                            class="selectedMerchantlicence col-xs-6" 
+                            (click)="enlargeImage(addOne, 'Additional Documents', myModal)"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="row container-image ">
+                            <img
+                            [src]="addTwo" 
+                            class="selectedMerchantlicence col-xs-6" 
+                            (click)="enlargeImage(addTwo, 'Additional Documents', myModal)"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="row container-image ">
+                            <img
+                            [src]="addThree" 
+                            class="selectedMerchantlicence col-xs-6" 
+                            (click)="enlargeImage(addThree, 'Additional Documents', myModal)"
+                            >
+                        </div>
+                    </div>
+                    <div class="col-xs-3">
+                        <div class="row container-image ">
+                            <img
+                            [src]="addFour" 
+                            class="selectedMerchantlicence col-xs-6" 
+                            (click)="enlargeImage(addFour, 'Additional Documents', myModal)"
+                            >
+                        </div>
+                    </div>
+                  
+              </div>
+              
+          </div>
+          
+      </div>
+        
+      
+    </div>
+    
+      
+    
+  </div>
+</div>
+<ng-template #myModal style="color: transparent">
+    <div class="modal-header">
+        <img 
+        [src]="enlargeImageName" 
+        class="img-fluid" 
+        style="width:550px; height: 450px;"
+        alt=""/>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+</ng-template>

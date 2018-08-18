@@ -1,7 +1,7 @@
 <div class="row">
   <div
   style=" width: 80%;" 
-  class="col-xs-12 col-md-8 col-md-offset-1">
+  class="col-xs-12 ">
   
   <div class="row left" style="margin-top: 10px; margin-left: 5px;">
       <h2 
@@ -50,7 +50,7 @@
                   <td class="button"><button
                     class="btn btnReject"
                     (click)="requestStatus(super.super_category_id,0)"
-                    >Reject</button></td>
+                    >Delete</button></td>
                   <td class="button"><button
                     (click)="editCategory(request, super, template)"
                     class="btn btnEdit"
@@ -100,7 +100,7 @@
                 <td class="button"><button
                   class="btn btnReject"
                   (click)="requestStatus(super.category_id,0)"
-                  >Reject</button></td>
+                  >Delete</button></td>
                 <td class="button"><button
                   (click)="editCategory(request, super, template)"
                   class="btn btnEdit"
@@ -116,7 +116,10 @@
       <mat-accordion
          *ngIf="show === 3">
             <mat-expansion-panel *ngFor="let request of superCategoryRequests">
-              <mat-expansion-panel-header (click)="headerClicked()">
+              <mat-expansion-panel-header 
+              [collapsedHeight]="customCollapsedHeight" 
+              [expandedHeight]="customExpandedHeight"
+              (click)="headerClicked()">
                 <mat-panel-title>
                   {{request.merchant_first_name}}
                 </mat-panel-title>
@@ -149,7 +152,7 @@
                       <td class="button"><button
                         class="btn btnReject"
                         (click)=requestStatus(super.sub_category_id,0)
-                        >Reject</button></td>
+                        >Delete</button></td>
                       <td class="button"><button
                         (click)="editCategory(request, super, template)"
                         class="btn btnEdit"
@@ -163,6 +166,45 @@
         </mat-accordion>
           
       <!-- product accordion -->  
+      <div class="list-group" *ngIf="show === 4">
+          <a
+          style="cursor: pointer;"
+          (click)="getProductRequests(i)"
+          *ngFor='let merchant of merchantWithRequest; let i = index;'
+          class="list-group-item clearfix">
+        
+          <img
+          [src]="merchant.merchant_profile_pic ? 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/' + merchant.merchant_profile_pic : displayImage" 
+            class="w3-bar-item w3-circle col-xs-2" 
+            >
+        <div class="pull-left col-xs-4">
+          <h4 class="list-group-item-heading">{{merchant.merchant_display_name}}</h4>
+          <h6 class="list-group-item-text">{{merchant.merchant_first_name}}</h6>
+        </div>
+        </a>
+        <a 
+        *ngIf=showViewMore
+        (click)=viewmore()
+        class="col-xs-2 col-xs-offset-5"
+        style="font-size: 22px;
+        ">viewmore</a>
+        <!-- merchant_profile_pic -->
+        <!-- <button 
+        (click)="getProductRequests(i)"
+        *ngFor='let merchant of merchantWithRequest; let i = index;'
+        type="button" 
+        class="list-group-item listGroup">
+        <img [src]="displayImage" 
+        class="w3-bar-item w3-circle" 
+        style="width:85px">
+        <div class="w3-bar-item">
+          <span class="w3-large">{{merchant.merchant_first_name}}</span><br>
+          <span>Web Designer</span>
+        </div> 
+      
+      </button> -->
+      </div>
+
       <!-- <mat-accordion
              *ngIf="show === 4">
               <mat-expansion-panel *ngFor="let request of superCategoryRequests">

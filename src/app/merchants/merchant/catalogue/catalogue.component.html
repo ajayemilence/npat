@@ -1,5 +1,36 @@
-<div class="row">
-  <div class="col-xs-12 col-sm-12 ">
+<div
+    style="margin-top: 40px;"  
+    class="row alert alert-info col-xs-10" 
+    role="alert" 
+    *ngIf="!merchantVerified">
+  <h3>Vendor Verification</h3>
+  <p>
+  Nearr Team will reach you with in 24 working hours.</p>
+
+  <button 
+  (click)="clickOnceVerified()"
+  class="btn btn-info"> Click Here Once Verified</button>
+
+  <p>Didn't received a call in 24 hours, <a (click)="openVerifyModal(verifyModal)">Click here.</a></p>
+</div>
+
+<!-- upgrade plan -->
+<div
+    style="margin-top: 40px;"  
+    class="row alert alert-danger col-xs-10" 
+    role="alert" 
+    *ngIf="merchantFreeListing">
+  <h3>Free Listing</h3>
+  <p>List the store with some prominent offers.</p>
+  <button 
+  (click)="upgradePlanModal(upgradePlanTemplate)"
+  class="btn btn-danger">Upgrade Plan</button>
+
+</div>
+
+
+<div class="row" *ngIf="merchantVerified && !merchantFreeListing">
+  <div class="col-xs-12  ">
       <div class="row">
           <div class="row left" style="margin-top: 40px;">
               <h2>{{MerchantNameHeading}}</h2>
@@ -20,7 +51,7 @@
 </div>
 </div> -->
  
-<div id="main">
+<div id="main" class="col-xs-12">
   <div class="col1" >
     <div class="mainRow">
      <div class="heading" >
@@ -341,13 +372,13 @@
                             (click)="addCategoryModel(template2,super)"
                             *ngIf=" super.super_category_hasChild !== 2">
                             <mat-icon class="menuOption"> <i class="fa fa-plus right"></i></mat-icon>
-                            <!-- <i class="fa fa-plus right"></i> -->
                             <span>Category</span>
                             </button>
                             <button
                             class="menuOption"
                             mat-menu-item
-                            *ngIf="super.super_category_hasChild !== 1"
+                            (click)="addProductRoute()"
+                            *ngIf="super.super_category_hasChild !== 1 && mode !== 0"
                             routerLink = '/catalogue/product/new'>
                             <mat-icon class="menuOption"><i class="fa fa-plus right"></i></mat-icon>
                             <span>Product</span>
@@ -411,7 +442,8 @@
                       </button>
                       <button
                       mat-menu-item
-                      *ngIf="category.category_hasChild !== 1"
+                      (click)="addProductRoute()"
+                      *ngIf="category.category_hasChild !== 1 && mode !== 0"
                       routerLink = '/catalogue/product/new'>
                         <mat-icon><i class="fa fa-plus right"></i></mat-icon>
                         <span>Product</span>
@@ -472,19 +504,21 @@
           
                 </div>
                 <ul 
-                style="margin-left: -20px; margin-top: 10px"
+      
+                style="margin-left: -20px; margin-top: 20px"
                 *ngIf="i2 === subCollapsed">
                     <li 
                     style="cursor: pointer; margin: 10px;"
+                    (click)="childHeaderClicked(i)"
                     (click)="showProducts(sub)"
-                    *ngFor="let sub of category.Sub_Category"> 
+                    *ngFor="let sub of category.Sub_Category; let i = index"> 
                         {{ sub.sub_category_name }}
                         <div 
                         class="pull-right dropdown" 
                         style="float: right; margin-left: 160px; margin-top: -30px; margin-right: -10px;">
 
                         <button 
-                        style=" padding: 2px; margin-left: 3px;"
+                        style=" padding: 2px; margin-left: 3px; "
                         mat-icon-button [matMenuTriggerFor]="menu">
                             <mat-icon>more_vert</mat-icon>
                           </button>
@@ -562,39 +596,22 @@
           <div class="loader"></div>    
       </div>
        <div class="row col-xs-12 list" *ngIf="!productListLoading">
-         <div class="row" *ngIf="NoProductListToShow"></div>
-        <div *ngIf="!NoProductListToShow">
+         <!-- <div class="row" *ngIf="NoProductListToShow === true"><h1>LIst Not SHoqw</h1></div> -->
+        <!-- <div *ngIf="NoProductListToShow === false"> -->
+        <div>
+
             <a         
             style="cursor: default"   
             *ngFor="let product of products"
             class="list-group-item clearfix"
             >
+            
           <div class="pull-left">
             <h4
             (click)="showProduct(product)" 
             class="list-group-item-heading">{{ product.product_name }}</h4>
           </div>
           <div class="pull-right dropdown">
-              <!-- <button 
-                class="btn btn-rounded btnlist right dropdown-hover"
-              >
-              <i class="fa fa-ellipsis-v"></i>
-    
-              <ul class="dropdown-menu dropdown-hover-menu">
-                <li>
-                  <a 
-                  >Delete 
-                    <i class="fa fa-trash right"></i>
-                  </a></li>
-                <li><a href="/">Edit
-                    <i class="fa fa-pencil right"></i>
-                </a></li>
-                <li><a href="/">Disable
-                    <i class="fa fa-ban right"></i>
-                </a></li>
-              </ul>
-    
-              </button> -->
               <button mat-icon-button [matMenuTriggerFor]="menu">
                   <mat-icon>more_vert</mat-icon>
                 </button>
@@ -616,6 +633,12 @@
                 </mat-menu>
     
             </div>
+          </a>
+          <a *ngIf="showViewMore">
+              <p 
+              (click)="viewmoreProducts()"
+              class="styleviewmore"
+              >viewmore</p> 
           </a>
         </div>
        
@@ -640,10 +663,11 @@
           <div class="loader"></div>    
       </div>
       <div class="wrapper" *ngIf="!productDetailLoading">
-        <div class="row" *ngIf="NoProductToShow">
-        </div>
-        <div *ngIf="!NoProductToShow">
-          <img 
+        <!-- <div class="row" *ngIf="NoProductToShow">
+        </div> -->
+        <!-- <div *ngIf="!NoProductToShow"> -->
+        <div >
+          <!-- <img 
           [src]="productImage"
           alt="Product Image" 
           style="max-height:100px; max-width:100px; float: left; margin-right: 15px;" 
@@ -676,8 +700,87 @@
               <h6>No Varients / Add-ons Added</h6>
               <a>Add</a>
           </div>
-          <hr>
+          <hr> -->
+          <mat-card class="detail-card" *ngIf="showProductDetails">
 
+            <img 
+            class="image"
+            mat-card-image 
+            [src]="productImage" 
+            alt=""
+            style="padding: 20px; height: 300px; width: 350px; border-bottom: 1px solid #a7afba"
+            >
+            <mat-card-content>
+
+              <!-- <div class="row headingProduct">
+                <h3 class="col-xs-5">Product Name : </h3>
+                <h3 class="col-xs-7">{{productName}}</h3>
+              </div> -->
+              <!-- <div class="row headingProduct">
+                <h3 class="col-xs-5">Product Price : </h3>
+                <h3 class="col-xs-7">{{productPrice}}</h3>
+              </div> -->
+              <div class="row headingProduct">
+                <h3 class="col-xs-8" 
+                style="font-size: 30px; font-weight: bold">{{productName}} </h3>
+                <h3 class="col-xs-4"
+                style="font-size: 20px; margin-top: 25px;"
+                >Rs. {{productPrice}}</h3>
+              </div>
+              <div class="row headingProduct">
+                <!-- <h3 >Product Detail : </h3>
+                <textarea rows="3" cols="50" readonly>
+                  {{productDesc}}
+                </textarea> -->
+                <p style="padding: 10px;">{{productDesc}}</p>
+              </div>
+              <div class="row">
+                  <!-- <h3 class="col-xs-4" 
+                  style="font-size: 20px;">Status: </h3> -->
+                  <h2 class="col-xs-12 bg-danger"
+                  *ngIf="!productApproved"
+                  style="font-size: 20px; margin-top: 25px; color:red; text-align: center; background-color: rgb(252, 156, 156)"
+                  >Pending Approval</h2>
+                  <h2
+                  style="font-size: 20px; margin-top: 25px; color:green; text-align: center"
+                  *ngIf="productApproved"
+                  class="bg-success col-xs-12" >Approved</h2>
+                  <!-- <h4 
+                  *ngIf="!productApproved"
+                  class="bg-danger" style="color:red; text-align: center">Pending Approval</h4>
+                  <h4 
+                  *ngIf="productApproved"
+                  class="bg-success" style="color:green; text-align: center">Approved</h4> -->
+              </div>
+              <!-- <div class="row headingProduct">
+                  <h3 class="col-xs-5">Inventory : </h3>
+                  <h3 class="col-xs-7" *ngIf="singleQuantity">{{productPrice}}</h3>
+                  <div class="row showTable" *ngIf="!singleQuantity">
+                    <table class="table" >
+                        <thead>
+                            <tr>
+                            <th 
+                            *ngFor="let attribute of Heading; let i = index"
+                            class="table-name">{{attribute.product_spec_name}}</th>
+                            <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let row of InventoryTableEdit; let index  = index">
+                            <td *ngFor="let val of row.type">
+                              {{val.name}}
+                            </td>
+                            <td>{{row.quantity}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                  </div>
+                  
+                </div> -->
+      
+            </mat-card-content>
+          </mat-card>
+          
         </div>
 
 
@@ -931,7 +1034,7 @@
         ngModel
         (change)="onSuperCategoryChange($event.target.value)"
         >
-        <option disabled>--Select--</option>
+        <option value ="" >Choose a option</option>
             <option 
             selected
             *ngFor="let super of listSuperCategories; let i = index"
@@ -1077,3 +1180,66 @@
 </div>
 </ng-template> -->
 
+
+  <ng-template #verifyModal>
+      <div class="modal-header">
+        <h2 class="modal-title pull-left">Vendor Verification</h2>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <h4 style="font-size: 20px; text-align: center">Sorry For The Inconvinence</h4>
+        <h5 style="text-align: center">Please reach us at contact number.</h5>
+        <h5 style="font-size: 14px; text-align: center">Your account is under verification.</h5>
+        <button class="btn btn-default col-xs-4 col-xs-offset-4"   
+                style="font-size: 20px;">+919613524365 </button>
+      </div>
+      <div class="row" style="height: 60px;"></div>
+    </ng-template>
+
+<ng-template #upgradePlanTemplate>
+    <div class="modal-header">
+      <h3 class="modal-title pull-left">Plans</h3>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <!-- <button class="btn btn-primary login-btn" (click)="planSelected(1)" >Free Listing</button> -->
+          <button class="btn btn-primary login-btn" (click)="planSelected(2)" >Instore</button>
+          <button class="btn btn-primary login-btn" (click)="planSelected(3)" >Online</button>
+          <button class="btn btn-primary login-btn" (click)="planSelected(4)" >Online & Instore</button>
+      
+                <i 
+                (click)="planDetailModal(PlanDetailTemplate)"
+                matTooltip="Plans Information!"
+                matTooltipPosition = 'before'
+                class="fa fa-info-circle fa-3x my-float"></i>
+          
+    
+    </div>
+    <div class="row" style="height: 60px;"></div>
+
+</ng-template>
+
+
+
+<ng-template #PlanDetailTemplate>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Plan Detail(s)</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <!-- <h3>Free Listing</h3>
+        <p>List the store with some prominent offers.</p> -->
+        <h3 >Instore</h3>
+        <p>Register the store, list products, prominent offer of store (to be displayed in AR window), customer to purchase the product instore with some additional discount coming from nearr. On instore purchase, an sms should be triggered to the customer with an unique code which can be validated using seller app. </p>
+        <h3 >Online</h3>
+        <p>Register the store, list products, prominent offer of store (to be displayed in AR window), product will be dilvered to customer's doorstep.</p>
+    
+    </div>
+    <div class="row" style="height: 60px;"> </div>
+</ng-template>

@@ -1,5 +1,6 @@
 <div class="row">
-  <div class="col-xs-12 col-md-10 col-sm-10 col-sm-offset-1"
+    <!-- <div class="col-xs-12 col-md-10 col-sm-10 col-sm-offset-1" -->
+  <div class="col-xs-12 "
        style="margin-top:30px;
               width:90%">
     <div class="row list-inline">
@@ -21,24 +22,44 @@
         <table>
           <tr 
           class="container-inner ">
-            <th>Merchant Id</th>
-            <th>Store Name</th>
-            <th>Email</th>
-            <th>Address</th>
-            <th>Phone No.</th>
+            <th 
+            style="width: 5%"
+            >Merchant Id</th>
+            <th
+            style="width: 15%"
+            >Store Name</th>
+            <th
+            style="width: 20%"
+            >Email</th>
+            <th
+            style="width: 25%"
+            >Address</th>
+            <th
+            style="width: 15%"
+            >Phone No.</th>
+            <th
+            style="width: 15%"
+            >
+              Status
+            </th>
           </tr>
           <ng-container *ngIf="!isLoading">
               <tr 
               *ngFor="let merchant of merchants"
               routerLink="/merchants/merchant/info"
               (click)="info(merchant)"
+              style="cursor: pointer;"
               >
                 <td class="id">{{ merchant.merchant_id }}</td>
-                <td>{{ merchant.merchant_first_name}}</td>
+                <td>{{ merchant.merchant_display_name}}</td>
                 <td>{{merchant.merchant_email}}</td>
                 <td>{{merchant.merchant_address}}</td>
-                <td>{{merchant.merchant_phone_no}}</td>
-                
+                <td
+                style="padding-right: 5px"
+                >{{merchant.merchant_phone_no}}</td>
+                <td
+                style="padding-right: 5px"
+                >{{merchant.merchant_verification_status}}</td>
               </tr>
           </ng-container>
           
@@ -49,6 +70,7 @@
               class="paginator"
               [length]="length"
               [pageSize]="pageSize"
+              style="font-size: 16px;"
               (page)="pageEvent = changePage($event)">
       </mat-paginator>
 

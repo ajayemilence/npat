@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ElementRef, OnDestroy } from '@angular/core';
 import { CatalogueService } from '../catalogue.service';
 import { NgForm } from '@angular/forms';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
@@ -11,6 +11,7 @@ import { AngularFileUploaderComponent } from 'angular-file-uploader';
 import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { GlobalService } from '../../../../shared/global.service';
+import { LocalStorageService } from '../../../../shared/local-storage.service';
 
 declare var x;
 declare var y;
@@ -19,7 +20,9 @@ declare var y;
   templateUrl: './product-edit.component.html',
   styleUrls: ['./product-edit.component.css']
 })
-export class ProductEditComponent implements OnInit {
+export class ProductEditComponent implements OnInit, OnDestroy {
+  isLoading =  false;
+  submitFormStatus = false;
   // defaultGender = 'female';
 superCategories = [];
 categories = [];
@@ -31,6 +34,8 @@ selectedOption: string;
 productImages = [];
 filesIndex = [];
 modalRef: BsModalRef;
+
+deleteImages = [];
 
 row = [];
 editAttributeStatus = false;
@@ -116,20 +121,37 @@ ImageFive;
 
 ImagePath;
 displayImage = 'assets/images/upload.png';
+attributesArrayEdit = [];
 
 newImages = [];
+
+InventoryTableEdit = [];
+Heading = [];
+tempAttributeArray = [];
+ShowQuantityTable = false;
+
+EditQuantity = '';
+EditKeys = [];
+EditQuantityArray = [];
+EditQuantityIndexValue ;
+
+newAttributesAdded = [];
+noMoreImages = false;
+
+subscriptionStatus =  0;
+userData;
   constructor(private catalogueService: CatalogueService,
               private modalService: BsModalService,
               private productService: ProductService,
               private router: Router,
               public snackBar: MatSnackBar,
-              private globalService: GlobalService
+              private globalService: GlobalService,
+              private localStorageService: LocalStorageService
             ) { }
 
   ngOnInit() {
-    console.log(this.router.url, 'url');
+
     this.ImagePath = this.globalService.ImagePath;
-    console.log('-----------', this.ImagePath);
     this.catalogueService.getSuperCategory()
    .subscribe(
      (response) => {
@@ -137,7 +159,16 @@ newImages = [];
       if (response.success === 200) {
 
          // super categories
-         this.superCategories = response.data;
+         response.data.forEach(superCat => {
+            if (superCat.super_category_hasChild === 1) {
+                if (superCat.category.length > 0) {
+                  this.superCategories.push(superCat);
+                }
+            } else {
+              this.superCategories.push(superCat);
+            }
+         });
+        //  this.superCategories = response.data;
          this.defaultSuper = response.data[0].super_category_name;
 
          // categories
@@ -148,16 +179,34 @@ newImages = [];
          if (this.categories.length > 0) {
            this.subCategory = this.categories[0].Sub_Category;
          }
+         this.table = [];
 
+        this.userData = JSON.parse(localStorage.getItem('merchant-data'));
+
+        if (this.userData === null) {
+          this.userData = JSON.parse(localStorage.getItem('request-merchant'));
+
+        }
+
+        const subscription = this.userData.merchant_subscription;
+        if (subscription === 'ONLINE' || subscription === 'INSTORE') {
+            this.subscriptionStatus = 0;
+            this.defaultProductType = subscription.toLowerCase() ;
+        } else {
+          this.subscriptionStatus = 1;
+          this.defaultProductType = '' ;
+        }
         // if (this.router.url === '/catalogue/product/new' ) {
 
 
         // } else
          if (this.router.url === '/catalogue/product/edit' ) {
+          // loadin data
+          this.isLoading = true;
           this.EditProduct = this.productService.getProduct();
-          console.log(this.EditProduct);
+          console.log(this.EditProduct, '****');
           if (this.EditProduct === undefined) {
-            console.log('in if');
+
             const user = JSON.parse(localStorage.getItem('user-data'));
             if (user.admin_id !== undefined) {
               this.router.navigate(['/merchants/merchant/catalogue']);
@@ -166,22 +215,119 @@ newImages = [];
             }
           } else {
             this.EditProductMode = true;
-            console.log(response.data);
+
             this.defaultProductTax = this.EditProduct.product_tax;
             this.defaultProductSku = this.EditProduct.product_sku;
             this.defaultProductName = this.EditProduct.product_name;
             this.defaultProductDesc = this.EditProduct.product_description;
             // this.defaultProductMRP = this.EditProduct.product_tax;
-            this.defaultProductSellingPrice = this.EditProduct.pricing_array[0].product_pricing_price;
-            this.defaultProductType = this.EditProduct.product_type.toLowerCase();
+            this.defaultProductSellingPrice = (this.EditProduct.pricing_array === undefined) ?
+                this.EditProduct.product_pricing_price : this.EditProduct.pricing_array[0].product_pricing_price;
 
-             const EditProductImages = JSON.parse(this.EditProduct.product_image);
-             console.log(EditProductImages, 'images');
-           this.ImageOne = (EditProductImages[0] !== undefined) ? this.ImagePath + EditProductImages[0] : this.displayImage;
-           this.ImageTwo = (EditProductImages[1] !== undefined) ? this.ImagePath + EditProductImages[1] : this.displayImage;
-           this.ImageThree = (EditProductImages[2] !== undefined) ? this.ImagePath + EditProductImages[2] : this.displayImage;
-           this.ImageFour = (EditProductImages[3] !== undefined) ? this.ImagePath + EditProductImages[3] : this.displayImage;
-           this.ImageFive = (EditProductImages[4] !== undefined) ? this.ImagePath + EditProductImages[4] : this.displayImage;
+            if (this.subscriptionStatus === 1) {
+                this.defaultProductType = (this.EditProduct.product_type !== undefined) ? this.EditProduct.product_type.toLowerCase() : '';
+            }
+
+            // this.attributesArrayEdit
+
+
+            // Inventory table
+            if (this.EditProduct.pricing_array !== undefined && this.EditProduct.pricing_array.length > 0) {
+              if (this.EditProduct.pricing_array[0].product_spec.length > 0
+                  && this.EditProduct.pricing_array[0].product_inventory) {
+                    this.EditProduct.pricing_array[0].product_spec.forEach(spec => {
+                      const obj = {
+                        product_spec_name : spec.ProductSpecType.product_spec_name,
+                        product_spec_type_values : spec.ProductSpecType.product_spec_type_values.split(','),
+                        product_spec_id : spec.product_spec_id
+                      };
+                      this.Heading.push(obj);
+                    });
+
+
+                    this.Heading.sort(function(a, b) {
+                      return a.product_spec_id - b.product_spec_id;
+                    });
+
+                    // if (this.EditProduct.pricing_array[0].product_inventory.length > 0) {}
+                    this.EditProduct.pricing_array[0].product_inventory.forEach(inventory => {
+
+                        const rowTable = {
+                          quantity: inventory.product_inventory,
+                          type : inventory.product_spec_values.split(',')
+
+                        };
+                        rowTable.type.forEach(val => {
+                          const data = val.split('_');
+                            const quantity = {
+                                  id : data[0],
+                                  name : data[1]
+                            };
+                            this.tempAttributeArray.push(quantity);
+                        });
+                        if (this.Heading.length > this.tempAttributeArray.length) {
+                          this.Heading.forEach(attribute => {
+                              const indexOne = this.tempAttributeArray.findIndex(val => JSON.parse(val.id) === attribute.product_spec_id );
+                              if (indexOne < 0) {
+                                const obj = {
+                                  id : JSON.stringify(attribute.product_spec_id),
+                                  name : ''
+                                };
+                                this.tempAttributeArray.push(obj);
+                                // const indexTwo = this.Heading.findIndex
+                              }
+                          });
+                        }
+
+                        this.tempAttributeArray.sort(function(a, b) {
+                          return a.id - b.id;
+                        });
+
+                        const finalRow = {
+                            quantity : rowTable.quantity,
+                            type : this.tempAttributeArray,
+                            inventory_id : inventory.product_inventory_id
+                        };
+
+                        this.tempAttributeArray = [];
+                        this.InventoryTableEdit.push(finalRow);
+                    });
+                    // InventoryTableEdit
+                    this.table = [];
+                    const specArray = this.EditProduct.pricing_array[0].product_spec;
+
+                    specArray.forEach(row => {
+
+                      const obj = {
+                        id: row.product_spec_value_id,
+                        name: row.ProductSpecType.product_spec_name,
+                        values: row.product_spec_value.split(',')
+                      };
+                      this.table.push(obj);
+                    });
+
+              }
+
+            }
+
+
+
+            // Image part Edit
+            if (this.EditProduct.product_image === '' || this.EditProduct.product_image === undefined) {
+              this.ImageOne = this.displayImage;
+              this.ImageTwo = this.displayImage;
+              this.ImageThree = this.displayImage;
+              this.ImageFour = this.displayImage;
+              this.ImageFive = this.displayImage;
+            } else {
+              const EditProductImages = JSON.parse(this.EditProduct.product_image);
+               this.ImageOne = (EditProductImages[0] !== undefined) ? this.ImagePath + EditProductImages[0] : this.displayImage;
+               this.ImageTwo = (EditProductImages[1] !== undefined) ? this.ImagePath + EditProductImages[1] : this.displayImage;
+               this.ImageThree = (EditProductImages[2] !== undefined) ? this.ImagePath + EditProductImages[2] : this.displayImage;
+               this.ImageFour = (EditProductImages[3] !== undefined) ? this.ImagePath + EditProductImages[3] : this.displayImage;
+               this.ImageFive = (EditProductImages[4] !== undefined) ? this.ImagePath + EditProductImages[4] : this.displayImage;
+
+            }
 
             if (this.EditProduct.product_super_category !== '0') {
 
@@ -208,7 +354,6 @@ newImages = [];
               });
             } else if (this.EditProduct.product_sub_category_id !== '0') {
                // product from sub category
-               console.log('sub', this.EditProduct.product_sub_category_id);
 
               this.superCategories.forEach(superCategory => {
                   superCategory.category.forEach(singleCategory => {
@@ -281,8 +426,10 @@ newImages = [];
             // }
             this.defaultProductImages = this.EditProduct.product_tax;
             this.defaultProductAttributes = this.EditProduct.product_tax;
-            this.defaultAvailQuantity = this.EditProduct.product_tax;
+            this.defaultAvailQuantity = this.EditProduct.pricing_array[0].pricing_product_stock;
           }
+          // data loaded successfully
+          this.isLoading = false;
 
         }
 
@@ -322,7 +469,7 @@ newImages = [];
   }
 
 selectSuggestion(value) {
-  console.log(value, 'value');
+
   this.keyName = value.product_spec_name;
   this.attributeOptions = [];
   const values = value.product_spec_type_values;
@@ -337,7 +484,6 @@ selectSuggestion(value) {
 }
 
 onChange(superCategoryIndex) {
-    console.log(superCategoryIndex);
     if (superCategoryIndex !== '') {
       this.selectedSuper = this.superCategories[superCategoryIndex];
 
@@ -347,31 +493,26 @@ onChange(superCategoryIndex) {
       } else {
         this.subCategory = [];
       }
-      console.log(this.selectedSuper, 'super');
-      console.log(this.subCategory, 'sub');
-      console.log(this.categories, 'cate');
     }
 
 }
 
 onChangeCategory(categoryIndex) {
-  console.log(categoryIndex);
   if (categoryIndex !== '--Select--') {
   this.selectedCategory = this.categories[categoryIndex];
   this.subCategory = this.categories[categoryIndex].Sub_Category;
-  console.log(this.selectedCategory);
-  console.log(this.subCategory);
   }
 }
 
 // Register
 onFileChange(file: FileList) {
-  console.log(file);
-  this.productImages = [];
+
   this.filesIndex = _.range(file.length);
     _.each(this.filesIndex, (idx) => {
       if (idx < 5) {
+        // for editing
         this.newImages.push(file[idx]);
+        // for new
         this.productImages.push(file[idx]);
       }
     }
@@ -380,6 +521,7 @@ onFileChange(file: FileList) {
 
         if (this.ImageOne === this.displayImage ) {
             this.ImageOne = image;
+            this.newImages = [];
             const reader = new FileReader();
             reader.onload = (event: any) => {
               this.ImageOne = event.target.result;
@@ -387,23 +529,24 @@ onFileChange(file: FileList) {
              reader.readAsDataURL(this.ImageOne);
         } else if (this.ImageTwo === this.displayImage) {
             this.ImageTwo = image;
+            this.newImages = [];
             const reader = new FileReader();
             reader.onload = (event: any) => {
-              console.log('====', event.target.result);
+
               this.ImageTwo = event.target.result;
             };
              reader.readAsDataURL(this.ImageTwo);
         } else if (this.ImageThree === this.displayImage) {
             this.ImageThree = image;
+            this.newImages = [];
             const reader = new FileReader();
             reader.onload = (event: any) => {
-              console.log('-----', event.target.result.length);
-              console.log( event.target.result);
               this.ImageThree = event.target.result;
             };
            reader.readAsDataURL(this.ImageThree);
         } else if (this.ImageFour === this.displayImage) {
             this.ImageFour = image;
+            this.newImages = [];
             const reader = new FileReader();
             reader.onload = (event: any) => {
               this.ImageFour = event.target.result;
@@ -411,155 +554,327 @@ onFileChange(file: FileList) {
              reader.readAsDataURL(this.ImageFour);
         } else if (this.ImageFive === this.displayImage) {
           this.ImageFive = image;
+          this.newImages = [];
           const reader = new FileReader();
           reader.onload = (event: any) => {
             this.ImageFive = event.target.result;
           };
            reader.readAsDataURL(this.ImageFive);
+           this.noMoreImages = true;
+      } else {
+        this.noMoreImages = true;
+        if (this.router.url === '/catalogue/product/edi') {
+          this.snackBar.open('Only upto 5 Images can be uploaded', 'ok', {
+            duration: 5000,
+          });
+        }
+
+
       }
 
     });
-    console.log(this.productImages);
+
 }
 
+removeImage(index) {
+  this.noMoreImages = false;
+  const images = JSON.parse(this.EditProduct.product_image);
+  const imagePath = 'https://s3.us-east-2.amazonaws.com/swift-spar-local/delivery_app/';
+  if (index === 1) {
+    if (this.ImageOne.includes(imagePath)) {
+
+      this.deleteImages.push(images[0]);
+    }
+    this.ImageOne = this.displayImage;
+  } else if (index === 2) {
+    if (this.ImageTwo.includes(imagePath)) {
+      this.deleteImages.push(images[1]);
+    }
+    this.ImageTwo = this.displayImage;
+
+  } else if (index === 3) {
+    if (this.ImageThree.includes(imagePath)) {
+      this.deleteImages.push(images[2]);
+    }
+    this.ImageThree = this.displayImage;
+  } else if (index === 4) {
+    if (this.ImageFour.includes(imagePath)) {
+      this.deleteImages.push(images[3]);
+    }
+    this.ImageFour = this.displayImage;
+  } else if (index === 5) {
+    if (this.ImageFive.includes(imagePath)) {
+      this.deleteImages.push(images[4]);
+      // this.deleteImages.push(this.ImageFive);
+    }
+    this.ImageFive = this.displayImage;
+  }
 
 
+}
 
+submitForm() {
+  this.submitFormStatus = true;
+}
 addProductForm(form: NgForm, template: TemplateRef<any>) {
-    console.log(form);
+
+
+    if (this.submitFormStatus === true) {
     this.postSubmit = false;
+      if (this.EditProductMode === false) {
 
-    if (this.filesIndex.length > 5 ) {
+      if (this.filesIndex.length > 5 ) {
+          this.postSubmit = true;
+          this.error = 'Too many Images, Please Upload Only 5';
+
+      } else if (form.valid === false) {
         this.postSubmit = true;
-        this.error = 'Too many Images, Please Upload Only 5';
+        this.error = 'Mandatory Parameter Missing!';
+      } else if (form.valid === true) {
+        // --Select--
+        if (form.value.superCategory === '' ||
+            form.value.category === '' ||
+            form.value.subCategory === '') {
+              this.postSubmit = true;
+              this.error = 'Please Select Valid Categories';
+        } else {
 
-    } else if (form.valid === false) {
-      this.postSubmit = true;
-      this.error = 'Mandatory Parameter Missing!';
-    } else if (form.valid === true) {
-      // --Select--
-      if (form.value.superCategory === '' ||
-          form.value.category === '' ||
-          form.value.subCategory === '') {
-            this.postSubmit = true;
-            this.error = 'Please Select Valid Categories';
-      } else {
+        const attributes = [];
 
-      const attributes = [];
-
-      this.table.forEach(row => {
-          const obj = {
-              'product_spec_id': '',
-              'product_spec_name': row.name,
-              'product_spec_value': row.values.toString()
-          };
-          attributes.push(obj);
-      });
-
-      console.log(form);
-
-
-      const data = {
-          form : form,
-          images: this.productImages,
-          super: (form.value.superCategory === undefined) ? '' : this.superCategories[form.value.superCategory].super_category_id,
-          sub: (form.value.subCategory === undefined) ? '' :
-              // tslint:disable-next-line:max-line-length
-              this.superCategories[form.value.superCategory]
-              .category[form.value.category].Sub_Category[form.value.subCategory].sub_category_id,
-          cat: (form.value.category === undefined) ? '' :
-              this.superCategories[form.value.superCategory].category[form.value.category].category_id,
-          attribute: attributes
-      };
-      console.log('data', data);
+        this.table.forEach(row => {
+            const obj = {
+                'product_spec_id': '',
+                'product_spec_name': row.name,
+                'product_spec_value': row.values.toString()
+            };
+            attributes.push(obj);
+        });
 
 
 
-    //   const data = {
-    //     form : form,
-    //     images: this.productImages,
-    //     super: (form.value.superCategory === undefined) ?
-    //              '' : (this.superCategories.length === 0) ? '' :
-    //              this.superCategories[form.value.superCategory].super_category_id,
+        const data = {
+            form : form,
+            images: this.productImages,
+            super: (form.value.superCategory === undefined) ? '' : this.superCategories[form.value.superCategory].super_category_id,
+            sub: (form.value.subCategory === undefined) ? '' :
+                // tslint:disable-next-line:max-line-length
+                this.superCategories[form.value.superCategory]
+                .category[form.value.category].Sub_Category[form.value.subCategory].sub_category_id,
+            cat: (form.value.category === undefined) ? '' :
+                this.superCategories[form.value.superCategory].category[form.value.category].category_id,
+            attribute: attributes,
+            productType: (this.subscriptionStatus === 0) ? this.defaultProductType.toUpperCase() : form.value.productType.toUpperCase()
+        };
 
 
-    //     cat: (form.value.category === undefined) ? '' :
-    //     (this.superCategories[form.value.superCategory].category.length === 0 ) ? '' :
-    //     this.superCategories[form.value.superCategory].category[form.value.category].category_id,
-    //     attribute: attributes,
-    //     sub: (form.value.subCategory === undefined) ? '' :
-    //           (this.superCategories[form.value.superCategory].category.length === 0 ) ? '' :
-    //           // tslint:disable-next-line:max-line-length
-    //           this.superCategories[form.value.superCategory]
-    //         .category[form.value.category].Sub_Category[form.value.subCategory].sub_category_id,
 
-    // };
+      //   const data = {
+      //     form : form,
+      //     images: this.productImages,
+      //     super: (form.value.superCategory === undefined) ?
+      //              '' : (this.superCategories.length === 0) ? '' :
+      //              this.superCategories[form.value.superCategory].super_category_id,
 
-    // console.log('data', data);
-// -------------------------------
-    this.productService.addProduct(data)
-      .subscribe(
-        (response) => {
-         console.log(response, 'response');
-         if (response.success === 200) {
-           console.log(response.data);
-           form.reset();
-           if (response.data.product_spec.length > 0) {
+      //     cat: (form.value.category === undefined) ? '' :
+      //     (this.superCategories[form.value.superCategory].category.length === 0 ) ? '' :
+      //     this.superCategories[form.value.superCategory].category[form.value.category].category_id,
+      //     attribute: attributes,
+      //     sub: (form.value.subCategory === undefined) ? '' :
+      //           (this.superCategories[form.value.superCategory].category.length === 0 ) ? '' :
+      //           // tslint:disable-next-line:max-line-length
+      //           this.superCategories[form.value.superCategory]
+      //         .category[form.value.category].Sub_Category[form.value.subCategory].sub_category_id,
 
-            this.tempTable = [];
-            this.attributes = [];
-            this.tempAttribute = [...response.data.product_spec];
-            this.tempAttribute.forEach(attribute => {
-                attribute.product_spec_value.split(',');
-                const singleAttribute = {
-                    'product_spec_value_created_on' : attribute.product_spec_value_created_on,
-                    'product_spec_value_id' : attribute.product_spec_value_id,
-                    'product_pricing_id' : attribute.product_pricing_id,
-                    'product_spec_value' : attribute.product_spec_value.split(','),
-                    'merchant_id' : attribute.merchant_id,
-                    'product_spec_id' : attribute.product_spec_id,
-                    'product_spec_name': attribute.product_spec_name,
-                    'super_category_id': attribute.super_category_id,
-                    'category_id': attribute.category_id,
-                    'sub_category_id' : attribute.sub_category_id,
-                    'selectedValue' : ''
-                };
-                this.attributes.push(singleAttribute);
+      // };
 
-              });
-              this.modalRef = this.modalService.show(template, {
-                backdrop: 'static'
-              });
+      // console.log('data', data);
+      this.isLoading = true;
+      this.productService.addProduct(data)
+        .subscribe(
+          (response) => {
 
-              const user = JSON.parse(localStorage.getItem('user-data'));
-               if (user.merchant_id !== undefined) {
-                this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
-                  duration: 5000,
+           if (response.success === 200) {
+            //  const Product = {
+            //    super : data.super,
+            //    cat : data.cat,
+            //    sub : data.sub
+            //  };
+            //  this.localStorageService.set('Product' , Product);
+             this.isLoading = false;
+
+             form.reset();
+             if (response.data.product_spec.length > 0) {
+              this.defaultquantity = '';
+              this.tempTable = [];
+              this.attributes = [];
+              this.tempAttribute = [...response.data.product_spec];
+              this.tempAttribute.forEach(attribute => {
+                  attribute.product_spec_value.split(',');
+                  const singleAttribute = {
+                      'product_spec_value_created_on' : attribute.product_spec_value_created_on,
+                      'product_spec_value_id' : attribute.product_spec_value_id,
+                      'product_pricing_id' : attribute.product_pricing_id,
+                      'product_spec_value' : attribute.product_spec_value.split(','),
+                      'merchant_id' : attribute.merchant_id,
+                      'product_spec_id' : attribute.product_spec_id,
+                      'product_spec_name': attribute.product_spec_name,
+                      'super_category_id': attribute.super_category_id,
+                      'category_id': attribute.category_id,
+                      'sub_category_id' : attribute.sub_category_id,
+                      'selectedValue' : ''
+                  };
+                  this.attributes.push(singleAttribute);
+
                 });
-               }
+                this.modalRef = this.modalService.show(template, {
+                  backdrop: 'static'
+                });
+
+                const user = JSON.parse(localStorage.getItem('user-data'));
+                 if (user.merchant_id !== undefined) {
+                  this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
+                    duration: 5000,
+                  });
+                 }
+
+             } else {
+                const user = JSON.parse(localStorage.getItem('user-data'));
+                if (user.merchant_id !== undefined) {
+                 this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
+                   duration: 5000,
+                 });
+                }
+                const merchant = JSON.parse(localStorage.getItem('user-data'));
+                if (merchant.merchant_id !== null) {
+                  this.router.navigate(['/catalogue']);
+                } else if (merchant.admin_id !== null) {
+                  this.router.navigate(['/merchants/merchant/catalogue']);
+                }
+
+             }
 
            } else {
-              const user = JSON.parse(localStorage.getItem('user-data'));
-              if (user.merchant_id !== undefined) {
-               this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
-                 duration: 5000,
-               });
-              }
-              this.router.navigate(['/catalogue']);
+             // this.postSubmit = true;
+             // this.error = response.output.payload.message;
+             console.log(response.output.payload.message);
+             this.snackBar.open('Somethig went wrong, please try again!', 'Dismiss', {
+                duration: 5000,
+             });
            }
-
-         } else {
-           // this.postSubmit = true;
-           // this.error = response.output.payload.message;
-         }
-        },
-        (error) => {
-          console.log('error', error);
+          },
+          (error) => {
+            console.log('error', error);
+            this.snackBar.open('Somethig went wrong, please try again!', 'Dismiss', {
+                duration: 5000,
+            });
+          }
+        );
         }
-      );
+      }
+    } else {
+        // edit Mode
+
+
+
+        const images = [];
+
+        if (this.ImageOne !== this.displayImage) {
+            images.push(this.ImageOne);
+        } else if (this.ImageTwo !== this.displayImage) {
+            images.push(this.ImageTwo);
+        } else if (this.ImageTwo !== this.displayImage) {
+          images.push(this.ImageTwo);
+        } else if (this.ImageThree !== this.displayImage) {
+            images.push(this.ImageThree);
+        } else if (this.ImageFour !== this.displayImage) {
+          images.push(this.ImageFour);
+        } else if (this.ImageFive !== this.displayImage) {
+          images.push(this.ImageFive);
+        }
+
+        if (form.valid === false) {
+          this.postSubmit = true;
+          this.error = 'Mandatory Parameter Missing!';
+        } else if (form.valid === true) {
+          // --Select--
+          if (form.value.superCategory === '' ||
+              form.value.category === '' ||
+              form.value.subCategory === '') {
+                this.postSubmit = true;
+                this.error = 'Please Select Valid Categories';
+          } else {
+
+          const attributes = [];
+
+          this.table.forEach(row => {
+              const obj = {
+                  'product_spec_id': '',
+                  'product_spec_name': row.name,
+                  'product_spec_value': row.values.toString()
+              };
+              attributes.push(obj);
+          });
+
+
+          const data = {
+              productId : this.EditProduct.product_id,
+              form : form,
+              images: this.productImages,
+              super: (form.value.superCategory === undefined) ? '' : this.superCategories[form.value.superCategory].super_category_id,
+              sub: (form.value.subCategory === undefined) ? '' :
+                  // tslint:disable-next-line:max-line-length
+                  this.superCategories[form.value.superCategory]
+                  .category[form.value.category].Sub_Category[form.value.subCategory].sub_category_id,
+              cat: (form.value.category === undefined) ? '' :
+                  this.superCategories[form.value.superCategory].category[form.value.category].category_id,
+              attribute: attributes,
+              product : this.EditProduct,
+              deleteImages : this.deleteImages.toString(),
+              productType: (this.subscriptionStatus === 0) ? this.defaultProductType.toUpperCase() : form.value.productType.toUpperCase()
+          };
+
+          this.isLoading = true;
+          this.productService.editProduct(data).subscribe(
+            (response) => {
+
+              if (response.success === 200) {
+                this.EditProduct = undefined;
+                this.isLoading = false;
+                const requestMerchant = JSON.parse(localStorage.getItem('request-merchant'));
+                const user = JSON.parse(localStorage.getItem('user-data'));
+                const merchant = JSON.parse(localStorage.getItem('merchant-data'));
+                if (requestMerchant !== null) {
+                  this.router.navigate(['/requests']);
+                } else if (user.merchant_id !== undefined) {
+                    this.router.navigate(['/catalogue']);
+                } else  {
+                    this.router.navigate(['/merchants/merchant/catalogue']);
+                }
+
+              } else {
+                console.log(response.output.payload);
+                this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
+                  duration: 5000,
+                });
+
+                const requestMerchant = JSON.parse(localStorage.getItem('request-merchant'));
+                if (requestMerchant !== null) {
+                  this.router.navigate(['/requests']);
+                }
+              }
+            },
+            (error) => {
+              console.log(error);
+              this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
+                duration: 5000,
+              });
+            }
+          );
+        }
       }
     }
   }
+}
 
   resetForm(form: NgForm) {
     form.reset();
@@ -606,55 +921,263 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
   addAttributeForm() {
     const showValues = [];
-    console.log(this.keyName);
-    this.valueOption.forEach(value => {
-      if (value.checked === true) {
-        showValues.push(value.val);
-      }
-    });
 
-    if ( this.editAttributeStatus === true) {
-      const index = this.table.findIndex(val => val.name === this.keyName);
-      this.table[index].name = this.keyName;
-      this.table[index].values = showValues;
+
+    if (this.EditProductMode === true) {
+
+      if ( this.editAttributeStatus === true) {
+        const attribute = this.EditProduct.pricing_array[0].product_spec;
+        const index = attribute.findIndex(val => val.ProductSpecType.product_spec_name === this.keyName );
+        const values = [];
+          this.valueOption.forEach(val => {
+             if (val.checked === true) {
+               values.push(val.val);
+             }
+          });
+          const data = {
+            valueId : attribute[index].product_spec_value_id,
+            specId : attribute[index].ProductSpecType.product_spec_id,
+            value : values
+          };
+          this.productService.editAttribute(data).subscribe(
+            (response) => {
+
+              if (response.success === 200) {
+                const indexTable = this.table.findIndex( row => row.name === this.keyName);
+
+                // const finalValues = [];
+                this.table[indexTable].values = values;
+
+                this.snackBar.open('Edited Attribute Successfully!', 'Dismiss', {
+                  duration: 5000,
+                });
+                // reseting values
+                this.keyName = '';
+                this.valueOption = [];
+                this.modalRef.hide();
+                this.fruits = [];
+              } else {
+                this.snackBar.open('Failed to edit Attributes, please try again!', 'Dismiss', {
+                  duration: 5000,
+                });
+              }
+            },
+            (error) => {
+              console.log(error);
+              this.snackBar.open('Failed to edit Attributes, please try again!', 'Dismiss', {
+                duration: 5000,
+              });
+            }
+          );
+
+      } else {
+
+        this.valueOption.forEach(value => {
+          if (value.checked === true) {
+            showValues.push(value.val);
+          }
+        });
+
+       const obj = {
+          'product_spec_id': '',
+          'product_spec_name': this.keyName,
+          'product_spec_value': showValues.toString()
+        };
+
+        const attributes = [];
+        attributes.push(obj);
+
+        const data = {
+          attribute : attributes,
+          product_pricing_id: this.EditProduct.pricing_array[0].product_pricing_id,
+          product_sub_category_id: this.EditProduct.product_sub_category_id,
+          product_category:  this.EditProduct.product_category,
+          product_super_category: this.EditProduct.product_super_category
+        };
+
+        this.productService.addAttribute(data).subscribe(
+          (response) => {
+
+            if (response.success === 200 ) {
+
+
+                    if ( this.editAttributeStatus === true) {
+                      const index = this.table.findIndex(val => val.name === this.keyName);
+                      this.table[index].name = this.keyName;
+                      this.table[index].values = showValues;
+                    } else {
+                      this.table.push({
+                        'name': this.keyName,
+                        'values': showValues,
+                        // 'data' : this.fruits
+                      });
+                    }
+
+
+                  // reseting values
+                  this.keyName = '';
+                  this.valueOption = [];
+                  this.modalRef.hide();
+                  this.fruits = [];
+
+            // adding it to inventory table
+
+
+
+              response.data.forEach(attribute => {
+                const singleAttribute = {
+                    'product_spec_value_created_on' : attribute.product_spec_value_created_on,
+                    'product_spec_value_id' : attribute.product_spec_value_id,
+                    'product_pricing_id' : attribute.product_pricing_id,
+                    'product_spec_value' : attribute.product_spec_value,
+                    'merchant_id' : attribute.merchant_id,
+                    'product_spec_id' : attribute.product_spec_id,
+                    'product_spec_name': attribute.product_spec_name,
+                    'super_category_id': attribute.super_category_id,
+                    'category_id': attribute.category_id,
+                    'sub_category_id' : attribute.sub_category_id,
+                    'selectedValue' : ''
+                };
+                this.newAttributesAdded.push(singleAttribute);
+              });
+
+
+
+            // Adding data to Heading Array
+
+            response.data.forEach(spec => {
+
+                const objNew = {
+                  product_spec_name : spec.product_spec_name,
+                  product_spec_type_values : spec.product_spec_value.split(','),
+                  product_spec_id : spec.product_spec_id
+                };
+                this.Heading.push(objNew);
+            });
+
+
+              this.Heading.sort(function(a, b) {
+                return a.product_spec_id - b.product_spec_id;
+              });
+            const newIndex = this.Heading.findIndex(oneHeading =>
+                        JSON.parse(oneHeading.product_spec_id) === JSON.parse(response.data[0].product_spec_id) );
+
+
+              if (this.InventoryTableEdit.length > 0) {
+                  this.InventoryTableEdit.forEach(row => {
+
+                      const newObj = {
+                            id : JSON.stringify(response.data[0].product_spec_id),
+                            name : ''
+                      };
+                      row.type.splice(newIndex, 0 , newObj);
+                      // row.type.push(newObj);
+                  });
+              }
+
+            } else {
+              console.log(response.output.payload);
+              // reseting values
+              this.keyName = '';
+              this.valueOption = [];
+              this.modalRef.hide();
+              this.fruits = [];
+              this.snackBar.open('Failed to add Attributes, please try again!', 'Dismiss', {
+                duration: 5000,
+              });
+            }
+
+          },
+          (error) => {
+            console.log(error);
+            // reseting values
+            this.keyName = '';
+            this.valueOption = [];
+            this.modalRef.hide();
+            this.fruits = [];
+            this.snackBar.open('Failed to add Attributes, please try again!', 'Dismiss', {
+              duration: 5000,
+            });
+          }
+        );
+      }
+
+
+
     } else {
-      this.table.push({
-        'name': this.keyName,
-        'values': showValues,
-        // 'data' : this.fruits
+
+      this.valueOption.forEach(value => {
+        if (value.checked === true) {
+          showValues.push(value.val);
+        }
       });
+
+      if ( this.editAttributeStatus === true) {
+        const index = this.table.findIndex(val => val.name === this.keyName);
+        this.table[index].name = this.keyName;
+        this.table[index].values = showValues;
+      } else {
+        this.table.push({
+          'name': this.keyName,
+          'values': showValues,
+          // 'data' : this.fruits
+        });
+      }
+
+
+        // reseting values
+        this.keyName = '';
+        this.valueOption = [];
+        this.modalRef.hide();
+        this.fruits = [];
     }
 
-    this.keyName = '';
-    this.valueOption = [];
-    this.modalRef.hide();
-    this.fruits = [];
   }
 
 
-  newElement() {
-    const obj = {
-      val: this.addNewValue,
-      checked :  true
-    };
-    this.valueOption.push(obj);
-    this.addNewValue = '';
-
+  newElement(val) {
+    if (val !== '') {
+      const obj = {
+        val: this.addNewValue,
+        checked :  true
+      };
+      this.valueOption.push(obj);
+      this.addNewValue = '';
+    }
   }
 
 
   uncheck(index) {
-    console.log(index);
-    console.log(this.valueOption[index]);
+
     this.valueOption[index].checked = !this.valueOption[index].checked;
-    console.log(this.valueOption[index]);
+
   }
 
   // delete single attribute
   deleteAttribute(index) {
-    console.log(index);
-    console.log(this.table[index]);
-    this.table.splice(index, 1);
+
+
+    // this.table.splice(index, 1);
+    this.productService.deleteAttribute(this.table[index].id).subscribe(
+      (response) => {
+          if (response.success === 200) {
+            this.table.splice(index, 1);
+            this.snackBar.open('Attribute Deleted Successfully!', 'Dismiss', {
+              duration: 5000,
+            });
+          } else {
+            console.log(response);
+            this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
+              duration: 5000,
+            });
+          }
+      }, (error) => {
+          console.log(error);
+          this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
+            duration: 5000,
+          });
+      }
+    );
   }
 
   // edit single attribute
@@ -662,7 +1185,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template, {
       backdrop: 'static'
    });
-    console.log(this.table);
+
     this.editAttributeStatus = true;
     this.keyName = this.table[index].name;
     this.table[index].values.forEach(val => {
@@ -682,23 +1205,21 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
   }
 
   addQuantityForm(form: NgForm) {
-    console.log(form.value.quantity, 'quantity');
+
     if (form.valid === true ) {
       this.quantityError = false;
       const array = [];
-      console.log('editMode' , this.editQuantityStatus);
-      if (this.editQuantityStatus === true ) {
-          console.log(this.attributes);
-          console.log(this.tempTable[this.editQuantityIndex]);
 
+      if (this.editQuantityStatus === true ) {
+          // const index = this.attributes.findIndex(val => val.selectedValue !== '');
+          const index = this.attributes.findIndex(val => val.selectedValue === '');
+          // if (index > -1) {
+          if (index < 0) {
           this.attributes.forEach(attribute => {
             if (attribute.selectedValue !== '') {
-              console.log('changed');
               const currentRow = this.tempTable[this.editQuantityIndex];
-              console.log(currentRow);
               currentRow.options.forEach (row => {
                    if (attribute.product_spec_id === row.product_spec_id) {
-                     console.log(row.selectedItem, 'selected', attribute.selectedItem );
                      row.selectedItem = attribute.selectedValue;
                    }
               });
@@ -708,29 +1229,40 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
           this.tempTable[this.editQuantityIndex].quantity = form.value.quantity;
 
-          // this.tempTable.splice(this.editQuantityIndex, 1);
-          // this.tempTable.splice(this.editQuantityIndex , 0, editQuantity);
           this.editQuantityStatus = false;
           form.reset();
           this.editQuantityIndex = '';
+        } else {
+          this.quantityError = true;
+          this.quantityErrorMessage = 'Choose all attribute';
+        }
       } else {
+        // val => val.name === this.keyName
+        // const index = this.attributes.findIndex(val => val.selectedValue !== '');
+        const index = this.attributes.findIndex(val => val.selectedValue === '');
+        if (index < 0) {
           this.attributes.forEach(attribute => {
-              const arry2 = {
-                selectedItem : attribute.selectedValue,
-                product_spec_id : attribute.product_spec_id,
-                product_spec_name : attribute.product_spec_name,
-                product_pricing_id : attribute.product_pricing_id
+            const arry2 = {
+              selectedItem : attribute.selectedValue,
+              product_spec_id : attribute.product_spec_id,
+              product_spec_name : attribute.product_spec_name,
+              product_pricing_id : attribute.product_pricing_id
               };
               array.push(arry2);
               attribute.selectedValue = '';
           });
 
-          const currentRow = {
-            options : array,
-            quantity : form.value.quantity
-          };
-          this.tempTable.push(currentRow);
-          form.reset();
+            const currentRow = {
+              options : array,
+              quantity : form.value.quantity
+            };
+            this.tempTable.push(currentRow);
+            form.reset();
+        } else {
+          this.quantityError = true;
+          this.quantityErrorMessage = 'Choose all attribute';
+        }
+
       }
 
     } else {
@@ -787,7 +1319,6 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
   // edit Quantity
   editQuantity(index) {
-    console.log(this.tempTable[index]);
     // this.attributes
     this.editQuantityStatus = true;
     this.defaultquantity = this.tempTable[index].quantity;
@@ -822,13 +1353,223 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
           this.attributes = [];
           this.defaultquantity = '';
           this.modalRef.hide();
-          this.router.navigate(['/merchants/merchant/catalogue']);
+          const user = JSON.parse(localStorage.getItem('user-data'));
+          if (this.EditProductMode === true) {
+            // Heading // InventoryTableEdit
+                // this.EditProductMode = false;
+
+              response.data.forEach(quantity => {
+                  const rowTable = {
+                    quantity: quantity.product_inventory,
+                    type : quantity.product_spec_values.split(',')
+
+                  };
+                  rowTable.type.forEach(val => {
+                    const data = val.split('_');
+                      const saveQuantity = {
+                            id : data[0],
+                            name : data[1]
+                      };
+                      this.tempAttributeArray.push(saveQuantity);
+                  });
+                  this.tempAttributeArray.sort(function(a, b) {
+                    return a.id - b.id;
+                  });
+                  const finalRow = {
+                      quantity : rowTable.quantity,
+                      type : this.tempAttributeArray
+                  };
+                  this.tempAttributeArray = [];
+                  this.InventoryTableEdit.push(finalRow);
+              });
+
+
+
+              this.router.navigate(['/catalogue/product/edit']);
+          } else {
+              if (user.merchant_id !== undefined) {
+                this.router.navigate(['/catalogue']);
+                this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
+                  duration: 5000,
+                });
+              } else if (user.admin_id !== undefined) {
+                this.router.navigate(['/merchants/merchant/catalogue']);
+              }
+          }
+
+        } else {
+          console.log(response);
+          this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
+            duration: 5000,
+          });
         }
       },
       (error) => {
         console.log(error);
+        this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
+          duration: 5000,
+        });
       }
     );
+  }
+
+
+
+  // Edit Quantity
+  deleteQuantityEdit (index) {
+    this.productService.deleteInventory(this.InventoryTableEdit[index].inventory_id).subscribe(
+      (response) => {
+        if (response.success === 200) {
+          this.InventoryTableEdit.splice(index, 1);
+          this.snackBar.open('Inventory Deleted Successfully!', 'Dismiss', {
+            duration: 5000,
+          });
+        } else {
+            console.log(response);
+            this.snackBar.open('Something went wrong please try again', 'Dismiss', {
+              duration: 5000,
+            });
+        }
+
+      }, (error) => {
+        console.log(error);
+        this.snackBar.open('Something went wrong please try again', 'Dismiss', {
+          duration: 5000,
+        });
+      }
+    );
+  }
+
+  editQuantityEdit(index, template: TemplateRef<any> ) {
+    this.EditQuantityIndexValue = index;
+    this.modalRef = this.modalService.show(template, {
+      backdrop: 'static'
+   });
+    this.EditQuantityArray = [];
+    const key = [];
+    this.InventoryTableEdit[index].type.forEach(val => {
+      key.push(val.name);
+    });
+    this.Heading.forEach(val => {
+      const array = this.InventoryTableEdit[index].type;
+      const indexVal = array.findIndex
+      (value => JSON.parse(value.id) === JSON.parse(val.product_spec_id));
+
+      const obj = {
+        product_spec_id : val.product_spec_id,
+        product_spec_name: val.product_spec_name,
+        selectedVal : this.InventoryTableEdit[index].type[indexVal].name
+      };
+      this.EditQuantityArray.push(obj);
+
+    });
+   this.EditQuantity = this.InventoryTableEdit[index].quantity;
+
+  }
+
+
+  editQuantityForm(form: NgForm) {
+
+      const value =  [];
+      const inventory = this.InventoryTableEdit[this.EditQuantityIndexValue];
+      inventory.type.forEach(val => {
+        const string = val.id + '_' + val.name;
+        value.push(string);
+      });
+      const actual = this.EditProduct.pricing_array[0].product_inventory;
+      const index = actual.findIndex(val => val.product_inventory_id === inventory.inventory_id);
+      // const index2 = actual.findIndex(val => val.product_spec_values === value.toString());
+
+      if (index < 0) {
+        this.snackBar.open('Something went wrong please try again', 'Dismiss', {
+          duration: 5000,
+        });
+      } else {
+          const data = {
+            id : actual[index].product_inventory_id,
+            inventory : inventory.quantity,
+            value : actual[index].product_spec_values
+          };
+
+          this.productService.editInventory(data).subscribe(
+            (response) => {
+              if (response.success === 200) {
+                this.snackBar.open('Quantity Updated successfully!', 'Dismiss', {
+                  duration: 5000,
+                });
+              } else {
+                this.snackBar.open('Something went wrong please try again', 'Dismiss', {
+                  duration: 5000,
+                });
+              }
+          }, (error) => {
+              console.log(error);
+              this.snackBar.open('Something went wrong please try again', 'Dismiss', {
+                duration: 5000,
+              });
+          });
+          this.EditQuantityArray = [];
+          this.InventoryTableEdit[this.EditQuantityIndexValue].quantity = form.value.quantity;
+          this.EditQuantityIndexValue = undefined;
+          form.reset();
+          this.EditQuantity = undefined;
+          this.modalRef.hide();
+
+      }
+
+
+
+
+  }
+
+  // open qunatity modal when adding only quantity
+  addQuantityModal(template) {
+    this.defaultquantity = '';
+    this.modalRef = this.modalService.show(template, {
+      backdrop: 'static'
+    });
+    // use when going back
+    this.tempTable = [];
+    this.attributes = [];
+    this.tempAttribute = [...this.EditProduct.pricing_array[0].product_spec, ...this.newAttributesAdded];
+    this.tempAttribute.forEach(attribute => {
+        attribute.product_spec_value.split(',');
+        const singleAttribute = {
+            'product_spec_value_created_on' : attribute.product_spec_value_created_on,
+            'product_spec_value_id' : attribute.product_spec_value_id,
+            'product_pricing_id' : attribute.product_pricing_id,
+            'product_spec_value' : attribute.product_spec_value.split(','),
+            'merchant_id' : attribute.merchant_id,
+            'product_spec_id' : attribute.product_spec_id,
+            'product_spec_name': (attribute.ProductSpecType === undefined)
+                                  ? attribute.product_spec_name : attribute.ProductSpecType.product_spec_name,
+            'super_category_id': (attribute.ProductSpecType === undefined)
+                                  ? attribute.super_category_id : attribute.ProductSpecType.super_category_id,
+            'category_id':  (attribute.ProductSpecType === undefined)
+                            ? attribute.category_id : attribute.ProductSpecType.category_id,
+            'sub_category_id' : (attribute.ProductSpecType === undefined)
+                              ? attribute.sub_category_id : attribute.ProductSpecType.sub_category_id,
+            'selectedValue' : ''
+        };
+        this.attributes.push(singleAttribute);
+
+      });
+
+  }
+
+  ngOnDestroy() {
+    this.tempTable = [];
+    this.attributes = [];
+  }
+
+  cancelInventory () {
+    this.modalRef.hide();
+    const user = JSON.parse(localStorage.getItem('user-data'));
+      if (user.merchant_id !== undefined) {
+        this.router.navigate(['/catalogue']);
+      } else if (user.admin_id !== undefined) {
+        this.router.navigate(['/merchants/merchant/catalogue']);
+      }
   }
 }
 

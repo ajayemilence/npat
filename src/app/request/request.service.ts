@@ -10,6 +10,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 
 @Injectable()
 export class RequestService {
+    private RequestProductID ;
     private messageSource = new BehaviorSubject(1);
     currentMessage = this.messageSource.asObservable();
 
@@ -23,10 +24,15 @@ export class RequestService {
         this.messageSource.next(data);
     }
 
+    setRequestMerchant(data: any) {
+        this.RequestProductID = data;
+    }
+    getRequestMerchant() {
+        return this.RequestProductID;
+    }
     getSuperCategoryRequest(data: any) {
         const user = this.localStorageService.get('user-data');
         const token = this.localStorageService.get('token');
-        console.log(token, user);
         const headers = new Headers({
             'd_token':  token
          });
@@ -50,14 +56,14 @@ export class RequestService {
 
 
     getCategoryRequest(data: any) {
-        const user = this.localStorageService.get('user-data');
-        const token = this.localStorageService.get('token');
+
         const headers = new Headers({
-            'd_token':  token
+            'd_token':  JSON.parse(localStorage.getItem('token'))
          });
         return this.http.get(
-            this.global.serverUrl + 'admin/en/get_req_category_admin?limit=6&last_id=' + data.last_id
-            + '&super_category_admin=' + user.admin_id,
+            this.global.serverUrl + 'admin/en/get_req_category_admin',
+            // ?limit=6&last_id=' + data.last_id,
+            // + '&super_category_admin=' + user.admin_id,
             {headers: headers})
         .map(
             (response: Response) => {
@@ -120,7 +126,6 @@ export class RequestService {
         .map(
             (response: Response) => {
                 const output = response.json();
-                console.log(output, 'output');
                 return output;
             }
         ).catch(
@@ -132,6 +137,55 @@ export class RequestService {
         );
     }
 
+    getMerchantWithRequestProducts(data: any) {
+        const user = this.localStorageService.get('user-data');
+        const token = this.localStorageService.get('token');
+        const headers = new Headers({
+            'd_token':  token
+         });
+
+        return this.http.get(
+            this.global.serverUrl + 'product/en/get_req_product_merchant?last_id=' + data.last_id
+            + '&limit=',
+            {headers: headers})
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+
+    getRequestedProducts(data: any) {
+        const user = this.localStorageService.get('user-data');
+        const token = this.localStorageService.get('token');
+        const headers = new Headers({
+            'd_token':  token
+         });
+
+        return this.http.get(
+            this.global.serverUrl + 'product/en/get_req_products?last_id=' + data.lastId +
+                '&merchant_id=' + data.merchantID +
+                '&limit=',
+            {headers: headers})
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
 
     // // Edit
 
@@ -172,4 +226,3 @@ export class RequestService {
     //     );
     // }
 }
-

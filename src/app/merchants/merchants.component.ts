@@ -10,6 +10,7 @@ import {PageEvent} from '@angular/material';
   styleUrls: ['./merchants.component.css']
 })
 export class MerchantsComponent implements OnInit {
+  currentIndex = 0;
   merchants;
   isLoading = true;
   countArray = [];
@@ -24,7 +25,7 @@ export class MerchantsComponent implements OnInit {
   datasource: null;
   length = 0;
   pageSize = 6;
-  // pageSizeOptions: number[] = [5, 10, 25];
+  pageSizeOptions: number[] = [6, 25, 50];
 
   // MatPaginator Output
   pageEvent: PageEvent;
@@ -32,10 +33,12 @@ export class MerchantsComponent implements OnInit {
   constructor(private merchantService: MerchantService) { }
 
   ngOnInit() {
+    localStorage.removeItem('merchant-data');
     const data = {
       token: this.token,
       last_id: '',
-      // limit: 5
+      pre_id : '',
+      page_no: ''
     };
 
     this.merchantService.getMerchants(data)
@@ -44,11 +47,11 @@ export class MerchantsComponent implements OnInit {
           if (response.success === 200) {
             this.isLoading = false;
             this.merchants = response.data.rows;
-            this.current = {
-                pageIndex : 0,
-                last_Id : this.merchants[this.merchants.length - 1 ].merchant_id
-            };
-            this.pageDetail.push(this.current);
+            // this.current = {
+            //     pageIndex : 0,
+            //     last_Id : this.merchants[this.merchants.length - 1 ].merchant_id
+            // };
+            // this.pageDetail.push(this.current);
             this.length = response.data.count;
           } else {
             // navigate to error page
@@ -66,31 +69,52 @@ export class MerchantsComponent implements OnInit {
   }
 
   changePage(event) {
-      if (event.pageIndex === 0) {
-        // first page
-        this.params = {
-          token: this.token,
-          last_id: '',
-          // limit: event.pageSize
-        };
-      } else {
-        const result = this.pageDetail.filter(val => val.pageIndex === event.pageIndex - 1);
-        if (result.length === 0) {
-            // getting data after current
-            this.params = {
-              token: this.token,
-              last_id: this.current['last_Id'],
-              // limit: event.pageSize
-            };
-        } else {
-          this.params = {
-            token: this.token,
-            last_id: result[0].last_Id,
-            // limit: event.pageSize
-          };
-        }
-      }
-
+    console.log(event.pageIndex );
+    // if (event.pageIndex > this.currentIndex) {
+    //   this.currentIndex = event.pageIndex;
+    //   // console.log(this.currentIndex);
+    //   this.params = {
+    //       token: this.token,
+    //       last_id: this.merchants[this.merchants.length - 1].merchant_id,
+    //       pre_id : ''
+    //       // limit: event.pageSize
+    //   };
+    // } else  {
+      // console.log(this.currentIndex);
+      // this.currentIndex = event.pageIndex;
+      this.params = {
+        token: this.token,
+        last_id: '',
+        pre_id : '',
+        page_no : event.pageIndex
+        // limit: event.pageSize
+    };
+    // }
+      // if (event.pageIndex === 0) {
+      //   // first page
+      //   this.params = {
+      //     token: this.token,
+      //     last_id: '',
+      //     // limit: event.pageSize
+      //   };
+      // } else {
+      //   const result = this.pageDetail.filter(val => val.pageIndex === event.pageIndex - 1);
+      //   if (result.length === 0) {
+      //       // getting data after current
+      //       this.params = {
+      //         token: this.token,
+      //         last_id: this.current['last_Id'],
+      //         // limit: event.pageSize
+      //       };
+      //   } else {
+      //     this.params = {
+      //       token: this.token,
+      //       last_id: result[0].last_Id,
+      //       // limit: event.pageSize
+      //     };
+      //   }
+      // }
+      console.log(this.params.last_id, this.params.pre_id);
       this.merchantService.getMerchants(this.params)
       .subscribe(
       (response) => {
@@ -99,10 +123,10 @@ export class MerchantsComponent implements OnInit {
           this.merchants = response.data.rows;
 
           // updating current page
-          this.current = {
-            pageIndex : event.pageIndex,
-            last_Id : this.merchants[this.merchants.length - 1 ].merchant_id
-          };
+          // this.current = {
+          //   pageIndex : event.pageIndex,
+          //   last_Id : this.merchants[this.merchants.length - 1 ].merchant_id
+          // };
         } else {
           // navigate to error page
           console.log(response);

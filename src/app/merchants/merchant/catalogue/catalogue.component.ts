@@ -10,6 +10,7 @@ import { MatSnackBar } from '@angular/material';
 import { MerchantService } from '../../merchants.service';
 import { Router } from '@angular/router';
 import { ProductService } from './product.service';
+import { element } from 'protractor';
 
 declare var $: any;
 
@@ -29,7 +30,8 @@ showCategory = false;
 showSubcategory = false;
 collapsed = 0;
 subCollapsed = 0;
-productImage = 'assets/images/logo.jpg';
+childCollapsed = 0;
+productImage = 'assets/images/upload.png';
 totalSuperCategory = 0;
 totalProducts = 0;
 superCategories = [];
@@ -43,13 +45,9 @@ categoryEditAllowded = true;
 
 Categories = [];
 
-subCategories = [
-{id: 1, name: 'Pasta'}
-];
+subCategories = [];
 
-products = [
-{id: 1, name: 'Burger'}
-];
+products = [];
 
 
 selectedItem2;
@@ -68,6 +66,7 @@ panelOpenState = false;
 productName;
 productPrice;
 productDesc;
+productApproved = false;
 
 // list super category
 listSuperCategories = [];
@@ -87,7 +86,7 @@ fruits = [];
 currentMerchant ;
 MerchantNameHeading = '';
 
-
+showProductDetails = false;
 // loaders
 categoriesLoading = true;
 productListLoading = true;
@@ -95,6 +94,18 @@ productDetailLoading = true;
 
 NoProductToShow = false;
 NoProductListToShow = false;
+singleQuantity = true;
+
+productQuantity = 0;
+productInventory = [];
+Heading = [];
+tempAttributeArray = [];
+InventoryTableEdit = [];
+showViewMore = false;
+merchantVerified = false;
+merchantFreeListing = false;
+DataPlan; // upgrading
+planModalRef: BsModalRef;
 constructor(private modalService: BsModalService,
             private localStorageService: LocalStorageService,
             private catalogueService: CatalogueService,
@@ -102,38 +113,71 @@ constructor(private modalService: BsModalService,
             public snackBar: MatSnackBar,
             private merchantService: MerchantService,
             private router: Router,
-            private productService: ProductService
+            private productService: ProductService,
+            private merchantsService: MerchantService
           ) {}
 
 ngOnInit() {
 
     const user = JSON.parse(localStorage.getItem('user-data'));
     if (user.merchant_id !== undefined) {
+      if (user.merchant_subscription === undefined ||
+          user.merchant_display_name === '' ||
+          user.documents === 0 ) {
+              this.router.navigate(['/verify']);
+          }
+    const docs = JSON.parse(localStorage.getItem('doc'));
+
+    if (docs === null && user.documents === undefined && user.merchant_verification_status === 'Not verified') {
+      this.router.navigate(['/verify']);
+    }
+
+      if (user.merchant_verification_status === 'Not verified') {
+        this.merchantVerified = false;
+      } else {
+        this.merchantVerified = true;
+        if (user.merchant_subscription === 'FREELISTING') {
+           this.merchantFreeListing = true;
+        } else {
+          this.merchantFreeListing = false;
+        }
+
+      }
       this.categoryEditAllowded = false;
       this.mode = 1;
     } else if (user.admin_id) {
       this.categoryEditAllowded = true;
+      this.merchantVerified = true;
+      this.merchantFreeListing = false;
       this.mode = 0;
     }
     // get merchant catalogue when admin is logged in
     if (this.router.url === '/merchants/merchant/catalogue') {
       this.categoryEditAllowded = true;
       this.mode = 2;
-      console.log(this.router.url, 'case 1');
+
       this.currentMerchant = this.merchantService.getMerchant();
+      // if (this.currentMerchant === undefined) {
+      //   const merchantInfo = JSON.parse(localStorage.getItem('merchant-data'));
+      //   if (merchantInfo !== '' || merchantInfo !== undefined) {
+      //       if (merchantInfo.merchant_id !== undefined) {
+      //         this.currentMerchant = merchantInfo;
+      //       }
+      //       // this.localStorageService.set('merchant-data', undefined);
+      //   }
+      // }
       console.log('current Mechant', this.currentMerchant);
       const merchant = JSON.parse(localStorage.getItem('merchant-data'));
-        // if (merchant !== null) {
-        //     this.currentMerchant = merchant;
-        //     this.localStorageService.set('merchant-data', '');
-        // }
 
-        // console.log('current Mechant', this.currentMerchant);
+      if (merchant !== null) {
+        this.currentMerchant = merchant;
+      }
+      localStorage.removeItem('merchant-data');
 
       if (this.currentMerchant === undefined) {
         this.router.navigate(['/merchants']);
       } else {
-        this.MerchantNameHeading = this.currentMerchant.merchant_first_name;
+        this.MerchantNameHeading = this.currentMerchant.merchant_display_name;
         this.catalogueService.getAllCategoriesMerchant(this.currentMerchant.merchant_id).subscribe(
           (response) => {
             if (response.success === 200) {
@@ -142,11 +186,23 @@ ngOnInit() {
                 this.superCategories = response.data;
                 this.totalSuperCategory = this.superCategories.length;
                 this.totalProducts = 0;
-                console.log('supercategories', this.superCategories);
+
                 if (this.superCategories.length > 0) {
                     // get Products
+
                     if ( this.superCategories[0].super_category_hasChild === 0) {
                       this.products = [];
+                      this.showViewMore = false;
+                      this.productListLoading = false;
+                      this.productDetailLoading = false;
+                      this.NoProductToShow = true;
+                      this.NoProductListToShow = true;
+                      this.snackBar.open('No Product Found', 'Dismiss', {
+                        duration: 5000,
+                      });
+                   } else if (this.superCategories[0].category.length === 0 && this.superCategories[0].super_category_hasChild !== 2) {
+                      this.products = [];
+                      this.showViewMore = false;
                       this.productListLoading = false;
                       this.productDetailLoading = false;
                       this.NoProductToShow = true;
@@ -155,21 +211,49 @@ ngOnInit() {
                         duration: 5000,
                       });
                    } else if (this.superCategories[0].super_category_hasChild === 2) {
-                      this.showProducts(this.superCategories[0]);
-                   } else if (this.superCategories[0].category[0].category_hasChild === 0) {
-                      this.products = [];
-                      this.productListLoading = false;
-                      this.productDetailLoading = false;
-                      this.NoProductToShow = true;
-                      this.NoProductListToShow = true;
-                      this.snackBar.open('No Product Found', 'Dismiss', {
-                        duration: 5000,
-                      });
-                   } else if (this.superCategories[0].category[0].category_hasChild === 2) {
-                     this.showProducts(this.superCategories[0].category[0]);
-                   } else {
-                      this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
-                   }
+                        this.showProducts(this.superCategories[0]);
+                   } else if (this.superCategories[0].category.length > 0 ) {
+                      if (this.superCategories[0].category[0].category_hasChild === 0) {
+                        this.products = [];
+                        this.showViewMore = false;
+                        this.productListLoading = false;
+                        this.productDetailLoading = false;
+                        this.NoProductToShow = true;
+                        this.NoProductListToShow = true;
+                        this.snackBar.open('No Product Found', 'Dismiss', {
+                          duration: 5000,
+                        });
+                      } else if (this.superCategories[0].category[0].category_hasChild === 2) {
+                        this.showProducts(this.superCategories[0].category[0]);
+                      } else if (this.superCategories[0].category[0].category_hasChild === 1 &&
+                                this.superCategories[0].category[0].Sub_Category.length === 0) {
+                          this.products = [];
+                          this.showViewMore = false;
+                          this.productListLoading = false;
+                          this.productDetailLoading = false;
+                          this.NoProductToShow = true;
+                          this.NoProductListToShow = true;
+                          this.snackBar.open('No Product Found', 'Dismiss', {
+                            duration: 5000,
+                          });
+                      } else {
+                        this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
+                      }
+                  }
+                  //  } else if (this.superCategories[0].category[0].category_hasChild === 0) {
+                  //     this.products = [];
+                  //     this.productListLoading = false;
+                  //     this.productDetailLoading = false;
+                  //     this.NoProductToShow = true;
+                  //     this.NoProductListToShow = true;
+                  //     this.snackBar.open('No Product Found', 'Dismiss', {
+                  //       duration: 5000,
+                  //     });
+                  //  } else if (this.superCategories[0].category[0].category_hasChild === 2) {
+                  //    this.showProducts(this.superCategories[0].category[0]);
+                  //  } else {
+                  //     this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
+                  //  }
                 } else {
                   this.totalProducts = 0;
                   this.productListLoading = false;
@@ -181,10 +265,17 @@ ngOnInit() {
 
             } else {
             // FAILURE CASE
+            console.log(response);
+              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+                duration: 5000,
+              });
             }
           },
           (error) => {
              console.log(error);
+              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+                duration: 5000,
+              });
           }
         );
         // get catalogue data here
@@ -192,26 +283,28 @@ ngOnInit() {
 
     } else {
 
+      localStorage.removeItem('merchant-data');
         this.catalogueService.getSuperCategory()
        .subscribe(
          (response) => {
-          // console.log(this.superCategories, 'response');
+
           if (response.success === 200) {
             this.showSuperLoading = false;
             this.categoriesLoading = false;
             this.superCategories = response.data;
             this.totalSuperCategory = this.superCategories.length;
             if (user.merchant_id !== undefined) {
-            this.MerchantNameHeading = user.merchant_first_name;
+            this.MerchantNameHeading = user.merchant_display_name;
             }
 
-            console.log(this.superCategories.length);
-            console.log(this.superCategories[0]);
+
             if (this.superCategories.length > 0) {
-              this.totalProducts = 0;
+
                 // get Products
                   if ( this.superCategories[0].super_category_hasChild === 0) {
+                      this.totalProducts = 0;
                       this.products = [];
+                      this.showViewMore = false;
                       this.productListLoading = false;
                       this.productDetailLoading = false;
                       this.NoProductToShow = true;
@@ -219,8 +312,10 @@ ngOnInit() {
                       this.snackBar.open('No Product Found', 'Dismiss', {
                         duration: 5000,
                       });
-                  } else if (this.superCategories[0].category.length === 0) {
+                  } else if (this.superCategories[0].category.length === 0 && this.superCategories[0].super_category_hasChild !== 2) {
+                    this.totalProducts = 0;
                     this.products = [];
+                    this.showViewMore = false;
                     this.productListLoading = false;
                     this.productDetailLoading = false;
                     this.NoProductToShow = true;
@@ -228,22 +323,54 @@ ngOnInit() {
                     this.snackBar.open('No Product Found', 'Dismiss', {
                       duration: 5000,
                     });
-                  } else if (this.superCategories[0].category[0].category_hasChild === 0) {
-                    this.products = [];
-                    this.productListLoading = false;
-                    this.productDetailLoading = false;
-                    this.NoProductToShow = true;
-                    this.NoProductListToShow = true;
-                    this.snackBar.open('No Product Found', 'Dismiss', {
-                      duration: 5000,
-                    });
+
+                  } else if (this.superCategories[0].category.length > 0 ) {
+                        if (this.superCategories[0].category[0].category_hasChild === 0) {
+                          this.totalProducts = 0;
+                          this.products = [];
+                          this.showViewMore = false;
+                          this.productListLoading = false;
+                          this.productDetailLoading = false;
+                          this.NoProductToShow = true;
+                          this.NoProductListToShow = true;
+                          this.snackBar.open('No Product Found', 'Dismiss', {
+                            duration: 5000,
+                          });
+                        } else if (this.superCategories[0].category[0].category_hasChild === 2) {
+                          this.showProducts(this.superCategories[0].category[0]);
+                        } else if (this.superCategories[0].category[0].category_hasChild === 1 &&
+                                  this.superCategories[0].category[0].Sub_Category.length === 0) {
+                            this.products = [];
+                            this.showViewMore = false;
+                            this.totalProducts = 0;
+                            this.productListLoading = false;
+                            this.productDetailLoading = false;
+                            this.NoProductToShow = true;
+                            this.NoProductListToShow = true;
+                            this.snackBar.open('No Product Found', 'Dismiss', {
+                              duration: 5000,
+                            });
+                        } else {
+                          this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
+                        }
+
+                  // } else if (this.superCategories[0].category[0].category_hasChild === 0) {
+                  //   this.products = [];
+                  //   this.productListLoading = false;
+                  //   this.productDetailLoading = false;
+                  //   this.NoProductToShow = true;
+                  //   this.NoProductListToShow = true;
+                  //   this.snackBar.open('No Product Found', 'Dismiss', {
+                  //     duration: 5000,
+                  //   });
                   } else if (this.superCategories[0].super_category_hasChild === 2) {
                     this.showProducts(this.superCategories[0]);
-                  } else if (this.superCategories[0].category[0].category_hasChild === 2) {
-                    this.showProducts(this.superCategories[0].category[0]);
-                  } else {
-                    this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
                   }
+                  // } else if (this.superCategories[0].category[0].category_hasChild === 2) {
+                  //   this.showProducts(this.superCategories[0].category[0]);
+                  // } else {
+                  //   this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
+                  // }
               } else {
                 this.totalProducts = 0;
                 this.productListLoading = false;
@@ -297,16 +424,24 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
 
     // use data when admin adding supercategories in merchant
     const data = this.currentMerchant.merchant_id;
-    console.log('data', data);
+
     this.catalogueService.listSuperCategories(data).subscribe(
       (response) => {
         if (response.success === 200) {
           this.listSuperCategories = response.data;
-          console.log(this.listSuperCategories);
+
+        } else {
+          console.log(response);
+          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+            duration: 5000,
+          });
         }
       },
       (error) => {
         console.log(error);
+        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+          duration: 5000,
+        });
       }
     );
   } else {
@@ -326,7 +461,7 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
         (response) => {
           if (response.success === 200) {
             this.listSuperCategories = response.data;
-            console.log(this.listSuperCategories);
+
           }
         },
         (error) => {
@@ -354,13 +489,20 @@ addSubCategoryModel(template: TemplateRef<any>, currentSuper, currentCategory) {
   this.modalRef = this.modalService.show(template);
 }
 
-
+openVerifyModal (template: TemplateRef<any>) {
+  this.modalRef = this.modalService.show(template);
+}
 addProduct(template: TemplateRef<any>) {
   this.modalRef = this.modalService.show(template);
 }
 
+upgradePlanModal(template: TemplateRef<any>) {
+  this.modalRef = this.modalService.show(template);
+}
 
-
+planDetailModal(template: TemplateRef<any>) {
+  this.planModalRef = this.modalService.show(template);
+}
 addSuperCategory(form: NgForm) {
 
   const data = {
@@ -376,23 +518,24 @@ addSuperCategory(form: NgForm) {
     };
 
 
-    console.log(this.editCategory, 'Edit super category');
+
     this.catalogueService.editSuperCategory(input)
     .subscribe(
       (response) => {
-        console.log(response, 'response');
+
         if (response.success === 200) {
+
           this.currentSuperCategoryName = '';
           this.currentSuperCategoryDesc = '';
           this.displayImage = 'assets/images/upload.png';
           form.reset();
           this.modalRef.hide();
-          console.log(this.currentMerchant, 'this.currentMerchant');
+          this.editMode = false;
           if (this.currentMerchant === undefined) {
-            console.log('in if part');
+
             this.getData();
           } else {
-            console.log('in else part');
+
               this.getMerchantData();
           }
 
@@ -414,13 +557,11 @@ addSuperCategory(form: NgForm) {
     this.catalogueService.addSuperCategory(data)
     .subscribe(
       (response) => {
-        console.log(response, 'response');
 
 
        if (response.success === 200) {
           this.displayImage = 'assets/images/upload.png';
           this.modalRef.hide();
-          console.log(this.currentMerchant, 'this.currentMerchant');
             if (this.currentMerchant === undefined) {
               this.getData();
             } else {
@@ -457,13 +598,13 @@ addProductForm(form: NgForm) {
     form: form.value,
     image: this.userImage
   };
-  console.log(data);
+
   // this.modalRef.hide();
 
   this.catalogueService.addProduct(data)
    .subscribe(
      (response) => {
-       console.log(response, 'response');
+
        this.displayImage = 'assets/images/upload.png';
        this.modalRef.hide();
       // if (response.success === 200) {
@@ -489,7 +630,7 @@ addProductForm(form: NgForm) {
 addCategory(form: NgForm) {
 
   if (this.editMode === true) {
-    console.log('Edit Mode Enabled');
+
     const data = {
       form: form.value,
       image: this.userImage,
@@ -498,15 +639,17 @@ addCategory(form: NgForm) {
       merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
     };
 
-    console.log('Edit Mode Enabled', data);
+
 
     this.catalogueService.editCategory(data)
    .subscribe(
      (response) => {
-       console.log(response, 'response');
+
 
       if (response.success === 200) {
         this.displayImage = 'assets/images/upload.png';
+        this.editMode = false;
+
         form.reset();
         this.modalRef.hide();
         this.getData();
@@ -525,7 +668,7 @@ addCategory(form: NgForm) {
    );
 
   } else {
-    console.log('Edit Mode disabled');
+
     const data = {
       form: form.value,
       image: this.userImage,
@@ -535,7 +678,7 @@ addCategory(form: NgForm) {
     this.catalogueService.addCategory(data)
    .subscribe(
      (response) => {
-       console.log(response, 'response');
+
        this.displayImage = 'assets/images/upload.png';
        this.modalRef.hide();
       if (response.success === 200) {
@@ -546,10 +689,8 @@ addCategory(form: NgForm) {
           });
          } else {
           if (this.currentMerchant === undefined) {
-            console.log('in if part');
             this.getData();
           } else {
-            console.log('in else part');
               this.getMerchantData();
           }
 
@@ -574,7 +715,6 @@ addCategory(form: NgForm) {
 addSubCategory(form: NgForm) {
 
   if (this.editMode === true) {
-    console.log('edit mode enabled');
     const data = {
       form: form.value,
       image: this.userImage,
@@ -582,12 +722,13 @@ addSubCategory(form: NgForm) {
       categoryID : this.editCategory.sub_category_id,
       merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
     };
-    console.log('edit mode enabled', data);
+
 
     this.catalogueService.editSubCategory(data)
      .subscribe(
        (response) => {
-         console.log(response, 'response');
+
+         this.editMode = false;
 
         if (response.success === 200) {
           this.displayImage = 'assets/images/upload.png';
@@ -608,7 +749,7 @@ addSubCategory(form: NgForm) {
        }
      );
   } else {
-    console.log('edit mode disabled');
+
     const data = {
       form: form.value,
       image: this.userImage,
@@ -618,7 +759,7 @@ addSubCategory(form: NgForm) {
     this.catalogueService.addSubCategory(data)
      .subscribe(
        (response) => {
-         console.log(response, 'response');
+
          this.displayImage = 'assets/images/upload.png';
          this.modalRef.hide();
         if (response.success === 200) {
@@ -655,34 +796,39 @@ addSubCategory(form: NgForm) {
 
 // show category list
 showCategories() {
-  console.log('show category');
+
   this.showCategory = true;
   this.showSubcategory = false;
 }
 
   superCategorySelected(name: string) {
   this.showSubcategory = false;
-    console.log(name, 'name');
   }
 
 
   selectCategory(category: string) {
     this.showSubcategory = !this.showSubcategory;
     this.selectedItem = category;
-    console.log(category, 'category');
+
   }
 
 
 
   headerClicked(i) {
-    if (this.collapsed === i) {
-      this.collapsed = -1;
-    } else {
-      this.collapsed = i;
-      this.subCollapsed = -1;
-    }
+    // const newProduct = JSON.parse(localStorage.getItem('Product'));
+    // if (newProduct !== null) {
+    //     this.collapsed = newProduct.super;
+    //     this.subCollapsed = newProduct.cat;
+    // } else {
+      if (this.collapsed === i) {
+        this.collapsed = -1;
+      } else {
+        this.collapsed = i;
+        this.subCollapsed = -1;
+        this.childCollapsed = -1;
+      }
+    // }
 
-    console.log('headerclicked', this.collapsed);
   }
 
   subHeaderClicked(i) {
@@ -690,6 +836,7 @@ showCategories() {
       this.subCollapsed = -1;
     } else {
       this.subCollapsed = i;
+      this.childCollapsed = -1;
     }
     // this.subCollapsed = i;
   }
@@ -780,76 +927,186 @@ showCategories() {
 
   // get product
   showProducts(category) {
-    console.log(category);
-    this.productImage = 'assets/images/logo.jpg';
+    console.log('here', category);
+    this.Heading = [];
+    this.tempAttributeArray = [];
+    this.InventoryTableEdit = [];
+
+    this.productImage = 'assets/images/upload.png';
     if (category.super_category_id !== undefined && category.super_category_hasChild === 0) {
       this.products = [];
+      this.showViewMore = false;
       this.totalProducts = 0;
       this.productListLoading = false;
       this.productDetailLoading = false;
       this.NoProductToShow = true;
       this.NoProductListToShow = true;
+      this.showProductDetails = false;
       this.snackBar.open('No Product Found', 'Dismiss', {
         duration: 5000,
       });
     } else if (category.super_category_id !== undefined && category.super_category_hasChild === 2) {
-      console.log('show super');
+
       const data = {
-        ID : category.super_category_id
+        ID : category.super_category_id,
+        merchantID: (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
       };
       this.getSuperCatProducts(data);
 
     } else if (category.category_id !== undefined && category.category_hasChild === 0) {
-        console.log('show category');
+
         this.products = [];
+        this.showViewMore = false;
         this.totalProducts = 0;
         this.productListLoading = false;
         this.productDetailLoading = false;
         this.NoProductToShow = true;
         this.NoProductListToShow = true;
+        this.showProductDetails = false;
         this.snackBar.open('No Product Found', 'Dismiss', {
           duration: 5000,
         });
     } else if (category.category_id !== undefined && category.category_hasChild === 2) {
-      console.log('show category');
+
       const data = {
-        ID : category.category_id
+        ID : category.category_id,
+        merchantID: (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
       };
       this.getCatProducts(data);
     } else if (category.sub_category_id !== undefined) {
-      console.log('show sub category');
+
       const data = {
-        ID : category.sub_category_id
+        ID : category.sub_category_id,
+        merchantID: (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
       };
 
       this.getSubCatProducts(data);
+    } else {
+        this.products = [];
+        this.showViewMore = false;
+        this.totalProducts = 0;
+        this.productListLoading = false;
+        this.productDetailLoading = false;
+        this.NoProductToShow = true;
+        this.NoProductListToShow = true;
+        this.showProductDetails = false;
+        this.snackBar.open('No Product Found', 'Dismiss', {
+          duration: 5000,
+        });
     }
   }
 
   getSuperCatProducts(data) {
-    this.productImage = 'assets/images/logo.jpg';
+    this.productImage = 'assets/images/upload.png';
     this.catalogueService.getSuperCategoryProduct(data)
     .subscribe(
       (response) => {
         if (response.success === 200) {
           this.productListLoading = false;
-          this.products = response.data;
-          if (response.data.length > 0) {
-            this.totalProducts = response.data.length;
-            this.NoProductToShow = false;
-            this.NoProductListToShow = false;
-            const productOne = response.data[0];
-            this.productName = productOne.product_name;
-            this.productDesc =  productOne.product_description;
-            if (productOne.product_image !== '') {
-              const imageArray = JSON.parse(productOne.product_image);
-              this.productImage = this.globalService.ImagePath + imageArray[0];
+          if (data.last !== undefined) {
+            this.products = [...this.products, ...response.data.rows];
+            this.showViewMore = true;
+            this.totalProducts = response.data.count;
+            if (response.data.rows.length < 15) {
+              this.showViewMore = false;
             }
-
-            // removing product detail loader
-            this.productDetailLoading = false;
+          // } else if (data.last !== undefined) {
+            // this.products = [...this.products, ...response.data];
+            // remove viewmore
           } else {
+            this.products = response.data.rows;
+
+          if (response.data.rows.length > 0) {
+            this.totalProducts = response.data.count;
+              const productOne = response.data.rows[0];
+              this.productName = productOne.product_name;
+              this.productDesc =  productOne.product_description;
+              if (productOne.product_image !== '') {
+                const imageArray = JSON.parse(productOne.product_image);
+                this.productImage = this.globalService.ImagePath + imageArray[0];
+                console.log(this.productImage);
+              }
+
+              // if (productOne.pricing_array[0].product_inventory.length > 0 &&
+              //     productOne.pricing_array[0].product_spec.length > 0) {
+              //     // this.productInventory.push
+              //     this.singleQuantity = false;
+              //     productOne.pricing_array[0].product_spec.forEach(spec => {
+              //       console.log(spec);
+              //       const obj = {
+              //         product_spec_name : spec.ProductSpecType.product_spec_name,
+              //         product_spec_type_values : spec.ProductSpecType.product_spec_type_values.split(','),
+              //         product_spec_id : spec.product_spec_id
+              //       };
+              //       console.log(obj.product_spec_type_values, typeof obj.product_spec_type_values);
+              //       this.Heading.push(obj);
+              //     });
+
+              //     if (this.Heading.length > this.tempAttributeArray.length) {
+              //       this.Heading.forEach(attribute => {
+              //           const indexOne = this.tempAttributeArray.findIndex(val => JSON.parse(val.id) === attribute.product_spec_id );
+
+              //           if (indexOne < 0) {
+              //             const obj = {
+              //               id : JSON.stringify(attribute.product_spec_id),
+              //               name : ''
+              //             };
+              //             this.tempAttributeArray.push(obj);
+              //             // const indexTwo = this.Heading.findIndex
+              //           }
+              //       });
+              //     }
+              //     this.Heading.sort(function(a, b) {
+              //       return a.product_spec_id - b.product_spec_id;
+              //     });
+              //     // if (this.EditProduct.pricing_array[0].product_inventory.length > 0) {}
+              //     productOne.pricing_array[0].product_inventory.forEach(inventory => {
+
+              //         const rowTable = {
+              //           quantity: inventory.product_inventory,
+              //           type : inventory.product_spec_values.split(',')
+
+              //         };
+              //         rowTable.type.forEach(val => {
+              //           const data2 = val.split('_');
+              //             const quantity = {
+              //                   id : data2[0],
+              //                   name : data2[1]
+              //             };
+              //             this.tempAttributeArray.push(quantity);
+              //         });
+              //         this.tempAttributeArray.sort(function(a, b) {
+              //           return a.id - b.id;
+              //         });
+              //         const finalRow = {
+              //             quantity : rowTable.quantity,
+              //             type : this.tempAttributeArray
+              //         };
+              //         this.tempAttributeArray = [];
+              //         this.InventoryTableEdit.push(finalRow);
+              //     });
+
+
+              // } else {
+              //   this.singleQuantity = true;
+              // }
+              // this.productQuantity = productOne.pricing_array[0].pricing_product_stock;
+
+              // product_authorized
+              this.productApproved = (productOne.product_authorized === 0) ? false : true;
+              this.productPrice = productOne.pricing_array[0].product_pricing_price;
+              // removing product detail loader
+              this.productDetailLoading = false;
+              this.showProductDetails = true;
+              if (response.data.rows.length < 15) {
+                this.showViewMore = false;
+              } else if (response.data.rows.length === 15) {
+                this.showViewMore = true;
+              }
+          } else {
+            this.showViewMore = false;
             this.totalProducts = 0;
+            this.showProductDetails = false;
             this.productDetailLoading = false;
             this.NoProductToShow = true;
             this.NoProductListToShow = true;
@@ -857,7 +1114,7 @@ showCategories() {
               duration: 5000,
             });
           }
-          // this.productPrice = 1;
+        }
         }
       },
       (error) => {
@@ -870,39 +1127,72 @@ showCategories() {
   }
 
   getCatProducts(data) {
-    this.productImage = 'assets/images/logo.jpg';
+    this.productImage = 'assets/images/upload.png';
+    console.log(data);
     this.catalogueService.getCategoryProduct(data)
     .subscribe(
       (response) => {
+
         if (response.success === 200) {
+          console.log(response.data);
           this.productListLoading = false;
-          this.products = response.data;
-          if (response.data.length > 0) {
-            this.totalProducts = response.data.length;
-            this.NoProductToShow = false;
-            this.NoProductListToShow = false;
-            const productOne = response.data[0];
-            this.productName = productOne.product_name;
-            this.productDesc =  productOne.product_description;
-            if (productOne.product_image !== '') {
-              const imageArray = JSON.parse(productOne.product_image);
-              this.productImage = this.globalService.ImagePath + imageArray[0];
-              console.log(this.productImage);
+          if (data.last !== undefined) {
+            this.products = [...this.products, ...response.data.rows];
+            this.showViewMore = true;
+            this.totalProducts = response.data.count;
+            if (response.data.rows.length < 15) {
+              this.showViewMore = false;
             }
-            // removing product detail loader
-            this.productDetailLoading = false;
-          }  else {
-            this.totalProducts = 0;
-            this.productDetailLoading = false;
-            this.NoProductToShow = true;
-            this.NoProductListToShow = true;
-            this.snackBar.open('No Product Found', 'Dismiss', {
-              duration: 5000,
-            });
+          } else {
+            this.products = response.data.rows;
+
+            console.log(response.data);
+            // if (response.data.length > 0) {
+
+            // }
+            if (response.data.rows.length > 0) {
+              this.totalProducts = response.data.count;
+              this.productListLoading = false;
+
+                const productOne = response.data.rows[0];
+                this.productName = productOne.product_name;
+                this.productDesc =  productOne.product_description;
+                if (productOne.product_image !== '') {
+                  const imageArray = JSON.parse(productOne.product_image);
+                  this.productImage = this.globalService.ImagePath + imageArray[0];
+
+                }
+
+                this.productPrice = productOne.pricing_array[0].product_pricing_price;
+                // removing product detail loader
+                this.productApproved = (productOne.product_authorized === 0) ? false : true;
+                this.showProductDetails = true;
+                this.productDetailLoading = false;
+                if (response.data.rows.length < 15) {
+                  this.showViewMore = false;
+                } else if (response.data.rows.length === 15) {
+                  this.showViewMore = true;
+                }
+
+            }  else {
+              this.totalProducts = 0;
+              this.showViewMore = false;
+              this.productDetailLoading = false;
+              this.NoProductToShow = true;
+              this.NoProductListToShow = true;
+              this.showProductDetails = false;
+              this.snackBar.open('No Product Found', 'Dismiss', {
+                duration: 5000,
+              });
+            }
           }
-          // const inventory =
-          this.productPrice = 1;
-          console.log (this.products);
+
+
+        } else {
+          console.log(response);
+          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+            duration: 5000,
+          });
         }
       },
       (error) => {
@@ -917,18 +1207,37 @@ showCategories() {
 
 
   getSubCatProducts(data) {
-    this.productImage = 'assets/images/logo.jpg';
+    this.productImage = 'assets/images/upload.png';
     this.catalogueService.getSubCategoryProduct(data)
     .subscribe(
       (response) => {
+        console.log(response);
         if (response.success === 200) {
           this.productListLoading = false;
           this.NoProductToShow = false;
           this.NoProductListToShow = false;
-          this.products = response.data;
-          this.totalProducts = response.data.length;
-          if (response.data.length > 0) {
-            const productOne = response.data[0];
+          this.totalProducts = response.data.count;
+
+          if (data.last !== undefined) {
+            this.products = [...this.products, ...response.data.rows];
+            this.totalProducts = response.data.count;
+            this.showViewMore = true;
+            if (response.data.rows.length < 15) {
+              this.showViewMore = false;
+            }
+          // } else if (data.last !== undefined) {
+            // this.products = [...this.products, ...response.data];
+            // remove viewmore
+          } else {
+            this.products = response.data.rows;
+
+
+
+          if (response.data.rows.length > 0) {
+
+            this.totalProducts = response.data.count;
+            const productOne = response.data.rows[0];
+            this.showProductDetails = true;
             this.productName = productOne.product_name;
             this.productDesc =  productOne.product_description;
             if (productOne.product_image !== '') {
@@ -937,19 +1246,29 @@ showCategories() {
               console.log(this.productImage);
             }
 
+             this.productPrice = productOne.pricing_array[0].product_pricing_price;
             // removing product detail loader
             this.productDetailLoading = false;
+            this.productApproved = (productOne.product_authorized === 0) ? false : true;
+            if (response.data.rows.length < 15) {
+              this.showViewMore = false;
+            } else if (response.data.rows.length === 15) {
+              this.showViewMore = true;
+            }
+
           }  else {
+            this.showViewMore = false;
             this.productDetailLoading = false;
+            this.showProductDetails = false;
             this.NoProductToShow = true;
             this.NoProductListToShow = true;
             this.snackBar.open('No Product Found', 'Dismiss', {
               duration: 5000,
             });
           }
-          // const inventory =
-          this.productPrice = 1;
-          console.log (this.products);
+          }
+
+
         }
       },
       (error) => {
@@ -965,18 +1284,82 @@ showCategories() {
   // show product
 
   showProduct(product) {
+    this.Heading = [];
+    this.tempAttributeArray = [];
+    this.InventoryTableEdit = [];
+    this.productImage = 'assets/images/upload.png';
     console.log(product, typeof product);
-    this.productName = product.product_name;
-    this.productDesc =  product.product_description;
-    // const inventory =
-    if (product.product_image !== '') {
-      const imageArray = JSON.parse(product.product_image);
+    const productOne = product;
+    this.productName = productOne.product_name;
+    this.productDesc =  productOne.product_description;
+    if (productOne.product_image !== '') {
+      const imageArray = JSON.parse(productOne.product_image);
       this.productImage = this.globalService.ImagePath + imageArray[0];
       console.log(this.productImage);
-    } else {
-    this.productImage = 'assets/images/logo.jpg';
     }
-    this.productPrice = 1;
+    if (productOne.pricing_array[0].product_inventory.length > 0 &&
+        productOne.pricing_array[0].product_spec.length > 0) {
+        // this.productInventory.push
+        this.singleQuantity = false;
+        productOne.pricing_array[0].product_spec.forEach(spec => {
+          console.log(spec);
+          const obj = {
+            product_spec_name : spec.ProductSpecType.product_spec_name,
+            product_spec_type_values : spec.ProductSpecType.product_spec_type_values.split(','),
+            product_spec_id : spec.product_spec_id
+          };
+          console.log(obj.product_spec_type_values, typeof obj.product_spec_type_values);
+          this.Heading.push(obj);
+        });
+
+
+        this.Heading.sort(function(a, b) {
+          return a.product_spec_id - b.product_spec_id;
+        });
+        // if (this.EditProduct.pricing_array[0].product_inventory.length > 0) {}
+        productOne.pricing_array[0].product_inventory.forEach(inventory => {
+
+            const rowTable = {
+              quantity: inventory.product_inventory,
+              type : inventory.product_spec_values.split(',')
+
+            };
+            rowTable.type.forEach(val => {
+              const data2 = val.split('_');
+                const quantity = {
+                      id : data2[0],
+                      name : data2[1]
+                };
+                this.tempAttributeArray.push(quantity);
+            });
+            if (this.Heading.length > this.tempAttributeArray.length) {
+              this.Heading.forEach(attribute => {
+                  const indexOne = this.tempAttributeArray.findIndex(val => JSON.parse(val.id) === attribute.product_spec_id );
+
+                  if (indexOne < 0) {
+                    const obj = {
+                      id : JSON.stringify(attribute.product_spec_id),
+                      name : ''
+                    };
+                    this.tempAttributeArray.push(obj);
+                    // const indexTwo = this.Heading.findIndex
+                  }
+              });
+            }
+            this.tempAttributeArray.sort(function(a, b) {
+              return a.id - b.id;
+            });
+            const finalRow = {
+                quantity : rowTable.quantity,
+                type : this.tempAttributeArray
+            };
+            this.tempAttributeArray = [];
+            this.InventoryTableEdit.push(finalRow);
+        });
+    } else {
+    this.productImage = 'assets/images/upload.png';
+    }
+    this.productPrice = product.pricing_array[0].product_pricing_price;
   }
 
 
@@ -1000,11 +1383,13 @@ showCategories() {
   // listing supercategory for merchant
 
   onSuperCategoryChange(index) {
-    const idx = this.fruits.findIndex(x => x.super_category_id === this.listSuperCategories[index].super_category_id);
-    if (idx < 0) {
-      this.fruits.push(this.listSuperCategories[index]);
+    if (index !== '') {
+    console.log('index', index);
+      const idx = this.fruits.findIndex(x => x.super_category_id === this.listSuperCategories[index].super_category_id);
+      if (idx < 0) {
+        this.fruits.push(this.listSuperCategories[index]);
+      }
     }
-
   }
 
 
@@ -1091,18 +1476,146 @@ showCategories() {
 
   // product edit or new Product
   productScreen(productInfo) {
-    const user = JSON.parse(localStorage.getItem('user-data'));
-    if (user.merchant_id !== undefined) {
-      this.localStorageService.set('merchant-data', user);
-    } else if (this.currentMerchant !== undefined) {
-      this.localStorageService.set('merchant-data', this.currentMerchant);
-    }
-    console.log(productInfo, '---');
-    if (productInfo === undefined) {
-      this.router.navigate(['/catalogue/product/new']);
+
+
+    console.log(this.superCategories);
+    if (this.superCategories.length < 1) {
+        this.snackBar.open('Please Choose or Add Categories, before adding products.', 'Dismiss', {
+          duration: 5000,
+        });
     } else {
-      this.productService.setProduct(productInfo);
-      this.router.navigate(['/catalogue/product/edit']);
+        const user = JSON.parse(localStorage.getItem('user-data'));
+        if (user.merchant_id !== undefined) {
+          this.localStorageService.set('merchant-data', user);
+        } else if (this.currentMerchant !== undefined) {
+          this.localStorageService.set('merchant-data', this.currentMerchant);
+        }
+
+        if (productInfo === undefined) {
+          this.router.navigate(['/catalogue/product/new']);
+        } else {
+          this.productService.setProduct(productInfo);
+          this.router.navigate(['/catalogue/product/edit']);
+        }
     }
   }
+
+  addProductRoute() {
+    this.localStorageService.set('merchant-data', this.currentMerchant);
+  }
+
+  childHeaderClicked(index) {
+    this.childCollapsed = index;
+  }
+  viewmoreProducts() {
+    const last = this.products[this.products.length - 1].product_id;
+
+
+    if (this.childCollapsed > -1 && this.subCollapsed > -1 && this.collapsed > -1) {
+      // product of subcategory
+      const data = {
+        ID : this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_id,
+        last : last,
+        merchantID: (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
+      };
+
+      this.getSubCatProducts(data);
+    } else if (this.childCollapsed === -1 ) {
+        // product of category
+        const data = {
+          ID : this.superCategories[this.collapsed].category[this.subCollapsed].category_id,
+          last : last,
+          merchantID: (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
+        };
+
+        this.getCatProducts(data);
+    } else if (this.childCollapsed === -1 && this.subCollapsed === -1) {
+      // product of supercategory
+      const data = {
+        ID : this.superCategories[this.collapsed].super_category_id,
+        last : last,
+        merchantID: (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
+      };
+
+      this.getSuperCatProducts(data);
+    }
+  }
+
+
+
+
+  // once verified get single merchant
+  clickOnceVerified () {
+    this.merchantService.verifyMerchant().subscribe(
+      (response) => {
+          if (response.success === 200) {
+              this.localStorageService.set('user-data', response.data);
+
+              const user = JSON.parse(localStorage.getItem('user-data'));
+
+              if (user.merchant_id !== undefined) {
+                if (user.merchant_verification_status === 'Not verified') {
+                  this.merchantVerified = false;
+                } else {
+                  this.merchantVerified = true;
+                  if (user.merchant_subscription === 'FREELISTING') {
+                      this.merchantFreeListing = true;
+                  } else {
+                     this.merchantFreeListing = false;
+                  }
+                }
+                this.categoryEditAllowded = false;
+                this.mode = 1;
+              }
+          } else {
+            console.log(response.output.payload.message);
+            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+              duration: 5000,
+            });
+          }
+      }, (error) => {
+        console.log(error);
+        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+          duration: 5000,
+        });
+      }
+    );
+  }
+
+  // upgrade plan
+
+  planSelected(option) {
+
+    // if (option === 1) {
+    //     this.DataPlan = 'FREELISTING';
+    // } else
+    if (option === 3) {
+        this.DataPlan = 'ONLINE';
+    } else if (option === 2) {
+        this.DataPlan = 'INSTORE';
+    } else if (option === 4) {
+        this.DataPlan = 'ONLINE/INSTORE';
+    }
+
+    this.merchantsService.editMerchantPlans(this.DataPlan).subscribe(
+      (response) => {
+          if (response.success === 200 ) {
+
+            this.clickOnceVerified();
+            this.modalRef.hide();
+          } else {
+            console.log(response);
+            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+              duration: 5000,
+            });
+          }
+      }, (error) => {
+          console.log(error);
+          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+            duration: 5000,
+          });
+      }
+    );
+}
+
 }

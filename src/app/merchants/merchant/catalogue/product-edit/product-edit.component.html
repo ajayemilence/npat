@@ -1,26 +1,11 @@
-<!-- <div class="row">
-    <div class="row">
-        
-    </div>
-  </div>
-  <div *ngIf="showSuperLoading" class="InterimLoader">
-    <div class="loaderParent">
-      <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
-  </div>
-  </div>
-  
-  <div id="main">
-      <div class="col-md-9 col-md-push-3">.col-md-9 .col-md-push-3</div>
-  <div class="col-md-3 col-md-pull-9">.col-md-3 .col-md-pull-9</div>
-</div> -->
 <div class="row" >
     <div
-    style=" width: 80%;" 
-    class="col-xs-12 col-md-8 col-md-offset-1">
+    style=" width: 85%;" 
+    class="col-xs-12 ">
     
     <div class="row left" style="margin-top: 10px; margin-left: 5px;">
         <h2 
-        class="col-xs-10">Add Product</h2>
+        class="col-xs-10">Product</h2>
         <div class="row col-xs-2">
             <!-- <button 
             style="float: right; margin-top: 10px;"
@@ -32,12 +17,15 @@
         </div>
     </div>
     
-  
+    <section  *ngIf="isLoading">
+        <div class="loading">Loading&#8230;</div>
+    </section>
 
     <!-- form -->
 
-
-    <form
+    <!-- *ngIf="!isLoading" -->
+    <form 
+        
           (ngSubmit)="addProductForm(f, quantityTemplate)" 
           #f="ngForm" 
           class="productForm form-horizontal"
@@ -59,6 +47,7 @@
             #sku="ngModel"
             [(ngModel)]='defaultProductSku'
             autocomplete="off"
+            [disabled]="EditProductMode === true"
             >
             <span 
             *ngIf="!sku.valid && sku.touched" 
@@ -74,13 +63,12 @@
             ngModel 
             [(ngModel)]="this.defaultProductTax"
             class="form-control input"
-            required
             #tax="ngModel"
             autocomplete="off"
             >
-            <span 
+            <!-- <span 
             *ngIf="!tax.valid && tax.touched" 
-            class="help-block">Enter Valid Input!</span>
+            class="help-block">Enter Valid Input!</span> -->
          </div>
 
       <div class="form-group">
@@ -91,7 +79,7 @@
           name="superCategory" 
           class="form-control"
           ngModel
-          [disabled]="superCategories.length < 1"
+          [disabled]="superCategories.length < 1 || EditProductMode === true"
           (change)="onChange($event.target.value)"
           [ngModel]="defaultProductSuperCategory"
           >
@@ -111,7 +99,7 @@
           name="category" 
           class="form-control"
           ngModel
-          [disabled]="categories.length < 1"
+          [disabled]="categories.length < 1 || EditProductMode === true"
           [ngModel]="defaultProductCategory"
           >
           <option value="" >Please choose an option</option>
@@ -127,7 +115,7 @@
           name="subCategory" 
           class="form-control" 
           ngModel
-          [disabled]="subCategory.length < 1"
+          [disabled]="subCategory.length < 1 || EditProductMode === true"
           [ngModel]="defaultProductSubCategory"
           >
           <option value="">Please choose an option</option>
@@ -229,7 +217,9 @@
                       <tr *ngFor="let row of table; let i = index" style="padding-top: 10px;">
                         <td class="table-name">{{row.name}}</td>
                         <mat-chip-list>
-                            <mat-chip *ngFor="let val of row.values">{{val}}</mat-chip>
+                            <mat-chip 
+                            class="mat-chip-list"
+                            *ngFor="let val of row.values">{{val}}</mat-chip>
                           </mat-chip-list>
                         <!-- <td  class="table-value">{{row.values}}</td> -->
                         <th><span ><i 
@@ -312,6 +302,47 @@
        </div>
 
 
+
+
+        <div class="form-group" *ngIf="EditProductMode === true && Heading?.length > 0">
+            <label 
+            style="margin-top: 10px;"
+            for="attributes">Inventory: </label>
+            <button 
+            style="float: right; margin-bottom: 15px;"
+            class="btn btn-rounded btnnew"
+            (click)=addQuantityModal(quantityTemplate);
+            >
+            Add Quantity
+            </button>
+            <table class="table">
+                <thead>
+                    <tr>
+                    <th 
+                    *ngFor="let attribute of Heading; let i = index"
+                    class="table-name">{{attribute.product_spec_name}}</th>
+                    <th>Quantity</th>
+                    <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let row of InventoryTableEdit; let index  = index">
+                    <td *ngFor="let val of row.type">
+                        {{val.name}}
+                    </td>
+                    <td>{{row.quantity}}</td>
+                    <th><span ><i 
+                        (click)="editQuantityEdit(index, EditQuantityTemplate)"
+                        style="color: #49b6d6"
+                        class="fa fa-pencil fa-lg btnTable" ></i></span></th>
+                    <th><span ><i 
+                        (click)="deleteQuantityEdit(index)"
+                        style="color: #444444"
+                        class="fa fa-times fa-lg btnTable" ></i></span></th>
+                    </tr>
+                </tbody>
+            </table>
+       </div>
        <div
        *ngIf="table.length === 0"
        class="form-group">
@@ -342,6 +373,7 @@
         ngModel
         autocomplete="off"
         [ngModel]="defaultProductType"
+        [disabled]= "subscriptionStatus === 0"
         required >
             <option value="">Please choose an option</option>
             <option value="online" >ONLINE</option>
@@ -360,7 +392,7 @@
         </select> -->
          </div>
 
-       <div class="form-group" >
+       <div class="form-group" *ngIf='!EditProductMode' >
             <label for="images">Product Images : </label>
             <!-- <div class="border">
                 <h4>Example-2 (Theme - dragNDrop)</h4>
@@ -389,9 +421,9 @@
               </div>
            </div>
           </div>
-        <!-- <div class="form-group" *ngIf='EditProductMode'>
+        <div class="form-group" *ngIf='EditProductMode'>
             <label for="images">Product Images : </label>
-            <div class="row" >
+            <div class="row col-xs-12 " style="margin-left: 50px; margin-right: 50px">
                     
                 <input  
                 type="file"  
@@ -401,14 +433,71 @@
                 ngModel
                 accept="image/*"
                 (change)="onFileChange($event.target.files)"
-                multiple
+                style="margin-left: -50px"
+                [disabled]="noMoreImages"
                 >
+                <div class="col-xs-2">
+                    <i id='close'
+                    (click)="removeImage(1)"
+                    class="fa fa-times" aria-hidden="true"></i>
+                    <img 
+                    class="image"
+                    [src]="ImageOne" 
+                    alt="Snow" 
+                    style="width: 120px; height: 120px;"
+                    
+                    >
+                </div>
+                <div class="col-xs-2">
+                    <i id='close'
+                    (click)="removeImage(2)"
+                    class="fa fa-times" aria-hidden="true"></i>
+                    <img 
+                    class="image"
+                    [src]="ImageTwo" 
+                    alt="Snow" 
+                    style="width: 120px; height: 120px;"
+                    
+                    >
+                </div>
+                <div class="col-xs-2">
+                    <i id='close'
+                    (click)="removeImage(3)"
+                    class="fa fa-times" aria-hidden="true"></i>
+                    <img 
+                    class="image"
+                    [src]="ImageThree" 
+                    alt="Snow" 
+                    style="width: 120px; height: 120px;"
+                    
+                    >
+                </div>
+                <div class="col-xs-2">
+                    <i id='close'
+                    (click)="removeImage(4)"
+                    class="fa fa-times" aria-hidden="true"></i>
+                    <img 
+                    class="image"
+                    [src]="ImageFour" 
+                    alt="Snow" 
+                    style="width: 120px; height: 120px;"
+                    
+                    >
+                </div>
+                <div class="col-xs-2">
+                    <i id='close'
+                    (click)="removeImage(5)"
+                    class="fa fa-times" aria-hidden="true"></i>
+                    <img 
+                    class="image"
+                    [src]="ImageFive" 
+                    alt="Snow" 
+                    style="width: 120px; height: 120px;"
+                    
+                    >
+                </div>
                 
-                <img [src]="ImageOne" 
-                alt="Snow" 
-                style="width:18%"
-                >
-                <img [src]="ImageTwo" 
+                <!-- <img [src]="ImageTwo" 
                 alt="Snow" 
                 style="width:18%"
                 >
@@ -424,9 +513,9 @@
                 [src]="ImageFive" 
                 alt="Snow" 
                 style="width:18%"
-                >
+                > -->
             </div>
-        </div> -->
+        </div>
 
         <!-- <div class="col-xs-2 text-center">
             <label for="images">Product Images : </label>
@@ -475,11 +564,18 @@
                     </div>   -->
 
               
-    <div class="form-group">
+    <div class="form-group" *ngIf="!EditProductMode">
         <button type="reset" class="btn btnnew" (click)="resetForm(f)">Reset</button>
-        <button type="submit" class="btn  btnnew2">Add</button>
+        <button type="submit" class="btn  btnnew2" (click)="submitForm()">Add</button>
     </div>
-
+    <div class="form-group" *ngIf="EditProductMode">
+        <button 
+        style="margin-top: 10px; width: 150px; float: right"
+        type="submit" 
+        class="btn  btnnew2"
+        (click)="submitForm()"
+        >Save</button>
+    </div>
      </form>
     </div>
 </div>
@@ -508,6 +604,7 @@
             required
             [(ngModel)]="keyName"
             autocomplete="off"
+            [disabled]="this.editAttributeStatus"
             >
             <ul class="list-group" *ngIf="attributeOptions.length > 0">
                 <button type="button"
@@ -535,7 +632,7 @@
                 [(ngModel)]="addNewValue"
                 >
                 <span 
-                (click)="newElement()" 
+                (click)="newElement(addNewValue)" 
                 class="addBtn">Add Value</span>
             </div>
 
@@ -739,7 +836,7 @@
                 ngModel
                 (change)="onChangeQuantityOption($event.target.value, index)"
                 >
-                
+                <option value="">Please choose an option</option>
                     <option 
                     *ngFor="let val of attribute.product_spec_value; let i = index"
                     [value]="val"
@@ -766,7 +863,7 @@
                  <div class="error" *ngIf="quantityError" >{{quantityErrorMessage}}</div>
     
           <div class="row" style="float: right; margin-right: 20px; margin-bottom: 10px;">
-              <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+              <button class="btn btn-modal" type="button" (click)="cancelInventory()" >Cancel</button>
               <button class="btn btnnew" type="submit" >Add</button>
           </div>
       </form>
@@ -800,22 +897,6 @@
                         style="color: #444444"
                         class="fa fa-times fa-lg" ></i></span></th>
                     </tr>
-
-
-                    <!-- <tr *ngFor="let row of quantityTable">
-                    <td *ngFor="let val of row">
-                        {{val}}
-                    </td>
-                    <td class="table-name">{{val.quantity}}</td>
-                    <th><span ><i 
-                        (click)="editAttribute(attributeTemplate, i)"
-                        style="color: #49b6d6"
-                        class="fa fa-pencil fa-lg" ></i></span></th>
-                    <th><span ><i 
-                        (click)="deleteAttribute(i)"
-                        style="color: #444444"
-                        class="fa fa-times fa-lg" ></i></span></th>
-                    </tr> -->
                 </tbody>
             </table>
         </div>
@@ -831,3 +912,89 @@
     </div>
     </ng-template>
   
+<!-- edit quantity for existing attributes--> 
+<ng-template #EditQuantityTemplate class="model">
+    <div class="modal-header">
+      <h4 class="modal-title pull-left title-model">Edit Quantity</h4>
+    </div>
+    <div class="modal-body">
+      <form
+        
+        (ngSubmit)="editQuantityForm(f)" 
+        #f="ngForm" 
+      >
+      <div 
+      *ngFor="let attribute of EditQuantityArray; let i = index"
+        class="form-group" >
+            <label 
+            [for]="attribute.product_spec_name">{{attribute.product_spec_name}} : </label>
+            <ul class="list-group" >
+                <li 
+                style="background: transparent;"
+                class="list-group-item">{{attribute.selectedVal}}</li>
+            </ul>
+        </div>
+       
+        <div class="form-group">
+                <label for="quantity">Quantity : </label>
+                <input 
+                type="number" 
+                id="quantity" 
+                name="quantity" 
+                ngModel 
+                [(ngModel)]="this.EditQuantity"
+                class="form-control input"
+                required
+                #quantity="ngModel"
+                >
+                <span 
+                *ngIf="!quantity.valid && quantity.touched" 
+                class="help-block">Enter Valid Input!</span>
+        </div>
+             <div class="error" *ngIf="quantityError" >{{quantityErrorMessage}}</div>
+
+      <div class="row" style="float: right; margin-right: 20px; margin-bottom: 10px;">
+          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+          <button class="btn btnnew" type="submit" >Save</button>
+      </div>
+      <div class="row"></div>
+  </form>
+
+</div>
+</ng-template>
+
+<!-- <tbody>
+        <tr *ngFor="let row of InventoryTableEdit; let index  = index">
+        <td *ngFor="let val of row.type">
+            {{val.name}}
+        </td>
+        <td *ngIf="!EditQuantity"> {{row.quantity}} </td>
+        <td>
+        <input 
+        *ngIf="EditQuantity"
+        type="text" 
+        id="quantity" 
+        name="quantity" 
+        ngModel 
+        [(ngModel)]="row.quantity"
+        class="form-control input"
+        required
+        #quantity="ngModel"
+        autocomplete="off"
+        >
+        </td>
+
+        <th *ngIf="!EditQuantity"><span ><i 
+            (click)="editQuantityEdit()"
+            style="color: #49b6d6"
+            class="fa fa-pencil fa-lg btnTable" ></i></span></th>
+        <th *ngIf="EditQuantity"><span ><i 
+            (click)="SaveQuantityEdit(quantity)"
+            style="color: #444444"
+            class="fa fa-pencil fa-lg btnTable" ></i></span></th>
+        <th><span ><i 
+            (click)="deleteQuantityEdit(index)"
+            style="color: #444444"
+            class="fa fa-times fa-lg btnTable" ></i></span></th>
+        </tr>
+    </tbody> -->

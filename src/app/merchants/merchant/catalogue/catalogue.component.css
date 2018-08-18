@@ -9,7 +9,8 @@ element {
     height: 700px;;
     display: -webkit-flex; /* Safari */
     display: flex;
-    margin-bottom: 50px; 
+    margin-bottom: 50px;
+    margin-left: -60px;
 }
 
 .col1 {
@@ -98,6 +99,7 @@ element {
     font-family: 'SFSemiBold';
     font-weight: bold;
     margin-top: -10px;
+    margin-left: -40px;
 
 }
 
@@ -347,13 +349,18 @@ input[type=file] {
 }
 
 .headingProduct h3 {
-    margin-top: -5px;
+    /* margin-top: -5px; */
     font-size: 15px;
     font-family: 'Lato', sans-serif;
-    font-weight: bold;
+    /* font-weight: bold; */
     padding-left: 10px; 
 }
-
+.headingProduct textarea {
+    width: 100%;
+    align-content: left;
+    overflow:auto;
+    border: none;
+}
 .description p {
     margin-top: 10px;
     color: rgba(78, 77, 77, 0.6);
@@ -461,9 +468,11 @@ hr {
   }
 
   .wrapper {
-    max-width: 650px;
+    /* max-width: 650px; */
+    width: 100%;
     position: relative;
-    padding: 10px;
+    /* margin-right: 10px; */
+
 }
 
 .rowProduct {
@@ -690,3 +699,91 @@ ul li{
 }
 
 /* .menuOption i {} */
+
+/* .detail-card */
+
+/* .image {
+    width: 10px;
+    background-image: url('../../../../assets/images/upload.png');
+} */
+/* showTable {
+    height: 300px;
+    width: 300px;
+    margin: 10px;
+    overflow: auto;
+}
+table {
+    border: 1px solid #dddddd;
+    overflow-x: auto;
+    margin: 10px;
+    display:block; 
+} 
+
+
+td, th {
+    border: 1px solid #dddddd;
+    text-align: left;
+    padding: 8px;
+}
+
+tr:nth-child(even) {
+    background-color: #dddddd;
+}
+*/
+
+.styleviewmore {
+    color: #49b6d6; 
+    text-decoration: underline;
+    text-align: center
+}
+
+.alert p {
+    font-size: 18px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.alert button {
+    font-size: 20px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.login-btn {
+    font-size: 25px;
+    line-height: 1.5;
+    color: #fff;
+    /* text-transform: uppercase; */
+    width: 95%;
+    height: 55px;
+    display: -webkit-box;
+    display: -webkit-flex;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 25px;
+    margin: 15px;
+    -webkit-transition: all 0.4s;
+    -o-transition: all 0.4s;
+    -moz-transition: all 0.4s;
+    transition: all 0.4s;
+  }
+  
+  .login-btn:hover {
+    background: #353535;
+  }
+
+  .my-float{
+    margin-top: 2px;
+    float: right;
+    /* margin-left:-10px; */
+    color: #428BCA
+}
+
+.my-float:hover {
+
+  transform: translateY(4px);
+  /* box-shadow: 0 1.5px 0 0px #B6B6B5; */
+}

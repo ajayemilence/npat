@@ -88,6 +88,13 @@
     border: 1px border-style red;
   }
    
+  .valid {
+    border: 1px border-style rgb(18, 77, 18);
+  }
+
+  .invalid {
+    border: 1px border-style red;
+  }
 
   /* Input File */
   input[type=file] {

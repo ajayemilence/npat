@@ -4,7 +4,9 @@
 }
 
 .table {
-    width:75%;
+    width:100%;
+    border: #333333;
+    box-shadow: 0 0 30px -3px rgba(153, 153, 153, 0.5);
 }
 .btn.btnAccept {
     background-color: #49b6d6;
@@ -73,6 +75,9 @@ tr {
 }
 .tableRow {
     width: 11%;
+    height :60px;
+    text-align: center;
+    font-size: 16px;
 }
 .tableRowImage {
     width: 11%;
@@ -301,16 +306,12 @@ input[type=file] {
     }
   }
 
-
-  .listGroup {
+  .image {
+    background-image : url('../../../assets/images/upload.png');
+    width: 60px;
     height: 60px;
   }
-  .w3-circle{
-    border-radius:50%;
-    width: 100px;
-    height: 80px;
-    /* border: 1px solid #B6B6B5;
-    border-radius: 500px;
-    -webkit-border-radius: 500px;
-    -moz-border-radius: 500px; */
+
+  table tr {
+    height: 40px
   }

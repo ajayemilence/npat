@@ -5,6 +5,7 @@ import { GlobalService } from '../shared/global.service';
 import { NgForm } from '@angular/forms';
 import { CatalogueService } from '../merchants/merchant/catalogue/catalogue.service';
 import { MatSnackBar } from '@angular/material';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-request',
@@ -35,26 +36,33 @@ export class RequestComponent implements OnInit {
   currentCategory;
   currentMerchant;
   categoryImage;
-
+  showViewMore = true;
   isLoading = true;
+  // panelOpenState: Boolean = false;
+
+  // customCollapsedHeight: String = '190px';
+  // customExpandedHeight: String = '190px';
+  merchantWithRequest = [];
   constructor(private requestService: RequestService,
               private modalService: BsModalService,
               private globalService: GlobalService,
               private catalogueService: CatalogueService,
-              public snackBar: MatSnackBar
+              public snackBar: MatSnackBar,
+              private router: Router
             ) { }
 
   ngOnInit() {
-
+    localStorage.removeItem('request-merchant');
     const data = {
-      last_id: ''
+      last_id: '',
+      count : 0,
     };
 
       this.requestService.currentMessage.subscribe(
         (currentMessage) => {
-            console.log(currentMessage);
+
             this.show = currentMessage;
-            console.log(this.show);
+
             if (this.show === 1) {
               this.isLoading = true;
               this.Heading = 'Super Category';
@@ -69,7 +77,7 @@ export class RequestComponent implements OnInit {
               this.getSubCategoryRequest(data);
             } else if (this.show === 4) {
               this.isLoading = true;
-              this.Heading = 'Product';
+              this.Heading = 'Merchants';
               this.getProductRequest(data);
             }
         }
@@ -80,13 +88,18 @@ export class RequestComponent implements OnInit {
 // get super-category requests
 
 getSuperCategoryRequest(data: any) {
-  console.log(data);
+
   this.requestService.getSuperCategoryRequest(data).subscribe(
     (response) => {
-        console.log(response, 'the end');
+
         if (response.success === 200) {
             this.isLoading = false;
-            this.superCategoryRequests = response.data;
+            if (response.data.length < 1) {
+              this.superCategoryRequests = [];
+            } else {
+              this.superCategoryRequests = response.data;
+            }
+
         } else {
           this.snackBar.open('Failed To Load Requests', 'Dismiss', {
             duration: 5000,
@@ -104,17 +117,19 @@ getSuperCategoryRequest(data: any) {
 
 // get Category
 getCategoryRequest(data: any) {
-  console.log(data);
+
   this.requestService.getCategoryRequest(data).subscribe(
     (response) => {
-      console.log(response, 'the end');
+
       if (response.success === 200) {
           this.isLoading = false;
-          this.superCategoryRequests = response.data;
-          console.log(this.superCategoryRequests);
-          this.superCategoryRequests.splice(0, 1);
-          console.log(this.superCategoryRequests);
-      } else {
+          // this.superCategoryRequests = response.data;
+          if (response.data.length < 1) {
+            this.superCategoryRequests = [];
+          } else {
+            this.superCategoryRequests = response.data;
+          }
+
         this.snackBar.open('Failed To Load Requests', 'Dismiss', {
           duration: 5000,
         });
@@ -131,15 +146,21 @@ getCategoryRequest(data: any) {
 
 // get Sub Category
 getSubCategoryRequest(data: any) {
-  console.log(data);
   this.requestService.getSubCategoryRequest(data).subscribe(
     (response) => {
-      console.log(response, 'the end');
+
       if (response.success === 200) {
+
           this.isLoading = false;
-          this.superCategoryRequests = response.data;
-          this.superCategoryRequests.splice(0, 1);
-          console.log(this.superCategoryRequests);
+          if (response.data.length < 1) {
+            this.superCategoryRequests = [];
+          } else {
+            this.superCategoryRequests = response.data;
+          }
+
+          // this.superCategoryRequests = response.data;
+          // this.superCategoryRequests.splice(0, 1);
+
       } else {
         this.snackBar.open('Failed To Load Requests', 'Dismiss', {
           duration: 5000,
@@ -164,14 +185,15 @@ requestStatus(categoryID, val) {
 
     this.requestService.requestResponse(data).subscribe(
       (response) => {
-        console.log(response);
+
         if (response.success === 200) {
           const message = (val === 0) ? 'Successfully to rejected Request' : 'Successfully to accepted Request';
           this.snackBar.open(message, 'Dismiss', {
             duration: 5000,
           });
           const data2 = {
-            last_id: ''
+            last_id: '',
+            count : 0
           };
 
 
@@ -185,7 +207,7 @@ requestStatus(categoryID, val) {
             this.Heading = 'Sub-Category';
             this.getSubCategoryRequest(data2);
           } else if (this.show === 4) {
-            this.Heading = 'Product';
+            this.Heading = 'Merchants';
             this.getProductRequest(data2);
           }
 
@@ -207,17 +229,48 @@ requestStatus(categoryID, val) {
 
 // get Product
 getProductRequest(data: any) {
-  console.log(data);
-  // this.requestService.getSuperCategoryRequest(data).subscribe(
-  //   (response) => {
-  //       console.log(response, 'the end');
-  //   },
-  //   (error) => {
-  //       console.log(error);
-  //   }
-  // );
+
+  this.requestService.getMerchantWithRequestProducts(data).subscribe(
+    (response) => {
+
+        this.isLoading = false;
+        // merchantWithRequest
+        if (response.success === 200) {
+            if (data.count === 1) {
+              if (response.data.length < 25) {
+                this.showViewMore = false;
+              }
+              response.data.forEach (merchant => {
+                this.merchantWithRequest.push(merchant.Merchant);
+              });
+            } else {
+              this.merchantWithRequest = [];
+              response.data.forEach (merchant => {
+                this.merchantWithRequest.push(merchant.Merchant);
+              });
+            }
+
+
+        } else {
+          this.snackBar.open('Failed To Load Requests', 'Dismiss', {
+            duration: 5000,
+          });
+        }
+    },
+    (error) => {
+        console.log(error);
+        this.snackBar.open('Failed To Load Requests', 'Dismiss', {
+          duration: 5000,
+        });
+    }
+  );
 }
 
+getProductRequests(index) {
+
+  this.router.navigate(['/requests/products']);
+  this.requestService.setRequestMerchant(this.merchantWithRequest[index]);
+}
 
 editCategory(merchant, category, template: TemplateRef<any>) {
   // this.displayImage = 'assets/images/upload.png';
@@ -270,11 +323,11 @@ onFileChange(file: FileList) {
 editCategoryForm (form: NgForm) {
   // editing super category
   if (form.valid === false ) {
-      console.log('form not valid');
+
   } else if (form.valid === true ) {
-    console.log('form valid');
+
     if (this.currentCategory.super_category_id !== undefined) {
-      console.log('supercategoryedit');
+
       const input = {
         categoryID : this.currentCategory.super_category_id,
         form : form.value,
@@ -282,13 +335,13 @@ editCategoryForm (form: NgForm) {
       };
 
 
-      console.log(input, 'Edit super category');
+
       this.catalogueService.editSuperCategory(input)
       .subscribe(
         (response) => {
-        console.log(response);
+
          if (response.success === 200) {
-          console.log(response, 'response');
+
           this.displayImage = 'assets/images/upload.png';
           form.reset();
           this.modalRef.hide();
@@ -312,6 +365,9 @@ editCategoryForm (form: NgForm) {
         },
         (error) => {
           console.log('error', error);
+          this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
+            duration: 5000,
+          });
         }
       );
     } else if (this.currentCategory.category_id !== undefined) {
@@ -330,9 +386,9 @@ editCategoryForm (form: NgForm) {
       this.catalogueService.editCategory(input)
       .subscribe(
         (response) => {
-        console.log(response);
+
          if (response.success === 200) {
-          console.log(response, 'response');
+
           this.displayImage = 'assets/images/upload.png';
           form.reset();
           this.modalRef.hide();
@@ -368,14 +424,14 @@ editCategoryForm (form: NgForm) {
         superID : this.currentCategory.sub_category_parent
       };
 
-      console.log(input, 'editing sub category');
+
 
       this.catalogueService.editSubCategory(input)
       .subscribe(
         (response) => {
-        console.log(response);
+
          if (response.success === 200) {
-          console.log(response, 'response');
+
           this.displayImage = 'assets/images/upload.png';
           form.reset();
           this.modalRef.hide();
@@ -411,6 +467,15 @@ editCategoryForm (form: NgForm) {
 // resetiing image
   headerClicked() {
     this.displayImage = 'assets/images/upload.png';
+  }
+
+
+  viewmore() {
+    const data = {
+      count : 1,
+      last_id: this.merchantWithRequest[this.merchantWithRequest.length - 1].merchant_id
+    };
+    this.getProductRequest(data);
   }
 }
 

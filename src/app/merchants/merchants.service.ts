@@ -22,36 +22,29 @@ export class MerchantService {
 
 
     addMerchant(data: any) {
-        // const adminId = localStorage.getItem('user-data');
-        // console.log(adminId, 'admin_id');
 
         const user = this.localStorageService.get('user-data');
-        console.log(user.admin_id);
 
 
         const body = new FormData();
         body.append('merchant_email', data.form.email);
         body.append('merchant_password', data.form.password);
-        body.append('merchant_first_name', data.form.fname);
-        body.append('merchant_last_name', data.form.lname);
+        body.append('merchant_first_name', data.form.lname);
+        body.append('merchant_last_name', '');
         body.append('merchant_parent_admin', user.admin_id);
         body.append('merchant_description', data.form.url);
         body.append('merchant_address', data.place);
-        body.append('merchant_display_name', data.form.displayName);
+        body.append('merchant_display_name', data.form.fname);
         body.append('merchant_phone_no', data.form.phoneNumber);
         body.append('merchant_lat', data.lat);
         body.append('merchant_long', data.lng);
 
 
         if (data.image === null) {
-            console.log('image null');
             body.append('merchant_profile_pic', '');
         } else {
-            console.log('image not null', data.image);
             body.append('merchant_profile_pic', data.image, data.image.name );
         }
-
-        console.log(data, 'data');
 
         return this.http.post(this.global.serverUrl + 'merchant/en/register',
         body,
@@ -59,7 +52,6 @@ export class MerchantService {
         .map(
             (response: Response) => {
                 const output = response.json();
-                console.log(output, 'output');
                 return output;
             }
         ).catch(
@@ -81,25 +73,23 @@ export class MerchantService {
 
 
          const body = new FormData();
-        body.append('merchant_display_name', data.form.displayName);
-        body.append('merchant_first_name', data.form.fname);
-        body.append('merchant_last_name', data.form.lname);
+        body.append('merchant_display_name', data.form.fname);
+        body.append('merchant_first_name', data.form.lname);
+        body.append('merchant_last_name', '');
         body.append('merchant_description', data.form.url);
         body.append('merchant_address', data.place);
-        body.append('merchant_phone_no', data.form.phoneNumber);
+        // body.append('merchant_phone_no', data.form.phoneNumber);
         body.append('merchant_lat', data.lat);
         body.append('merchant_long', data.lng);
         body.append('merchant_id', data.merchantID);
-        body.append('merchant_parent_admin', (user.merchant_id === undefined) ? user.admin_id : '' );
+        // body.append('merchant_parent_admin', (user.merchant_id === undefined) ? user.admin_id : '' );
 
-        if (data.image === null) {
-            console.log('image null');
+        if (data.image === null || data.image === undefined) {
+
             body.append('merchant_profile_pic', '');
         } else {
-            console.log('image not null', data.image);
             body.append('merchant_profile_pic', data.image, data.image.name );
         }
-        console.log(data, 'data');
 
         return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant',
         body,
@@ -107,7 +97,6 @@ export class MerchantService {
         .map(
             (response: Response) => {
                 const output = response.json();
-                console.log(output, 'output');
                 return output;
             }
         ).catch(
@@ -126,7 +115,9 @@ export class MerchantService {
          });
 
         return this.http.get(
-            this.global.serverUrl + 'merchant/en/get_all_merchant?limit=6&last_id=' + data.last_id,
+            this.global.serverUrl + 'merchant/en/get_all_merchant?limit=6&last_id=' + data.last_id
+            + '&pre_id=' + data.pre_id +
+            '&page_no=' + data.page_no,
             {headers: headers})
         .map(
             (response: Response) => {
@@ -142,14 +133,120 @@ export class MerchantService {
     }
 
     setMerchant(data: any) {
-        console.log('in set Service part', this.merchantInfo);
         this.merchantInfo = data;
         // this.messageSource.next(data);
     }
 
     getMerchant() {
-        console.log('in get Service part', this.merchantInfo);
         return this.merchantInfo;
+    }
+
+
+    uploadDocuments(data: any) {
+        // merchant/en/add_merchant_doc
+        const user = this.localStorageService.get('user-data');
+
+
+
+        const body = new FormData();
+        body.append('merchant_id', user.merchant_id);
+        body.append('merchant_licence_id', data.form.license);
+        body.append('merchant_pan_id', data.form.pan);
+
+        data.imgLicence.forEach(image => {
+            body.append('merchant_licence_image', image, image.name);
+        });
+        body.append('merchant_pan_image', data.imgPan, data.imgPan.name);
+
+        if (data.form.gst !== '') {
+
+            body.append('merchant_gst_id', data.form.gst);
+            body.append('merchant_gst_image', data.gstImage, data.gstImage.name);
+        }
+
+
+
+        if (data.doc === undefined) {
+            body.append('additional_image', '');
+        } else {
+            data.doc.forEach(image => {
+                body.append('additional_image', image, image.name );
+            });
+
+        }
+
+
+
+        return this.http.post(this.global.serverUrl + 'merchant/en/add_merchant_doc',
+        body,
+        {headers: this.global.requestHeaders}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    editMerchantPlans(data: any) {
+
+        const user = this.localStorageService.get('user-data');
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(localStorage.getItem('token'))
+         });
+
+
+         const body = new FormData();
+        body.append('merchant_subscription', data);
+        body.append('merchant_id', user.merchant_id);
+
+
+        return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+
+    verifyMerchant() {
+        // /merchant/en/get_single_merchant?merchant_id=39
+        const headers = new Headers({
+            'd_token':  JSON.parse(localStorage.getItem('token'))
+         });
+         const merchant_id = JSON.parse(localStorage.getItem('user-data')).merchant_id;
+
+        return this.http.get(
+            this.global.serverUrl + 'merchant/en/get_single_merchant?merchant_id=' + merchant_id,
+            {headers: headers})
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
     }
 }
 

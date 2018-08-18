@@ -72,6 +72,11 @@ import { RequestComponent } from './request/request.component';
 import { RequestService } from './request/request.service';
 import { MerchantCatelogueComponent } from './merchant-catelogue/merchant-catelogue.component';
 import { MerchantCatelogueService } from './merchant-catelogue/merchant-catelogue.service';
+import { HashLocationStrategy, LocationStrategy } from '@angular/common';
+import { ProductRequestsComponent } from './request/product-requests/product-requests.component';
+import { VerificationComponent } from './verification/verification.component';
+import { VerifyMerchantComponent } from './verify-merchant/verify-merchant.component';
+import { VerifyMerchantService } from './verify-merchant/verify-merchant.service';
 
 
 @NgModule({
@@ -91,7 +96,10 @@ import { MerchantCatelogueService } from './merchant-catelogue/merchant-catelogu
     MerchantAuthComponent,
     MerchantNewComponent,
     RequestComponent,
-    MerchantCatelogueComponent
+    MerchantCatelogueComponent,
+    ProductRequestsComponent,
+    VerificationComponent,
+    VerifyMerchantComponent
   ],
   imports: [
     BrowserModule,
@@ -126,7 +134,10 @@ import { MerchantCatelogueService } from './merchant-catelogue/merchant-catelogu
     AngularFileUploaderModule, // for dropdown file upload
     MatTableModule,
     MatSnackBarModule,
-    MatMenuModule
+    MatMenuModule,
+    MatStepperModule,
+    MatTooltipModule,
+    MatDialogModule
   ],
   exports: [
     MatNativeDateModule ,
@@ -173,7 +184,10 @@ import { MerchantCatelogueService } from './merchant-catelogue/merchant-catelogu
     MerchantAuthService,
     ProductService,
     RequestService,
-    MerchantCatelogueService
+    MerchantCatelogueService,
+    VerifyMerchantService
+    // provide: LocationStrategy,
+    // useClass: HashLocationStrategy
   ],
   bootstrap: [AppComponent]
 })

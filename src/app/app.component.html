@@ -150,13 +150,15 @@
   *ngIf="admin"
   class="example-container" 
   [class.example-is-mobile]="mobileQuery.matches">
- <mat-toolbar color="primary" class="example-toolbar">
+ <mat-toolbar color="primary" class="example-toolbar col-xs-12">
    
-   <button mat-icon-button (click)="snav.toggle()">
+   <button mat-icon-button (click)="snav.toggle()" class="col-xs-1">
    <mat-icon>menu</mat-icon></button>
-   <h1 class="example-app-name">Nearr</h1>
-
-   <div class="nav-options">
+   <h1 
+   (click)="logoClicked()" 
+   class="example-app-name col-xs-3">Nearr</h1>
+  <div class="col-xs-6"></div>
+   <div class="nav-options col-xs-6">
       <div class="collapse navbar-collapse"
       style="top: 0px; position: relative;"
       >
@@ -173,19 +175,27 @@
                   alt="E Commerce" 
                   style="margin-top:10px; max-height:50px; max-width:50px; cursor: pointer;" 
                   class="img-responsive img-circle"
-                  href="/"
                   >   
             </li>
           <li><a 
-            style="cursor: pointer; font-size: 16px; font-family: 'SFMedium'; margin-top: 3px; " >
-            user name</a></li>
+            style="pointer-events: none;
+                    cursor: default;
+                    font-size: 16px; 
+                    font-family: 'SFMedium';
+                    margin-top: 3px; " >
+            UserName</a></li>
             <li class="dropdown">
               <a class="dropdown-hover"><i 
                 style="font-size: 10px; margin-left: -20px;"
                 class="glyphicon glyphicon-menu-down"></i></a>
                 <ul class="dropdown-menu dropdown-hover-menu">
+                  <li *ngIf="merchant == true"><a (click)="editProfile()">Edit Profile</a></li>
+                  <li><a *ngIf="merchant == true" 
+                    (click)="upgradePlanModal(upgradePlanTemplate)"
+                    >Subscription Plans</a></li>
+                  <li><a *ngIf="merchant == true">Change Password</a></li>
+                  <li><a *ngIf="merchant == true">My Documents</a></li>
                   <li><a (click)="logout()">Logout</a></li>
-                  <li><a (click)="editProfile()">Edit Profile</a></li>
                 </ul>
               </li>  
         </ul>
@@ -206,29 +216,30 @@
    style="width: 204px">
      <mat-nav-list>
        <a mat-list-item></a>
-       <a mat-list-item routerLink="/orders"
+
+       <a mat-list-item routerLink="/merchants" 
+       *ngIf="merchant == false"
+       >
+       <!-- <span 
+       class="pull-left showopacity glyphicon glyphicon-home"
+       ></span> -->
+       <i class="fa fa-home" style="margin-right: 4px;"></i>
+       Merchants</a>
+       <a mat-list-item (click)=openOrders() 
        >
         <!-- <span 
         class="pull-left showopacity glyphicon glyphicon-menu-hamburger"
         ></span> -->
         <i class="fa fa-list-ul" style="margin-right: 4px;"></i>
          Orders</a>
-      <a mat-list-item routerLink="/merchants" 
-      *ngIf="merchant == false"
-      >
-      <!-- <span 
-      class="pull-left showopacity glyphicon glyphicon-home"
-      ></span> -->
-      <i class="fa fa-home" style="margin-right: 4px;"></i>
-      Merchants</a>
-      <a mat-list-item routerLink="/orders">
+     
+      <a mat-list-item >
       <!-- <span 
       class="pull-left showopacity glyphicon glyphicon-user"
       ></span> -->
       <i class="fa fa-user" style="margin-right: 4px;"></i>
       Customer</a>
       <a mat-list-item 
-      routerLink="/orders"
       *ngIf="merchant == false"
       >
       <!-- <span 
@@ -269,10 +280,11 @@
                     <li><a (click)="ShowRequest(2)">Categories</a></li>
                     <li><a (click)="ShowRequest(3)">Sub Categories</a></li>
                     <li><a (click)="ShowRequest(4)">Products</a></li>
+                    <li><a (click)="ShowRequest(5)">Verify Merchant</a></li>
                 </ul>
             </div>
         </div>
-      <a mat-list-item routerLink="/orders">
+      <a mat-list-item >
       <!-- <span 
         class="pull-left showopacity glyphicon glyphicon-cog"
         ></span> -->
@@ -292,3 +304,48 @@
  <router-outlet></router-outlet>
 </div>
 
+
+
+<ng-template #upgradePlanTemplate>
+    <div class="modal-header">
+      <h2 class="modal-title pull-left" style="margin-left: 5px;">Plans</h2>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <!-- <button class="btn btn-primary login-btn" (click)="planSelected(1)" >Free Listing</button> -->
+          <button class="btn btn-primary login-btn" (click)="planSelected(2)" >Instore</button>
+          <button class="btn btn-primary login-btn" (click)="planSelected(3)" >Online</button>
+          <button class="btn btn-primary login-btn" (click)="planSelected(4)" >Online & Instore</button>
+      
+                <i 
+                (click)="planDetailModal(PlanDetailTemplate)"
+                matTooltip="Plans Information!"
+                matTooltipPosition = 'before'
+                class="fa fa-info-circle fa-3x my-float"></i>
+          
+    
+    </div>
+    <div class="row" style="height: 60px;"></div>
+
+</ng-template>
+
+<ng-template #PlanDetailTemplate >
+    <div class="modal-header" style="padding:15px ">
+      <h2 class="modal-title pull-left">Plan Detail(s)</h2>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body" style="padding:15px ">
+        <!-- <h3 style="font-size: 22px; font-weight: bold">Free Listing</h3>
+        <p  style="font-size: 18px;">List the store with some prominent offers.</p> -->
+        <h3 style="font-size: 22px; font-weight: bold">Instore</h3>
+        <p  style="font-size:18px;">Register the store, list products, prominent offer of store (to be displayed in AR window), customer to purchase the product instore with some additional discount coming from nearr. On instore purchase, an sms should be triggered to the customer with an unique code which can be validated using seller app. </p>
+        <h3 style="font-size: 22px; font-weight: bold">Online</h3>
+        <p  style="font-size: 18px;"> Register the store, list products, prominent offer of store (to be displayed in AR window), product will be dilvered to customer's doorstep.</p>
+    
+    </div>
+    <div class="row" style="height: 60px;"> </div>
+</ng-template>

@@ -1,0 +1,976 @@
+<!-- <mat-horizontal-stepper 
+  class="col-xs-10 col-xs-offset-1"
+  [linear]="isLinear" #stepper="matHorizontalStepper">
+  <mat-step [stepControl]="firstFormGroup">
+      <form 
+      (ngSubmit)="onSignup(f)" 
+      #f="ngForm"
+      class="login-form ">
+      <div class="col-xs-8 col-xs-offset-2">
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
+      </div>
+
+
+      <div class="col-xs-8 col-xs-offset-2">
+        <div class="form-group">
+          <label for="email">Email</label>
+          <input 
+          type="text" 
+          id="email" 
+          name="email" 
+          ngModel 
+          class="form-control input"
+          required
+          email
+          #email="ngModel"
+          placeholder="Enter Email Address"
+          >
+          <span 
+          *ngIf="!email.valid && email.touched" 
+          class="help-block">Enter Valid Email Address!</span>
+        </div>
+      </div>
+      <div class="col-xs-8 col-xs-offset-2">
+      <div class="form-group">
+        <label for="password">Password</label>
+        <input 
+        type="password" 
+        id="password" 
+        name="password" 
+        ngModel 
+        class="form-control input"
+        required
+        minlength="6"
+        #pwd="ngModel"
+        placeholder="Enter Password"
+        >
+        <span 
+        *ngIf="!pwd.valid && pwd.touched " 
+        class="help-block">Minimum Length 6</span>
+      </div>
+      </div>
+      <div class="col-xs-8 col-xs-offset-2">
+        <div class="form-group">
+          <label for="phoneNumber">Phone Number</label>
+          <input 
+          type="text" 
+          id="phoneNumber" 
+          name="phoneNumber" 
+          ngModel 
+          class="form-control input"
+          minlength="10"
+          #phoneNumber="ngModel"
+          placeholder="Enter Phone Number"
+          >
+          <span 
+          *ngIf="!phoneNumber.valid && phoneNumber.touched " 
+          class="help-block">Enter Valid Phone Number</span>
+        </div>
+        </div>
+        <div class="col-xs-8 col-xs-offset-2">
+          <div class="col-xs-10"></div>
+            <button  
+            class="col-xs-2 btn btn-primary"
+            matStepperNext>Next</button>
+        </div>
+
+    </form> 
+
+  </mat-step>
+  <mat-step [stepControl]="secondFormGroup">
+      <form 
+      (ngSubmit)="onSignup(f)" 
+      #f="ngForm"
+      class="login-form ">
+      <div class="col-xs-8 col-xs-offset-2">
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
+      </div>
+
+      <div class="col-xs-8 col-xs-offset-2">
+      <div class="form-group">
+        <h1 class="heading ">Verify Your Phone Number </h1>
+        <label for="pin">Enter Verification PIN Code</label>
+        <input 
+        type="number" 
+        id="pin" 
+        name="pin" 
+        ngModel 
+        class="form-control input"
+        required
+        minlength="4"
+        maxlength="4"
+        size="4"
+        #pin="ngModel"
+        placeholder="Enter Password"
+        >
+        <span 
+        *ngIf="!pin.valid && pin.touched " 
+        class="help-block">Enter Valid PIN</span>
+      </div>
+      </div>
+
+
+    <div class="col-xs-8 col-xs-offset-2">
+        <button class="btn btn-primary login-btn" type="submit" >Verify</button>
+    </div>  
+    </form> 
+
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    You are now done.
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button matStepperNext>Next</button>
+    </div>
+  </mat-step>
+  <mat-step>
+    <ng-template matStepLabel>Done</ng-template>
+    You are now done.
+    <div>
+      <button mat-button matStepperPrevious>Back</button>
+      <button mat-button (click)="stepper.reset()">Reset</button>
+    </div>
+  </mat-step>
+</mat-horizontal-stepper> -->
+<!-- ***************************************************************** -->
+<!-- <div class="container">
+		
+        
+    <div class="row bs-wizard" style="border-bottom:0;">
+        
+        <div class="col-xs-3 bs-wizard-step complete">
+          <div class="text-center bs-wizard-stepnum">Step 1</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a class="bs-wizard-dot"></a>
+        </div>
+        
+        <div 
+        [ngClass]="{
+          'active': stepperTwo === true,
+          'complete': stepperTwo !== true
+        }"
+        class="col-xs-3 bs-wizard-step ">
+          <div class="text-center bs-wizard-stepnum">Step 2</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a class="bs-wizard-dot"></a>
+        </div>
+        
+        <div 
+        [ngClass]="{
+          'active': stepperThree === true,
+          'disabled': stepperTwo === true,
+          'complete': stepperFour === true
+        }"
+        class="col-xs-3 bs-wizard-step ">
+          <div class="text-center bs-wizard-stepnum">Step 3</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a class="bs-wizard-dot"></a>
+        </div>
+        
+        <div 
+        [ngClass]="{
+          'active': stepperFour === true,
+          'disabled': stepperFour !== true
+        }"
+        class="col-xs-3 bs-wizard-step disabled">
+          <div class="text-center bs-wizard-stepnum">Step 4</div>
+          <div class="progress"><div class="progress-bar"></div></div>
+          <a class="bs-wizard-dot"></a>
+        </div>
+    </div>
+
+    <div 
+    *ngIf="stepperTwo"
+    class="row verify-form col-xs-6 col-xs-offset-3">
+        <form 
+        (ngSubmit)="submitPin(f)" 
+        #f="ngForm">
+
+  
+        <div class="col-xs-10 col-xs-offset-1">
+        <h1 
+        style="font-size: 35px;"
+        class="heading ">Verify Your Phone Number </h1>
+          <div class="form-group">
+          <label class="labelClass" for="pin">Enter Verification PIN Code</label>
+          <input 
+          type="number" 
+          id="pin" 
+          name="pin" 
+          ngModel 
+          class="form-control input"
+          required
+          minlength="4"
+          #pin="ngModel"
+          placeholder="Enter PIN Code"
+          >
+          <span 
+          *ngIf="!pin.valid && pin.touched " 
+          class="help-block">Enter Valid PIN</span>
+          <span 
+              *ngIf="showErrorMsg" 
+              class="help-block">{{ErrorMsg}}</span>
+        </div>
+        </div>
+  
+  
+      <div class="col-xs-10 col-xs-offset-1">
+          <button class="btn btn-primary login-btn" type="submit" >Verify</button>
+          <a
+          (click)=resendPin()
+          class="resend col-xs-2 col-xs-offset-5"
+          
+          >Resend</a>
+      </div>  
+
+      </form> 
+    </div>
+
+    <div 
+    *ngIf="stepperFour"
+    class="row verify-doc-form col-xs-10 col-xs-offset-1">
+    <h1>Verify your document(s)</h1>
+    
+
+
+     <form (ngSubmit)="submitDocs(f)" #f="ngForm" class="container"> 
+      <div class="col-xs-10 col-xs-offset-1">
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
+      </div>
+          <div style="width:50%; height:50%; float:left">
+              <div class="form-group singleInput">
+                  <label class="docLabel" for="license">Trade License  <span class="blue">*</span> (Required)</label>
+                  <input 
+                  type="string" 
+                  id="license" 
+                  name="license" 
+                  ngModel 
+                  class="form-control inputField"
+                  required
+                  #license="ngModel"
+                  >
+                  <span 
+                  *ngIf="!license.valid && license.touched " 
+                  class="help-block">Enter License Number</span>
+              </div>
+
+              <div class="form-group singleInput">
+                  <input  
+                  type="file"  
+                  id="file-1" 
+                  class="inputfile"
+                  name="licenceImage" 
+                  ngModel
+                  accept="image/*"
+                  (change)="onFileChange($event.target.files, 1)"
+                  multiple
+                  >
+                  
+                  <label  for="file-1">
+                    <img 
+                    id="blah" 
+                    [src]="displayImageLicence"
+                    class="img-responsive " 
+                    width="100" 
+                    height="100"
+                    >
+                  </label>
+                  <p>(max 2 images)</p>
+              </div>
+          </div>
+            
+            <div style="width:50%; height:50%; float:right">
+                <div class="form-group singleInput">
+                    <label class="docLabel" for="pan">PAN Card  <span class="blue">*</span> (Required)</label>
+                    <input 
+                    type="string" 
+                    id="pan" 
+                    name="pan" 
+                    ngModel 
+                    class="form-control inputField"
+                    required
+                    #pan="ngModel"
+                    >
+                    <span 
+                    *ngIf="!pan.valid && pan.touched " 
+                    class="help-block">Enter PAN Number</span>
+                </div>
+  
+                <div class="form-group singleInput">
+                    <input  
+                    type="file"  
+                    id="file-2" 
+                    class="inputfile" 
+                    name="panImage" 
+                    ngModel
+                    accept="image/*"
+                    (change)="onFileChange($event.target.files, 2)"
+                    >
+                    
+                    <label for="file-2">
+                      <img 
+                      id="blah" 
+                      [src]="displayImagePan"
+                      class="img-responsive img-rounded inputField " 
+                      width="100" 
+                      height="100"
+                      >
+                    </label>
+                    <p>(max 1 image)</p>
+                </div>
+            </div>
+            
+            <div style="width:50%; height:50%; float:left">
+                <div class="form-group singleInput">
+                    <label class="docLabel" for="gst">GST Number  </label>
+                    <input 
+                    type="text" 
+                    id="gst" 
+                    name="gst" 
+                    ngModel 
+                    class="form-control inputField"
+                    #gst="ngModel"
+                    >
+                    
+                </div>
+  
+                <div class="form-group singleInput">
+                    <input  
+                    type="file"  
+                    id="file-3" 
+                    class="inputfile" 
+                    name="gstImage" 
+                    ngModel
+                    accept="image/*"
+                    (change)="onFileChange($event.target.files, 3)"
+                    >
+                    
+                    <label  for="file-3">
+                      <img 
+                      id="blah" 
+                      [src]="displayImageGst"
+                      class="img-responsive img-rounded inputField " 
+                      width="100" 
+                      height="100"
+                      >
+                    </label>
+                    <p>(max 1 image)</p>
+                </div>
+            </div>
+            
+            <div style="width:50%; height:50%; float:right">
+                <div class="form-group singleInput">
+                    <label class="docLabel" for="license">Additional Documents (Not Mandatory)</label>
+                </div>
+  
+                <div class="form-group singleInput">
+                    <input  
+                    type="file"  
+                    id="file-4" 
+                    class="inputfile inputfile-1" 
+                    name="doc" 
+                    ngModel
+                    accept="image/*"
+                    (change)="onFileChange($event.target.files, 4)"
+                    multiple
+                    >
+                    
+                    <label  for="file-4">
+                      <img 
+                      id="blah" 
+                      [src]="displayImage"
+                      class="img-responsive img-rounded inputField docLabel " 
+                      width="100" 
+                      height="100"
+                      >
+                    </label>
+                    <p>(max 4 images)</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <button
+                style="float: right; font-size: 18px;"  
+                class="btn btn-class" >Submit</button>
+            </div>
+      </form> 
+    </div>
+
+    <div class="row"  *ngIf=stepperThree>
+            <div class="add-info-form col-xs-10 col-xs-offset-1"> 
+                <form 
+                (ngSubmit)="addMerchantData(f)" 
+                #f="ngForm">
+
+          
+                <div class="form-group text-center">
+                  <input  
+                  type="file"  
+                  id="file-5" 
+                  class="inputfile inputfile-1" 
+                  name="user-pic" 
+                  ngModel
+                  accept="image/*"
+                  (change)="onMerchantFileChange($event.target.files)"
+                  >
+                  
+                  <label for="file-5"> Select an Image
+                      <span class="sr-only"></span>
+                      <img 
+                      id="blah" 
+                      [src]="displayImageMerchant"
+                      class="img-responsive img-circle center-block" 
+                      width="100" 
+                      height="100"
+                      >
+                  </label>
+                </div>
+
+                <div class="col-xs-10 col-xs-offset-1">
+                    <div class="postsignup">
+                        <div class="error" *ngIf="postSubmit" >{{error}}</div>
+                    </div>
+                </div>
+        
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <label for="fname">Store Name</label>
+                    <input 
+                    type="text" 
+                    id="fname" 
+                    name="fname" 
+                    ngModel 
+                    class="form-control "
+                    required
+                    #fname="ngModel"
+                    placeholder="Enter Store Name"
+                    >
+                    <span 
+                    *ngIf="!fname.valid && fname.touched" 
+                    class="help-block">Enter Valid Input!</span>
+                  </div>
+                </div>
+               
+                <div class="col-xs-12">
+                  <div class="form-group">
+                    <label for="lname">Vendor name</label>
+                    <input 
+                    type="text" 
+                    id="lname" 
+                    name="lname" 
+                    ngModel 
+                    class="form-control "
+                    required
+                    #lname="ngModel"
+                    placeholder="Enter Vendor Name"
+                    >
+                    <span 
+                    *ngIf="!lname.valid && lname.touched" 
+                    class="help-block">Enter Valid Input!</span>
+                  </div>
+                </div>
+  
+          
+                <div class="col-xs-12">
+                    <div class="form-group">
+                        <label for="url">Shop Url</label>
+                        <input 
+                        type="text" 
+                        id="url" 
+                        name="url" 
+                        ngModel 
+                        class="form-control "
+                        placeholder="Enter Shop Url"
+                        >
+                      </div>
+                  </div>
+              <div class="col-xs-12">
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <input 
+                    type="text" 
+                    id="address" 
+                    name="address" 
+                    ngModel 
+                    class="form-control "
+                    required
+                    autocorrect="off" 
+                    autocapitalize="off" 
+                    spellcheck="off" 
+                    #address="ngModel"
+                    #search
+                    >
+                    <span 
+                    *ngIf="!address.valid && address.touched " 
+                    class="help-block">Enter Valid Input!</span>
+                  </div>
+              </div>
+              <div class="row">
+                  <button
+                  class="btn btn-class" >SAVE</button>
+              </div>
+              </form> 
+            </div>
+
+            
+    </div> 
+        
+</div> -->
+
+<!-- ***************************************************************** -->
+
+<div class="md-stepper-horizontal orange">
+  <div class="md-step active done">
+    <div class="md-step-circle"><span>1</span></div>
+    <div class="md-step-title">Registeration</div>
+    <div class="md-step-bar-left"></div>
+    <div class="md-step-bar-right"></div>
+  </div>
+  <div 
+      [ngClass]="{
+        'done': stepperTwo !== true
+      }"
+      class="md-step active ">
+    <div class="md-step-circle"><span>2</span></div>
+    <div class="md-step-title">Phone Number Verification</div>
+    <div class="md-step-bar-left"></div>
+    <div class="md-step-bar-right"></div>
+  </div>
+  <div 
+    [ngClass]="{
+      'active': stepperThree === true || stepperFour === true || stepperFive === true,
+      'done': stepperFour === true || stepperFive === true
+    }"  
+    class="md-step ">
+    <div class="md-step-circle"><span>3</span></div>
+    <div class="md-step-title">Personal Detail</div>
+    <div class="md-step-bar-left"></div>
+    <div class="md-step-bar-right"></div>
+  </div>
+  <div 
+    [ngClass]="{
+      'active': stepperFour === true || stepperFive === true,
+      'done': stepperFive === true
+    }" 
+    class="md-step">
+    <div class="md-step-circle"><span>4</span></div>
+    <div class="md-step-title">Current Plans</div>
+    <div class="md-step-bar-left"></div>
+    <div class="md-step-bar-right"></div>
+  </div>
+  <div 
+    [ngClass]="{
+      'active': stepperFive === true
+    }"
+    class="md-step">
+    <div class="md-step-circle"><span>5</span></div>
+    <div class="md-step-title">Verification Documents</div>
+    <div class="md-step-bar-left"></div>
+    <div class="md-step-bar-right"></div>
+  </div>
+  
+
+  
+
+</div>
+
+
+<section  *ngIf="isLoading">
+    <div class="loading">Loading&#8230;</div>
+</section>
+
+<div 
+  *ngIf="stepperTwo"
+  class="row verify-form col-xs-6 col-xs-offset-3">
+    <form 
+    (ngSubmit)="submitPin(f)" 
+    #f="ngForm">
+
+
+    <div class="col-xs-10 col-xs-offset-1">
+    <h1 
+    style="font-size: 35px;"
+    class="heading ">Verify Your Phone Number </h1>
+      <div class="form-group">
+      <label class="labelClass" for="pin">Enter Verification PIN Code</label>
+      <input 
+      type="number" 
+      id="pin" 
+      name="pin" 
+      ngModel 
+      class="form-control input"
+      required
+      minlength="4"
+      #pin="ngModel"
+      placeholder="Enter PIN Code"
+      >
+      <span 
+      *ngIf="!pin.valid && pin.touched " 
+      class="help-block">Enter Valid PIN</span>
+      <span 
+          *ngIf="showErrorMsg" 
+          class="help-block">{{ErrorMsg}}</span>
+    </div>
+    </div>
+
+
+  <div class="col-xs-10 col-xs-offset-1">
+      <button 
+      style="margin-left:-3px; "
+      class="btn btn-primary login-btn" type="submit" >Verify</button>
+      <a
+      (click)=resendPin()
+      class="resend col-xs-2 col-xs-offset-5"
+      
+      >Resend</a>
+  </div>  
+
+  </form> 
+</div>
+
+<div 
+*ngIf="stepperFive"
+class="row verify-doc-form col-xs-10 col-xs-offset-1">
+<h1>Verify your document(s)</h1>
+
+
+
+ <form (ngSubmit)="submitDocs(f)" #f="ngForm" class="container"> 
+  <div class="col-xs-10 col-xs-offset-1">
+    <div class="postsignup">
+        <div class="error" *ngIf="postSubmit" >{{error}}</div>
+    </div>
+  </div>
+      <div style="width:50%; height:50%; float:left">
+          <div class="form-group singleInput">
+              <label class="docLabel" for="license">Trade License  <span class="blue">*</span> (Required)</label>
+              <input 
+              type="string" 
+              id="license" 
+              name="license" 
+              ngModel 
+              class="form-control inputField"
+              required
+              #license="ngModel"
+              >
+              <span 
+              *ngIf="!license.valid && license.touched " 
+              class="help-block">Enter License Number</span>
+          </div>
+
+          <div class="form-group singleInput">
+              <input  
+              type="file"  
+              id="file-1" 
+              class="inputfile"
+              name="licenceImage" 
+              ngModel
+              accept="image/*"
+              (change)="onFileChange($event.target.files, 1)"
+              multiple
+              >
+              
+              <label  for="file-1">
+                <img 
+                id="blah" 
+                [src]="displayImageLicence"
+                class="img-responsive " 
+                width="100" 
+                height="100"
+                >
+              </label>
+              <p>(max 2 images)</p>
+          </div>
+      </div>
+        
+        <div style="width:50%; height:50%; float:right">
+            <div class="form-group singleInput">
+                <label class="docLabel" for="pan">PAN Card  <span class="blue">*</span> (Required)</label>
+                <input 
+                type="string" 
+                id="pan" 
+                name="pan" 
+                ngModel 
+                class="form-control inputField"
+                required
+                #pan="ngModel"
+                >
+                <span 
+                *ngIf="!pan.valid && pan.touched " 
+                class="help-block">Enter PAN Number</span>
+            </div>
+
+            <div class="form-group singleInput">
+                <input  
+                type="file"  
+                id="file-2" 
+                class="inputfile" 
+                name="panImage" 
+                ngModel
+                accept="image/*"
+                (change)="onFileChange($event.target.files, 2)"
+                >
+                
+                <label for="file-2">
+                  <img 
+                  id="blah" 
+                  [src]="displayImagePan"
+                  class="img-responsive img-rounded  " 
+                  width="100" 
+                  height="100"
+                  >
+                </label>
+                <p>(max 1 image)</p>
+            </div>
+        </div>
+        
+        <div style="width:50%; height:50%; float:left">
+            <div class="form-group singleInput">
+                <label class="docLabel" for="gst">GST Number  </label>
+                <input 
+                type="text" 
+                id="gst" 
+                name="gst" 
+                ngModel 
+                class="form-control inputField"
+                #gst="ngModel"
+                >
+                
+            </div>
+
+            <div class="form-group singleInput">
+                <input  
+                type="file"  
+                id="file-3" 
+                class="inputfile" 
+                name="gstImage" 
+                ngModel
+                accept="image/*"
+                (change)="onFileChange($event.target.files, 3)"
+                >
+                
+                <label  for="file-3">
+                  <img 
+                  id="blah" 
+                  [src]="displayImageGst"
+                  class="img-responsive img-rounded" 
+                  width="100" 
+                  height="100"
+                  >
+                </label>
+                <p>(max 1 image)</p>
+            </div>
+        </div>
+        
+        <div style="width:50%; height:50%; float:right">
+            <div class="form-group singleInput">
+                <label class="docLabel" for="license">Additional Documents (Not Mandatory)</label>
+            </div>
+
+            <div class="form-group singleInput">
+                <input  
+                type="file"  
+                id="file-4" 
+                class="inputfile inputfile-1" 
+                name="doc" 
+                ngModel
+                accept="image/*"
+                (change)="onFileChange($event.target.files, 4)"
+                multiple
+                >
+                
+                <label  for="file-4">
+                  <img 
+                  id="blah" 
+                  [src]="displayImage"
+                  class="img-responsive img-rounded docLabel " 
+                  width="100" 
+                  height="100"
+                  >
+                </label>
+                <p>(max 4 images)</p>
+            </div>
+        </div>
+
+        <div class="row">
+            <button
+            style="float: right; font-size: 18px;"  
+            class="btn btn-class" >Submit</button>
+        </div>
+  </form> 
+</div>
+
+<div class="row"  *ngIf=stepperThree>
+  <div class="add-info-form col-xs-10 col-xs-offset-1"> 
+      <form 
+      (ngSubmit)="addMerchantData(f)" 
+      #f="ngForm">
+
+
+      <div class="form-group text-center">
+        <input  
+        type="file"  
+        id="file-5" 
+        class="inputfile inputfile-1" 
+        name="user-pic" 
+        ngModel
+        accept="image/*"
+        (change)="onMerchantFileChange($event.target.files)"
+        >
+        
+        <label for="file-5"> Select an Image
+            <span class="sr-only"></span>
+            <img 
+            id="blah" 
+            [src]="displayImageMerchant"
+            class="img-responsive img-circle center-block" 
+            width="100" 
+            height="100"
+            >
+        </label>
+      </div>
+
+      <div class="col-xs-10 col-xs-offset-1">
+          <div class="postsignup">
+              <div class="error" *ngIf="postSubmit" >{{error}}</div>
+          </div>
+      </div>
+
+      <div class="col-xs-12">
+        <div class="form-group">
+          <label for="fname">Store Name</label>
+          <input 
+          type="text" 
+          id="fname" 
+          name="fname" 
+          ngModel 
+          class="form-control inputBorder "
+          required
+          #fname="ngModel"
+          placeholder="Enter Store Name"
+          >
+          <span 
+          *ngIf="!fname.valid && fname.touched" 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+      </div>
+      
+      <div class="col-xs-12">
+        <div class="form-group">
+          <label for="lname">Vendor name</label>
+          <input 
+          type="text" 
+          id="lname" 
+          name="lname" 
+          ngModel 
+          class="form-control inputBorder "
+          required
+          #lname="ngModel"
+          placeholder="Enter Vendor Name"
+          >
+          <span 
+          *ngIf="!lname.valid && lname.touched" 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+      </div>
+
+
+      <div class="col-xs-12">
+          <div class="form-group">
+              <label for="url">Shop Url</label>
+              <input 
+              type="text" 
+              id="url" 
+              name="url" 
+              ngModel 
+              class="form-control inputBorder "
+              placeholder="Enter Shop Url"
+              >
+            </div>
+        </div>
+    <div class="col-xs-12">
+      <div class="form-group">
+          <label for="address">Address</label>
+          <input 
+          type="text" 
+          id="address" 
+          name="address" 
+          ngModel 
+          class="form-control inputBorder "
+          required
+          autocorrect="off" 
+          autocapitalize="off" 
+          spellcheck="off" 
+          #address="ngModel"
+          #search
+          >
+          <span 
+          *ngIf="!address.valid && address.touched " 
+          class="help-block">Enter Valid Input!</span>
+        </div>
+    </div>
+    <div class="row">
+        <button
+        class="btn btn-class" >SAVE</button>
+    </div>
+    </form> 
+  </div>
+
+        
+</div> 
+
+<div class="row verify-form col-xs-6 col-xs-offset-3" *ngIf=stepperFour>
+  <!-- <form 
+  (ngSubmit)="submitPin(f)" 
+  #f="ngForm"> -->
+
+
+ <div class="col-xs-10 col-xs-offset-1">
+  <h1 
+  style="font-size: 35px;"
+  class="heading ">Current Plans </h1>
+  </div> 
+
+
+<div class="col-xs-10 col-xs-offset-1"
+    style="margin-top: -30px;">
+    <button class="btn btn-primary login-btn" (click)="planSelected(1)" >Free Listing</button>
+    <button class="btn btn-primary login-btn" (click)="planSelected(2)" >Instore</button>
+    <button class="btn btn-primary login-btn" (click)="planSelected(3)" >Online</button>
+    <button class="btn btn-primary login-btn" (click)="planSelected(4)" >Online & Instore</button>
+
+          <i 
+          (click)="openModal(template)"
+          matTooltip="Plans Information!"
+          matTooltipPosition = 'after'
+          class="fa fa-info-circle fa-3x my-float"></i>
+    
+</div>  
+
+</div>
+
+
+<ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">Plan Detail(s)</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <h3>Free Listing</h3>
+        <p>List the store with some prominent offers.</p>
+        <h3 >Instore</h3>
+        <p>Register the store, list products, prominent offer of store (to be displayed in AR window), customer to purchase the product instore with some additional discount coming from nearr. On instore purchase, an sms should be triggered to the customer with an unique code which can be validated using seller app. </p>
+        <h3 >Online</h3>
+        <p>Register the store, list products, prominent offer of store (to be displayed in AR window), product will be dilvered to customer's doorstep.</p>
+    
+    </div>
+  </ng-template>

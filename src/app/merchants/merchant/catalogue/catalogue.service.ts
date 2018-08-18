@@ -14,6 +14,8 @@ export class CatalogueService {
     inventory = '0';
     loggedIn = false;
     merchantInfo;
+    merchantID;
+    userdata;
     // private messageSource = new BehaviorSubject('default message');
     // currentMessage = this.messageSource.asObservable();
     constructor(private http: Http,
@@ -24,8 +26,7 @@ export class CatalogueService {
 
 
     addProduct(data: any) {
-        // const adminId = localStorage.getItem('user-data');
-        // console.log(adminId, 'admin_id');
+
 
         const token = localStorage.getItem('token');
         const headers = new Headers({
@@ -48,14 +49,14 @@ export class CatalogueService {
 
         // product_image
         if (data.image === null) {
-            console.log('image null');
+
             body.append('product_image', '');
         } else {
-            console.log('image not null', data.image);
+
             body.append('product_image', data.image, data.image.name );
         }
 
-        console.log(data, 'data');
+
 
         return this.http.post(this.global.serverUrl + 'product/en/add_product',
         body,
@@ -63,7 +64,6 @@ export class CatalogueService {
         .map(
             (response: Response) => {
                 const output = response.json();
-                console.log(output, 'output');
                 return output;
             }
         ).catch(
@@ -84,9 +84,8 @@ export class CatalogueService {
 
         const admin = JSON.parse(localStorage.getItem('user-data'));
         const adminID = (admin.admin_id === undefined) ? admin.merchant_parent_admin : admin.admin_id;
-        console.log(adminID, 'adminID');
         const merchantID = (admin.admin_id !== undefined) ?  data.merchantID : admin.merchant_id;
-        console.log(merchantID, '0000' , adminID);
+
         const body = new FormData();
         body.append('super_category_name', data.form.name);
         body.append('super_category_description', data.form.discription);
@@ -137,7 +136,7 @@ export class CatalogueService {
         }
 
         body.append('merchant_id', (user.merchant_id !== undefined) ? user.merchant_id : data.merchantID);
-        console.log(user.merchant_id, data.merchantID, 'merchantIDDD');
+
         return this.http.post(this.global.serverUrl + 'category/en/add_category',
         body,
         {headers: headers}  )
@@ -177,7 +176,7 @@ export class CatalogueService {
         }
         body.append('merchant_id', (user.merchant_id !== undefined) ? user.merchant_id : data.merchantID);
 
-        console.log( user.merchant_id, data.merchantID, data);
+
         return this.http.post(this.global.serverUrl + 'sub_category/en/add_sub_category',
         body,
         {headers: headers}  )
@@ -206,7 +205,7 @@ export class CatalogueService {
         if (user !== null) {
             if (user.merchant_id !== undefined) {
             // Merchant catalogue
-                console.log('merchant Catalogue API');
+
                 return this.http.get(this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id=' + user.merchant_id ,
                 {headers: headers}  )
                 .map(
@@ -222,9 +221,13 @@ export class CatalogueService {
                     }
                 );
             } else if (user.admin_id !== undefined) {
-            // Admin catalogue
-            console.log('Admin Catalogue API');
-                return this.http.get(this.global.serverUrl + 'admin/en/get_all_category_admin',
+
+                const merchant = JSON.parse(localStorage.getItem('merchant-data'));
+                const requestMerchant = JSON.parse(localStorage.getItem('request-merchant'));
+                if (merchant !== null || requestMerchant !== null) {
+                    const merchantID = (merchant !== null) ? merchant.merchant_id : requestMerchant.merchant_id;
+                    return this.http.get(this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id='
+                        + merchantID ,
                 {headers: headers}  )
                 .map(
                     (response: Response) => {
@@ -239,6 +242,25 @@ export class CatalogueService {
                     }
                 );
 
+
+                } else {
+                // Admin catalogue
+
+                return this.http.get(this.global.serverUrl + 'admin/en/get_all_category_admin',
+                    {headers: headers}  )
+                    .map(
+                        (response: Response) => {
+                            const output = response.json();
+                            return output;
+                        }
+                    ).catch(
+                        (error: Response) => {
+                            console.log('error', error);
+                            const output = error.json();
+                            return Observable.throw('Something went wrong', output);
+                        }
+                    );
+                }
             }
         }
     }
@@ -247,7 +269,7 @@ export class CatalogueService {
     // Edit
 
     editSuperCategory(data: any) {
-        console.log('In Edit Super Category service', data);
+
         const token = localStorage.getItem('token');
         const headers = new Headers({
             'd_token':  JSON.parse(token),
@@ -264,7 +286,7 @@ export class CatalogueService {
         } else {
             body.append('super_category_image', data.image, data.image.name );
         }
-        console.log('user' , JSON.parse(localStorage.getItem('user-data')));
+
         return this.http.put(this.global.serverUrl + 'super_category/en/update_super_category',
         body,
         {headers: headers}  )
@@ -284,7 +306,7 @@ export class CatalogueService {
 
 
     editCategory(data: any) {
-        console.log('In Edit Super Category service');
+
         const token = localStorage.getItem('token');
         const headers = new Headers({
             'd_token':  JSON.parse(token)
@@ -321,7 +343,7 @@ export class CatalogueService {
 
 
     editSubCategory(data: any) {
-        console.log('In Edit Super Category service');
+
         const token = localStorage.getItem('token');
         const headers = new Headers({
             'd_token':  JSON.parse(token)
@@ -366,10 +388,20 @@ export class CatalogueService {
         const headers = new Headers({
             'd_token':  JSON.parse(token)
         });
+
+        const last_id = (data.last !== undefined) ? data.last : '';
         if (user !== null) {
             // super category
-
-            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_super_category=' + data.ID,
+            if (user.merchant_id !== undefined) {
+                this.merchantID = user.merchant_id;
+             } else if (user.admin_id !== undefined) {
+                 this.merchantID = (data.merchantID === '') ? user.admin_id : data.merchantID;
+             }
+             const role = (user.admin_id !== undefined && data.merchantID === '') ? 1 : '';
+            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_super_category=' + data.ID +
+            '&static_user_id=' + this.merchantID  +
+            '&static_role=' + role +
+            '&last_id=' + last_id,
             {headers: headers}  )
             .map(
                 (response: Response) => {
@@ -396,10 +428,19 @@ export class CatalogueService {
         const headers = new Headers({
             'd_token':  JSON.parse(token)
         });
+        const last_id = (data.last !== undefined) ? data.last : '';
         if (user !== null) {
             // super category
-
-            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_category=' + data.ID,
+            if (user.merchant_id !== undefined) {
+               this.merchantID = user.merchant_id;
+            } else if (user.admin_id !== undefined) {
+                this.merchantID = (data.merchantID === '') ? user.admin_id : data.merchantID;
+            }
+            const role = (user.admin_id !== undefined && data.merchantID === '') ? 1 : '';
+            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_category=' + data.ID +
+            '&static_user_id=' + this.merchantID  +
+            '&static_role=' + role +
+            '&last_id=' + last_id,
             {headers: headers}  )
             .map(
                 (response: Response) => {
@@ -426,10 +467,19 @@ export class CatalogueService {
         const headers = new Headers({
             'd_token':  JSON.parse(token)
         });
+        const last_id = (data.last !== undefined) ? data.last : '';
         if (user !== null) {
             // super category
-
-            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_sub_category_id=' + data.ID,
+            if (user.merchant_id !== undefined) {
+               this.merchantID = user.merchant_id;
+            } else if (user.admin_id !== undefined) {
+                this.merchantID = (data.merchantID === '') ? user.admin_id : data.merchantID;
+            }
+            const role = (user.admin_id !== undefined && data.merchantID === '') ? 1 : '';
+            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_sub_category_id=' + data.ID +
+            '&static_user_id=' + this.merchantID  +
+            '&static_role=' + role +
+            '&last_id=' + last_id,
             {headers: headers}  )
             .map(
                 (response: Response) => {
@@ -446,6 +496,45 @@ export class CatalogueService {
 
 
         }
+        // const token = localStorage.getItem('token');
+        // const user = JSON.parse(localStorage.getItem('user-data'));
+
+        // const headers = new Headers({
+        //     'd_token':  JSON.parse(localStorage.getItem('token'))
+        // });
+        // console.log(JSON.parse(token), 'token');
+        // const last_id = (data.last !== undefined) ? data.last : '';
+        // if (user !== null) {
+        //     // super category
+        //     if (user.merchant_id !== undefined) {
+        //         this.merchantID = user.merchant_id;
+        //     } else if (user.admin_id !== undefined) {
+        //          this.merchantID = (data.merchantID === '') ? user.admin_id : data.merchantID;
+        //     }
+        //     const role = (user.admin_id !== undefined && data.merchantID === '') ? 1 : 4;
+        //     console.log(role, 'role');
+        //     console.log(this.merchantID, 'this.merchantID');
+        //     console.log('cat ID', data.ID);
+        //     return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_sub_category_id=' + data.ID +
+        //     '&static_user_id=' + this.merchantID  +
+        //     '&last_id=' + last_id,
+        //     '&static_role=' + role,
+        //     {headers: headers}  )
+        //     .map(
+        //         (response: Response) => {
+        //             const output = response.json();
+        //             return output;
+        //         }
+        //     ).catch(
+        //         (error: Response) => {
+        //             console.log('error', error);
+        //             const output = error.json();
+        //             return Observable.throw('Something went wrong', output);
+        //         }
+        //     );
+
+
+        // }
     }
 
 
@@ -460,7 +549,7 @@ export class CatalogueService {
             // 'Authorization': this.global.basicAuth
         });
         // Merchant catalogue
-        console.log(user.merchant_parent_admin , 'adminID', user.merchant_id, 'merchantID');
+
         const merchantID = (user.merchant_id === undefined) ? data : user.merchant_id;
         const adminID = (user.merchant_id === undefined) ? user.admin_id : user.merchant_parent_admin;
         return this.http.get(this.global.serverUrl + '/super_category/en/get_all_super_category' +
@@ -484,7 +573,7 @@ export class CatalogueService {
 
     }
 
-    // try again
+    // select super category
     addSelectedSuperCategories(data: any) {
         const token = localStorage.getItem('token');
         const user = JSON.parse(localStorage.getItem('user-data'));
@@ -497,11 +586,12 @@ export class CatalogueService {
 
 
         const merchantID = (user.merchant_id === undefined) ? data.merchantID : user.merchant_id;
-        console.log(merchantID, 'merchantID');
+
         const body = new URLSearchParams();
         body.append('super_category_ids', data.superCategories);
+        body.append('merchant_id' , merchantID);
 
-        return this.http.post(this.global.serverUrl + 'merchant/en/select_super_category?user_id=' + merchantID,
+        return this.http.post(this.global.serverUrl + 'merchant/en/select_super_category?merchant_id=' + merchantID,
         body.toString(),
         {headers: headers}  )
         .map(
@@ -542,5 +632,12 @@ export class CatalogueService {
         );
     }
 
+
+    setUser(data) {
+        this.userdata = data;
+    }
+    getUser() {
+        return this.userdata;
+    }
 }
 

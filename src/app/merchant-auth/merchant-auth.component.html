@@ -23,13 +23,12 @@
           </div>
               <label for="email">Email</label>
               <input 
-              type="email" 
+              type="text" 
               id="email" 
               name="email" 
               ngModel 
               class="form-control input"
               required
-              email
               >
           </div>
           <div class="form-group">
@@ -57,7 +56,7 @@
             </div>
           </div>
     
-          <div class="col-xs-12">
+          <!-- <div class="col-xs-12">
             <div class="form-group">
               <label for="fname">Store Name</label>
               <input 
@@ -93,25 +92,32 @@
               *ngIf="!lname.valid && lname.touched" 
               class="help-block">Enter Valid Input!</span>
             </div>
-          </div>
+          </div> -->
     
           <div class="col-xs-12">
             <div class="form-group">
               <label for="email">Email</label>
+              
+              <!-- [ngClass]="{'valid': validEmail === 'true', 'invalid': validEmail === 'false'}" -->
               <input 
               type="text" 
               id="email" 
               name="email" 
               ngModel 
-              class="form-control input"
+              class="form-control input valid"
               required
               email
+              [(ngModel)]="newEmail"
+              (input)="onSearchEmail($event.target.value)"
               #email="ngModel"
               placeholder="Enter Email Address"
               >
               <span 
               *ngIf="!email.valid && email.touched" 
               class="help-block">Enter Valid Email Address!</span>
+              <span 
+              *ngIf="showErrorMsg" 
+              class="help-block">{{ErrorMsg}}</span>
             </div>
           </div>
           <div class="col-xs-12">
@@ -122,6 +128,7 @@
             id="password" 
             name="password" 
             ngModel 
+            [(ngModel)]="newPwd"
             class="form-control input"
             required
             minlength="6"
@@ -141,6 +148,7 @@
               id="phoneNumber" 
               name="phoneNumber" 
               ngModel 
+              [(ngModel)]="newNumber"
               class="form-control input"
               minlength="10"
               #phoneNumber="ngModel"
@@ -152,7 +160,7 @@
             </div>
             </div>
     
-          <div class="col-xs-12">
+          <!-- <div class="col-xs-12">
               <div class="form-group">
                   <label for="url">Shop Url</label>
                   <input 
@@ -164,8 +172,8 @@
                   placeholder="Enter Shop Url"
                   >
                 </div>
-            </div>
-        <div class="col-xs-12">
+            </div> -->
+        <!-- <div class="col-xs-12">
           <div class="form-group">
               <label for="address">Address</label>
               <input 
@@ -185,7 +193,7 @@
               *ngIf="!address.valid && address.touched " 
               class="help-block">Enter Valid Input!</span>
             </div>
-        </div>
+        </div> -->
         <div class="col-xs-12">
             <button class="btn btn-primary login-btn" type="submit" >Sign Up</button>
         </div>  
