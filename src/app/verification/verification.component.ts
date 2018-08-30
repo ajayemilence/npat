@@ -45,6 +45,7 @@ export class VerificationComponent implements OnInit {
   lat;
   lng;
   place;
+  altitude;
   DataPlan;
   constructor(
     public snackBar: MatSnackBar,
@@ -59,47 +60,65 @@ export class VerificationComponent implements OnInit {
 
   ngOnInit() {
     const user = JSON.parse(localStorage.getItem('user-data'));
-    console.log('user', user);
-    if (user !== null) {
+    const newUser = JSON.parse(localStorage.getItem('new-merchant'));
+    const doc = JSON.parse(localStorage.getItem('doc'));
 
-      if (user.merchant_display_name === '') {
+    if (newUser !== null || user !== null) {
+      if (user !== null) {
 
-        this.stepperTwo = false;
-        this.stepperThree = true;
-        this.stepperFour = false;
-        // location
-        this.mapsAPILoader.load().then(
-          () => {
+        if (user.merchant_display_name === '') {
 
-            const autocomplete = new google.maps.places.Autocomplete(this.searchElement.nativeElement, {});
-            autocomplete.addListener('place_changed', () => {
-              this.ngZone.run(() => {
-                const place: google.maps.places.PlaceResult = autocomplete.getPlace();
-                if (place.geometry === undefined || place.geometry === null) {
-                  return;
-                }
-                this.lat = JSON.stringify(place.geometry.location.lat());
-                this.lng = JSON.stringify(place.geometry.location.lng());
-                this.place = place.formatted_address;
+          this.stepperTwo = false;
+          this.stepperThree = true;
+          this.stepperFour = false;
+          // location
+          this.mapsAPILoader.load().then(
+            () => {
+
+              const autocomplete = new google.maps.places.Autocomplete(this.searchElement.nativeElement, {});
+              autocomplete.addListener('place_changed', () => {
+                this.ngZone.run(() => {
+                  const place: google.maps.places.PlaceResult = autocomplete.getPlace();
+                  if (place.geometry === undefined || place.geometry === null) {
+                    return;
+                  }
+                  this.lat = JSON.stringify(place.geometry.location.lat());
+                  this.lng = JSON.stringify(place.geometry.location.lng());
+                  this.place = place.formatted_address;
+
+                  const location = {lat: place.geometry.location.lat(), lng: place.geometry.location.lng()};
+
+                  const elevator = new google.maps.ElevationService;
+                   this.displayLocationElevation(location, elevator).then(alt => {
+                     this.altitude =  alt;
+                   });
+                });
               });
-            });
-          }
-        );
-      } else if (user.documents === 0 || user.documents === undefined) {
+            }
+          );
+        // } else if (doc !== null) {
+          // console.log('here3');
+          // this.router.navigate(['/']);
+        } else if (user.documents === 0 || user.documents === undefined) {
 
-        this.stepperTwo = false;
+          this.stepperTwo = false;
+          this.stepperThree = false;
+          this.stepperFour = false;
+          this.stepperFive = true;
+        }
+
+
+      } else {
+
+        this.stepperTwo = true;
         this.stepperThree = false;
+        this.stepperFive = false;
         this.stepperFour = false;
-        this.stepperFive = true;
       }
-
     } else {
-
-      this.stepperTwo = true;
-      this.stepperThree = false;
-      this.stepperFive = false;
-      this.stepperFour = false;
+      this.router.navigate(['/merchant/auth']);
     }
+
 
     // this.merchantAuthService.currentView.subscribe(
     //   (response) => {
@@ -123,7 +142,6 @@ export class VerificationComponent implements OnInit {
   }
 
   onMerchantFileChange(file: FileList) {
-    console.log(file);
     if (file.length === 0) {
       this.displayImageMerchant = 'assets/images/profile-pic.png';
     } else {
@@ -226,8 +244,11 @@ export class VerificationComponent implements OnInit {
 
     const storedPin = localStorage.getItem('pin');
     if (JSON.parse(form.value.pin) === JSON.parse(storedPin)) {
+
       const data = JSON.parse(localStorage.getItem('new-merchant'));
-      this.merchantAuthService.signup(data)
+
+      if (data.email !== '' && data.email !== null ) {
+        this.merchantAuthService.signup(data)
         .subscribe(
           (response) => {
 
@@ -254,6 +275,13 @@ export class VerificationComponent implements OnInit {
                       this.lat = JSON.stringify(place.geometry.location.lat());
                       this.lng = JSON.stringify(place.geometry.location.lng());
                       this.place = place.formatted_address;
+
+                      const location = {lat: place.geometry.location.lat(), lng: place.geometry.location.lng()};
+
+                      const elevator = new google.maps.ElevationService;
+                       this.displayLocationElevation(location, elevator).then(alt => {
+                         this.altitude =  alt;
+                       });
                     });
                   });
                 }
@@ -281,6 +309,12 @@ export class VerificationComponent implements OnInit {
             });
           }
         );
+      } else {
+        localStorage.clear();
+        this.router.navigate(['/merchant/auth']);
+        form.reset();
+      }
+
     } else {
       this.showErrorMsg = true;
       this.ErrorMsg = 'Enter Valid PIN!';
@@ -396,6 +430,7 @@ export class VerificationComponent implements OnInit {
         place: this.place,
         lat: this.lat,
         lng: this.lng,
+        altitude: this.altitude,
         image: this.imgMerchant,
         merchantID: JSON.parse(localStorage.getItem('user-data')).merchant_id
       };
@@ -416,7 +451,6 @@ export class VerificationComponent implements OnInit {
               this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
                 duration: 5000,
               });
-
               console.log(response.output.payload.message);
             }
 
@@ -467,6 +501,17 @@ export class VerificationComponent implements OnInit {
 
   openModal(template: TemplateRef<any>) {
     this.modalRef = this.modalService.show(template);
+  }
+
+  displayLocationElevation(loc, elevator2) {
+    return new Promise ((resolve, reject) => {
+        return elevator2.getElevationForLocations({
+          'locations': [loc]
+        }, function(results, status) {
+          resolve(results[0].elevation);
+        });
+    });
+
   }
 
 }

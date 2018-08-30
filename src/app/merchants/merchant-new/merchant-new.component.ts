@@ -4,6 +4,7 @@ import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { MapsAPILoader } from '@agm/core';
 import {} from '@types/googlemaps';
+import { MatSnackBar } from '@angular/material';
 
 @Component({
   selector: 'app-merchant-new',
@@ -26,11 +27,14 @@ export class MerchantNewComponent implements OnInit {
   profilepic;
   displayImage = 'assets/images/profile-pic.png';
   userImage: File = null;
+  altitude;
 
   constructor(private merchantsService: MerchantService,
               private router: Router,
               private mapsAPILoader: MapsAPILoader,
-              private ngZone: NgZone) { }
+              private ngZone: NgZone,
+              private snackbar: MatSnackBar
+            ) { }
 
   ngOnInit() {
       if (this.router.url === '/merchants/edit'
@@ -46,7 +50,7 @@ export class MerchantNewComponent implements OnInit {
            //  this.profilepic = this.currentMerchant.merchant_profile_pic;
           }
 
-          console.log(this.fname, 'in edit');
+
 
 
       }
@@ -65,6 +69,12 @@ export class MerchantNewComponent implements OnInit {
          this.lat = JSON.stringify(place.geometry.location.lat());
          this.lng = JSON.stringify(place.geometry.location.lng());
          this.place = place.formatted_address;
+         const location = {lat: place.geometry.location.lat(), lng: place.geometry.location.lng()};
+
+         const elevator = new google.maps.ElevationService;
+          this.displayLocationElevation(location, elevator).then(alt => {
+            this.altitude =  alt;
+          });
         });
         });
       }
@@ -99,9 +109,10 @@ onFileChange(file: FileList) {
           place: this.place,
           lat: this.lat,
           lng: this.lng,
-          image: this.userImage
+          image: this.userImage,
+          altitude: this.altitude
       };
-      console.log(data);
+
       // Post request to store user data
       this.merchantsService.addMerchant(data)
       .subscribe(
@@ -119,11 +130,23 @@ onFileChange(file: FileList) {
         (error) => {
           // handle all error cases
           console.log(error);
+          this.snackbar.open('Something went wrong, please try again later', 'Dismiss', {
+            duration: 5000
+          });
         }
       );
     }
   }
 
 
+  displayLocationElevation(loc, elevator2) {
+    return new Promise ((resolve, reject) => {
+        return elevator2.getElevationForLocations({
+          'locations': [loc]
+        }, function(results, status) {
+          resolve(results[0].elevation);
+        });
+    });
 
+  }
 }

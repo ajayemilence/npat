@@ -37,6 +37,9 @@ export class RequestComponent implements OnInit {
   currentMerchant;
   categoryImage;
   showViewMore = true;
+  showViewMoreSuper = true;
+  showViewMoreCat = true;
+  showViewMoreSub = true;
   isLoading = true;
   // panelOpenState: Boolean = false;
 
@@ -88,7 +91,7 @@ export class RequestComponent implements OnInit {
 // get super-category requests
 
 getSuperCategoryRequest(data: any) {
-
+  console.log(data, '--');
   this.requestService.getSuperCategoryRequest(data).subscribe(
     (response) => {
 
@@ -97,7 +100,17 @@ getSuperCategoryRequest(data: any) {
             if (response.data.length < 1) {
               this.superCategoryRequests = [];
             } else {
-              this.superCategoryRequests = response.data;
+              console.log(data);
+              console.log(response.data);
+              if (data.count === 1) {
+                  this.superCategoryRequests.push(response.data);
+                  if (response.data < 15) {
+                    this.showViewMoreSuper = false;
+                  }
+              } else {
+                  this.superCategoryRequests = response.data;
+              }
+
             }
 
         } else {
@@ -477,7 +490,19 @@ editCategoryForm (form: NgForm) {
     };
     this.getProductRequest(data);
   }
+
+
+  viewmoreSuper () {
+    const data = {
+      count : 1,
+      last_id: this.superCategoryRequests[this.superCategoryRequests.length - 1].merchant_id
+    };
+
+    this.getSuperCategoryRequest(data);
+  }
+
 }
+
 
 
 // editCategoryForm (form: NgForm) {

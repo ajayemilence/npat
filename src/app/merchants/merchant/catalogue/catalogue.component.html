@@ -45,11 +45,9 @@
            
    </div>
 </div>
-<!-- <div *ngIf="showSuperLoading" class="InterimLoader">
-  <div class="loaderParent">
-    <i class="fa fa-spinner fa-pulse fa-1x fa-fw"></i>
-</div>
-</div> -->
+<!-- <section  *ngIf="isLoading">
+  <div class="loading">Loading&#8230;</div>
+</section> -->
  
 <div id="main" class="col-xs-12">
   <div class="col1" >
@@ -652,7 +650,13 @@
   <div class="col3" >
     <div class="mainRow">
       <div class="heading">
-           <h3 class="left">Product Detail</h3>
+           <h3 
+              class="left">Product Detail</h3>
+           <img 
+              *ngIf="productInstore"
+              class="img-rounded img-responsive right"
+              [src]="instoreIcon"
+              style="height: 40px; width: 80px; margin-top: -40px ">
        </div>
        <div 
        class="row col-xs-12 listProduct" 
@@ -663,63 +667,110 @@
           <div class="loader"></div>    
       </div>
       <div class="wrapper" *ngIf="!productDetailLoading">
-        <!-- <div class="row" *ngIf="NoProductToShow">
-        </div> -->
-        <!-- <div *ngIf="!NoProductToShow"> -->
-        <div >
-          <!-- <img 
-          [src]="productImage"
-          alt="Product Image" 
-          style="max-height:100px; max-width:100px; float: left; margin-right: 15px;" 
-          class="img-responsive"
-          >
-        <div class="row headingProduct">
-          <h3>{{productName}}</h3>
-          <h3>Price: $ {{productPrice}}</h3>
-        </div>
-
-
-        <div class="rowProduct description">
-            <p>
-               {{productDesc}}
-            </p>
-        </div>
-        <hr>
-          <div class="row inventory">
-            <h5 >Inventory</h5>
-            <label class="switch" >
-                <input type="checkbox">
-                <span class="slider round"></span>
-              </label>
-          </div>
-          <hr>
-          <div class="row addons">
-              <h5>Varients/Add-ons</h5>
-          </div>
-          <div class="row listAddOns">
-              <h6>No Varients / Add-ons Added</h6>
-              <a>Add</a>
-          </div>
-          <hr> -->
-          <mat-card class="detail-card" *ngIf="showProductDetails">
-
-            <img 
-            class="image"
-            mat-card-image 
-            [src]="productImage" 
-            alt=""
-            style="padding: 20px; height: 300px; width: 350px; border-bottom: 1px solid #a7afba"
+        <div  *ngIf="showProductDetails">
+          <!-- <mat-card class="detail-card" *ngIf="showProductDetails"> -->
+            <carousel
+            *ngIf="productImage.length > 0"
             >
-            <mat-card-content>
+              <slide 
+              *ngFor="let image of productImage">
+                <img 
+                class="img-rounded img-responsive center-block"
+                [src]="ImagePath + image"
+                alt=""
+                style="padding:0; margin:0; height: 250px; width: 310px; ">
+              </slide>
+            </carousel>
+            <img 
+            *ngIf="productImage.length === 0"
+            class="image img-rounded img-responsive"
+            mat-card-image 
+            [src]="dummyProductImage" 
+            alt=""
+            style="padding:0; margin:0;; height: 250px; width: 310px; "
+            >
 
-              <!-- <div class="row headingProduct">
-                <h3 class="col-xs-5">Product Name : </h3>
-                <h3 class="col-xs-7">{{productName}}</h3>
-              </div> -->
-              <!-- <div class="row headingProduct">
-                <h3 class="col-xs-5">Product Price : </h3>
-                <h3 class="col-xs-7">{{productPrice}}</h3>
-              </div> -->
+            <div class="row detailpart">
+                <div class="row subpart">
+                    <h6 
+                    class="name">Super Category </h6>
+                    <h5 
+                    class="value">{{showProductCategory.super}}</h5>
+                    <h6 
+                    *ngIf="showProductCategory.cat !== ''"
+                    class="name">Category </h6>
+                    <h5 
+                    *ngIf="showProductCategory.cat !== ''"
+                    class="value">{{showProductCategory.cat}}</h5>
+                    <h6 
+                    *ngIf="showProductCategory.sub !== ''"
+                    class="name">Sub Category </h6>
+                    <h5 
+                    *ngIf="showProductCategory.sub !== ''"
+                    class="value">{{showProductCategory.sub}}</h5>
+                    <h6 
+                    *ngIf="showProductCategory.product !== ''"
+                    class="name">Product Name </h6>
+                    <h5 
+                    *ngIf="showProductCategory.product !== ''"
+                    class="value">{{showProductCategory.product}}</h5>
+                  </div>
+      
+      
+                  <div class="row subpart">
+                    <h6 class="name">MRP</h6>
+                    <h5 class="value">{{showSelectedProductDetail.pricing_array[0].product_pricing_price}}</h5>
+                    <h6 class="name">Selling Price</h6>
+                    <h5 class="value">{{showSelectedProductDetail.pricing_array[0].product_pricing_discount}}</h5>
+                  </div>
+      
+      
+                  <div 
+                  *ngIf="attributeArray.length > 0"
+                  class="row subpart">
+                      <div class="row attributeSubpart" *ngFor="let attribute of attributeArray">
+                          <h6 class="name">{{attribute.name}}</h6>
+
+                          <div *ngFor="let single of attribute.values">
+                              <ul class="list-unstyled list-inline">
+                                  <li 
+                                  style="margin: 4px;"
+                                  class="attribute-list list-inline-item">{{single}}</li>
+                              </ul>
+                          </div>
+                      </div>
+                      <div
+                      (click)=openInventoryModal(inventoryDetailTemplate)
+                      class="value btn btn-default quantityBtn">
+                      <h5 class="value"
+                      style="float: left"
+                      >Quantity</h5>
+                      <span
+                      style="float: right; margin-top: 10px;"
+                      ><i class="fa fa-chevron-right" aria-hidden="true"></i></span>
+                    </div>
+
+                  </div>
+
+                  <div 
+                  *ngIf="attributeArray.length < 1"
+                  class="row subpart">
+                      <h6 class="name">Quantity</h6>
+                      <h5 class="value">{{showSelectedProductDetail.pricing_array[0].pricing_product_stock}}</h5>
+                  </div>
+
+                  <div class="row subpart">
+                      <h6 class="name">Description</h6>
+                      <h5 class="value">{{showSelectedProductDetail.product_description}}</h5>
+                  </div>
+
+
+            </div>
+
+
+
+            <!-- <mat-card-content>
+
               <div class="row headingProduct">
                 <h3 class="col-xs-8" 
                 style="font-size: 30px; font-weight: bold">{{productName}} </h3>
@@ -728,15 +779,10 @@
                 >Rs. {{productPrice}}</h3>
               </div>
               <div class="row headingProduct">
-                <!-- <h3 >Product Detail : </h3>
-                <textarea rows="3" cols="50" readonly>
-                  {{productDesc}}
-                </textarea> -->
+
                 <p style="padding: 10px;">{{productDesc}}</p>
               </div>
               <div class="row">
-                  <!-- <h3 class="col-xs-4" 
-                  style="font-size: 20px;">Status: </h3> -->
                   <h2 class="col-xs-12 bg-danger"
                   *ngIf="!productApproved"
                   style="font-size: 20px; margin-top: 25px; color:red; text-align: center; background-color: rgb(252, 156, 156)"
@@ -745,41 +791,9 @@
                   style="font-size: 20px; margin-top: 25px; color:green; text-align: center"
                   *ngIf="productApproved"
                   class="bg-success col-xs-12" >Approved</h2>
-                  <!-- <h4 
-                  *ngIf="!productApproved"
-                  class="bg-danger" style="color:red; text-align: center">Pending Approval</h4>
-                  <h4 
-                  *ngIf="productApproved"
-                  class="bg-success" style="color:green; text-align: center">Approved</h4> -->
               </div>
-              <!-- <div class="row headingProduct">
-                  <h3 class="col-xs-5">Inventory : </h3>
-                  <h3 class="col-xs-7" *ngIf="singleQuantity">{{productPrice}}</h3>
-                  <div class="row showTable" *ngIf="!singleQuantity">
-                    <table class="table" >
-                        <thead>
-                            <tr>
-                            <th 
-                            *ngFor="let attribute of Heading; let i = index"
-                            class="table-name">{{attribute.product_spec_name}}</th>
-                            <th>Quantity</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr *ngFor="let row of InventoryTableEdit; let index  = index">
-                            <td *ngFor="let val of row.type">
-                              {{val.name}}
-                            </td>
-                            <td>{{row.quantity}}</td>
-                            </tr>
-                        </tbody>
-                    </table>
-                  </div>
-                  
-                </div> -->
-      
             </mat-card-content>
-          </mat-card>
+          </mat-card> -->
           
         </div>
 
@@ -828,7 +842,6 @@
           [(ngModel)]="this.currentSuperCategoryDesc"
           ngModel 
           class="form-control input"
-          #discription="ngModel"
           >
         </div>
         <div class="form-group">
@@ -853,9 +866,33 @@
             </label>
             <p>Drag & Drop images, or browse from computer.</p>
         </div>
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
         <div class="row">
-            <button class="btn btn-modal" type="submit" >Save</button>
-            <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+            <button   
+              [disabled]="requestLoader === true"
+              class="btn btn-modal" type="submit" >Save</button>
+            <!-- <button class="btn btn-primary"  > -->
+                <div 
+                  *ngIf="requestLoader"              
+                  id="preloader">
+                    <div id="loader"></div>
+                  </div>
+                <!-- <div class="lds-dual-ring"></div> -->
+                <!-- <img 
+                id="blah" 
+                [src]="btnLoader"
+                class="img-responsive img-rounded " 
+                width="50" 
+                height="50"
+                style="background-color: rgb(255, 0, 0)"
+                > -->
+
+            <!-- </button> -->
+            <button 
+                [disabled]="requestLoader === true"
+                class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
         </div>
     </form>
   </div>
@@ -927,8 +964,17 @@
           <p>Drag & Drop images, or browse from computer.</p>
       </div>
       <div class="row">
-          <button class="btn btn-modal" type="submit" >Add</button>
-          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+          <button  
+            [disabled]="requestLoader === true"
+            class="btn btn-modal" type="submit" >Add</button>
+            <div 
+                  *ngIf="requestLoader"              
+                  id="preloader">
+                    <div id="loader"></div>
+            </div>
+          <button 
+            [disabled]="requestLoader === true"
+            class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
       </div>
   </form>
 </div>
@@ -1000,8 +1046,17 @@
           <p>Drag & Drop images, or browse from computer.</p>
       </div>
       <div class="row">
-          <button class="btn btn-modal" type="submit" >Add</button>
-          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+          <button 
+              [disabled]="requestLoader === true"
+              class="btn btn-modal" type="submit" >Add</button>
+              <div 
+                  *ngIf="requestLoader"              
+                  id="preloader">
+                    <div id="loader"></div>
+              </div>
+          <button 
+              [disabled]="requestLoader === true"
+              class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
       </div>
   </form>
 </div>
@@ -1242,4 +1297,35 @@
     
     </div>
     <div class="row" style="height: 60px;"> </div>
+</ng-template>
+
+<ng-template #inventoryDetailTemplate>
+<div class="modal-header">
+    <h4 class="modal-title pull-left">Inventory</h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <table class="table">
+          <thead>
+              <tr>
+              <th 
+              *ngFor="let attribute of Heading; let i = index"
+              class="table-name">{{attribute.product_spec_name}}</th>
+              <th>Quantity</th>
+              <th></th>
+              </tr>
+          </thead>
+          <tbody>
+              <tr *ngFor="let row of InventoryTableEdit; let index  = index">
+              <td *ngFor="let val of row.type">
+                  {{val.name}}
+              </td>
+              <td>{{row.quantity}}</td>
+          </tbody>
+      </table>
+  
+  </div>
+  <div class="row" style="height: 60px;"> </div>
 </ng-template>

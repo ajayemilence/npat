@@ -65,9 +65,9 @@
 }
 
 .btn.btnnew:hover{
-  background-color: #444444; 
+  background-color: #000000; 
   color:#fff;
-  transform:translateY(4px);
+  /* transform:translateY(4px); */
   box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
 
@@ -97,7 +97,7 @@ text-align: center;
 .btn.btn-modal:hover{
   background-color: #B6B6B5; 
   color:#fff;
-  transform:translateY(4px);
+  /* transform:translateY(4px); */
   box-shadow: 0 1px 0 0px #B6B6B5;
 }
 
@@ -442,4 +442,15 @@ tr {
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+
+/* changing color of checkboxes */
+/** No CSS for this example */
+::ng-deep .mat-checkbox .mat-checkbox-frame {
+  border-color: #444444;
+}
+
+::ng-deep .mat-checkbox-checked .mat-checkbox-background {
+  background-color: #49b6d6 !important;
 }

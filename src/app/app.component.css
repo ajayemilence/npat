@@ -123,18 +123,16 @@ overflow-x: hidden;
   position: absolute;
   white-space: nowrap;
 }
-.dropdown-hover-menu>li>a {
+/* .dropdown-hover-menu>li>a {
   padding: 10px 20px;
   font-size: 16px;
   line-height: 1.5;
   border-bottom: 1px solid #aaa;
-  /* font-family: 'Oswald', sans-serif;
-  text-transform: uppercase; */
   display: block;
   background-color: transparent; 
-}
+} */
 .dropdown-hover-menu>li>a:hover {
-  background-color: #f5f5f5;
+  background-color: #f0f0f0;
 }
 .dropdown:hover .dropdown-hover-menu {
   display: block;
@@ -217,7 +215,9 @@ overflow-x: hidden;
 .login-btn:hover {
   background: #353535;
 }
-
+.selectedPlan {
+  background: #353535;
+}
 .my-float{
   margin-top: 2px;
   float: right;

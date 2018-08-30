@@ -1,0 +1,558 @@
+<div 
+  *ngIf='DocumentsStatus'
+  class="flex-container col-xs-10"  >
+  <div class="flex-container2 ">
+      <section  *ngIf="isLoading">
+          <div class="loading"></div>
+      </section>
+
+
+      <div id="overlay" 
+      [ngClass]="{
+        'overlayOnn':OpenOverlay === true,
+        'overlayOff':OpenOverlay === false
+      }"
+      (click)="off()">
+          <div id="text">
+          <img 
+          [src]="ZoomImage" 
+          [alt]="ZoomImageAlt" 
+          width="85%" 
+          height="75%"
+          style="margin-top: 150px; margin-bottom: 150px; font-size: 22px;"
+          class="col-xs-10 col-xs-offset-1"
+          >
+        </div>
+      </div>
+    <div class="row">
+    <h4><strong>Licence Number: </strong> <i 
+      *ngIf="EditEnable  "
+      (click)="openModal(template, 1)"
+      class="fa fa-pencil EditDoc" ></i></h4>  
+    <h4><strong>{{LicenceNumber}}</strong></h4>
+    
+    <img
+        [src]="showLicenceImage" 
+        class="Image "
+        (click)="showImage(1)"        
+    >
+    <!-- <img
+        *ngIf='DocumentsStatus'
+        [src]="showLicenceImage" 
+        class="Image "
+        (click)="showImage(1)"
+        
+    > -->
+    <!-- <div 
+      *ngIf='!DocumentsStatus'
+      class="col-xs-10 wrapper">
+      <button 
+      style="text-align: center"
+      (click)="uploadDocuments(1, template)"
+      class="btn btn-primary button">Upload Documents!</button>
+    </div> -->
+    
+    <div class="footer" style="text-align: center">
+        <button 
+        *ngIf="LicenceImageTwo !== undefined"
+        (click)="changeImage(1)"
+        class="btn btn-default"> 1 </button>
+        <button 
+        *ngIf="LicenceImageTwo !== undefined"
+        (click)="changeImage(2)"
+        class="btn btn-default"> 2 </button>
+    </div>
+    </div>
+
+
+
+    <div class="row">
+        <h4><strong>PAN Number: <i 
+          *ngIf="EditEnable && DocumentsStatus "
+          (click)="openModal(template, 2)"
+          class="fa fa-pencil EditDoc" ></i></strong></h4> 
+        <h4><strong>{{PanNumber}}</strong></h4>  
+        <img
+          [src]="PanImage" 
+          class="Image " 
+          (click)="showImage(2)"
+        >
+        <!-- <img
+        *ngIf='DocumentsStatus'
+        [src]="PanImage" 
+        class="Image " 
+        (click)="showImage(2)"
+        >
+
+        <div 
+          *ngIf='!DocumentsStatus'
+          class="col-xs-10 wrapper">
+          <button 
+          style="text-align: center"
+          (click)="uploadDocuments(2, template)"
+          class="btn btn-primary button">Upload Documents!</button>
+        </div> -->
+        <div class="footer"></div>
+    </div>
+
+
+
+    <div class="row">
+        <h4 *ngIf="EditEnable || GstNumber !== ''"><strong>GST Number: <i 
+          *ngIf="EditEnable   "
+          (click)="openModal(template, 3)"
+          class="fa fa-pencil EditDoc" ></i></strong></h4> 
+        <h4 *ngIf="GstNumber !== ''"><strong>{{GstNumber}}</strong></h4> 
+        <img
+        *ngIf="GstNumber !== '' && DocumentsStatus "
+        [src]="GstImage" 
+        class="Image " 
+        (click)="showImage(3)"
+        >
+        <div 
+          *ngIf="(EditEnable && GstNumber === '') || !DocumentsStatus "
+          class="col-xs-10 wrapper">
+          <button 
+          style="text-align: center"
+          (click)="uploadDocuments(3, template)"
+          class="btn btn-primary button">Upload Documents!</button>
+        </div>
+        <div class="footer"></div>
+    </div>  
+  </div>
+  <h4 
+  *ngIf="AdditionalImage.length > 0 || EditEnable"
+  style="float: left;
+  margin-bottom: 20px;
+  margin-left: 25px;
+  "><strong>Additional Documents:</strong> <i 
+    *ngIf="EditEnable "
+    (click)="openModal(template, 4)"
+    class="fa fa-pencil EditDoc" ></i></h4> 
+  <div 
+    class="column">
+    <div
+      *ngIf="AdditionalImage.length > 0 "
+      >      
+      <carousel>
+        <slide 
+        *ngFor="let image of AdditionalImage;let i = index">
+          <img 
+          class="img-rounded img-responsive "
+          [src]="ImagePath + image"
+          alt=""
+          style="height: 400px; width:980px;"
+          (click)="showImage(4, i)"
+          >
+        </slide>
+      </carousel>
+    </div>
+    <div 
+      *ngIf='AdditionalImage.length === 0 && EditEnable'
+      >
+      <button 
+      style="text-align: center"
+      (click)="uploadDocuments(4, template)"
+      class="btn btn-primary buttonAdditional">Upload Documents!</button>
+    </div>
+  </div>
+</div>
+
+
+<div 
+  *ngIf='!DocumentsStatus'
+  class="col-xs-10 wrapper">
+  <h4 
+  style="text-align: center"
+  ><strong> No Documents Uploaded Yet!</strong></h4>
+</div>
+
+
+
+<ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">{{ModalHeader}}</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <form
+        (ngSubmit)="save(f)" 
+        #f="ngForm" 
+      >
+      <div class="postsignup">
+          <div class="error" *ngIf="postSubmit" >{{error}}</div>
+    </div>
+      <div
+        *ngIf="ModalInputFieldTitle !== ''"
+        class="form-group">
+        <label for="title"><h5><strong>{{ModalInputFieldTitle}}</strong></h5>
+
+        </label>
+        <input 
+        type="text" 
+        id="name" 
+        name="title" 
+        ngModel 
+        [(ngModel)]="ModalInputField"
+        class="form-control input"
+        required
+        style="text-transform:uppercase;"
+        #title="ngModel"
+        >
+        <span 
+        *ngIf="!title.valid && title.touched" 
+        class="help-block">Enter Valid Input!</span>
+      </div>
+      
+      <!-- Images -->
+      <h5><strong> Document Image </strong></h5>
+      <div class="row" *ngFor="let image of ModalImages;let i = index ">
+
+          <div class="form-group">
+              <input  
+                type="file"  
+                id={{i}} 
+                class="inputfile inputfile-1" 
+                name="categoryPic" 
+                ngModel
+                accept="image/*"
+                (change)="onFileChange($event.target.files, i)"
+              >
+            
+              <label for={{i}} >
+                <img 
+                id="blah" 
+                [src]="image"
+                class="img-responsive img-rounded " 
+                width="200" 
+                height="200"
+                >
+              </label>
+          </div>
+      </div>
+    
+      <div class="row">
+          <button class="btn btn-modal" type="submit" >Save</button>
+          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+      </div>
+  </form>
+    </div>
+  </ng-template>
+
+ <!-- <div 
+  *ngIf='DocumentsStatus'
+  class="flex-container col-xs-10"  >
+  <div class="flex-container2 ">
+      <section  *ngIf="isLoading">
+          <div class="loading"></div>
+      </section>
+
+
+      <div id="overlay" 
+      [ngClass]="{
+        'overlayOnn':OpenOverlay === true,
+        'overlayOff':OpenOverlay === false
+      }"
+      (click)="off()">
+          <div id="text">
+          <img 
+          [src]="ZoomImage" 
+          [alt]="ZoomImageAlt" 
+          width="85%" 
+          height="75%"
+          style="margin-top: 150px; margin-bottom: 150px; font-size: 22px;"
+          class="col-xs-10 col-xs-offset-1"
+          >
+        </div>
+      </div>
+    <div class="row">
+    <h4><strong>Licence Number: </strong> 
+      <button 
+        class="EditDoc"
+        *ngIf="EditEnable  "
+        mat-button [matMenuTriggerFor]="menuLicence"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menuLicence="matMenu">
+        <button 
+          class="menuOption"
+          mat-menu-item
+          (click)="openModal(template, 1)"
+          ><mat-icon class="menuOption"> <i class="fa fa-pencil right"></i></mat-icon>
+          <span>Edit</span></button>
+      </mat-menu></h4>
+
+      <!-- <i 
+      *ngIf="EditEnable  "
+      (click)="openModal(template, 1)"
+      class="fa fa-pencil EditDoc" ></i></h4>   --
+    <h4><strong>{{LicenceNumber}}</strong></h4>
+    
+    <img
+        [src]="showLicenceImage" 
+        class="Image "
+        (click)="showImage(1)"        
+    >
+    <!-- <img
+        *ngIf='DocumentsStatus'
+        [src]="showLicenceImage" 
+        class="Image "
+        (click)="showImage(1)"
+        
+    > -->
+    <!-- <div 
+      *ngIf='!DocumentsStatus'
+      class="col-xs-10 wrapper">
+      <button 
+      style="text-align: center"
+      (click)="uploadDocuments(1, template)"
+      class="btn btn-primary button">Upload Documents!</button>
+    </div> --
+    
+    <div class="footer" style="text-align: center">
+        <button 
+        *ngIf="LicenceImageTwo !== undefined"
+        (click)="changeImage(1)"
+        class="btn btn-default"> 1 </button>
+        <button 
+        *ngIf="LicenceImageTwo !== undefined"
+        (click)="changeImage(2)"
+        class="btn btn-default"> 2 </button>
+    </div>
+    </div>
+
+
+
+    <div class="row">
+        <h4><strong>PAN Number: </strong>
+              <button 
+              class="EditDoc"
+            *ngIf="EditEnable  "
+            mat-button [matMenuTriggerFor]="menuLicence"><mat-icon>more_vert</mat-icon></button>
+          <mat-menu #menuLicence="matMenu">
+            <button 
+              class="menuOption"
+              mat-menu-item
+              (click)="openModal(template, 2)"
+              ><mat-icon class="menuOption"> <i class="fa fa-pencil right"></i></mat-icon>
+              <span>Edit</span></button>
+          </mat-menu></h4>
+          <!-- <i 
+          *ngIf="EditEnable && DocumentsStatus "
+          (click)="openModal(template, 2)"
+          class="fa fa-pencil EditDoc" ></i></strong></h4>  --
+        <h4><strong>{{PanNumber}}</strong></h4>  
+        <img
+          [src]="PanImage" 
+          class="Image " 
+          (click)="showImage(2)"
+        >
+        <!-- <img
+        *ngIf='DocumentsStatus'
+        [src]="PanImage" 
+        class="Image " 
+        (click)="showImage(2)"
+        >
+
+        <div 
+          *ngIf='!DocumentsStatus'
+          class="col-xs-10 wrapper">
+          <button 
+          style="text-align: center"
+          (click)="uploadDocuments(2, template)"
+          class="btn btn-primary button">Upload Documents!</button>
+        </div> --
+        <div class="footer"></div>
+    </div>
+
+
+
+    <div class="row">
+        <h4 *ngIf="EditEnable || GstNumber !== ''"><strong>GST Number: 
+          <button 
+          class="EditDoc"
+        *ngIf="EditEnable  "
+        mat-button [matMenuTriggerFor]="menuLicence"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menuLicence="matMenu">
+        <button 
+          class="menuOption"
+          mat-menu-item
+          (click)="openModal(template, 3)"
+          ><mat-icon class="menuOption"> <i class="fa fa-pencil right"></i></mat-icon>
+          <span>Edit</span></button>
+          <button 
+          class="menuOption"
+          mat-menu-item
+          (click)="deleteDocuments(3)"
+          ><mat-icon class="menuOption"> <i class="fa fa-trash-o right"></i></mat-icon>
+          <span>Delete</span></button>
+      </mat-menu>
+          <!-- <i 
+          *ngIf="EditEnable   "
+          (click)="openModal(template, 3)"
+          class="fa fa-pencil EditDoc" ></i> -- </strong></h4>  
+        <h4 *ngIf="GstNumber !== ''"><strong>{{GstNumber}}</strong></h4> 
+        <img
+        *ngIf="GstNumber !== '' && DocumentsStatus "
+        [src]="GstImage" 
+        class="Image " 
+        (click)="showImage(3)"
+        >
+        <div 
+          *ngIf="(EditEnable && GstNumber === '') || !DocumentsStatus "
+          class="col-xs-10 wrapper">
+          <button 
+          style="text-align: center"
+          (click)="uploadDocuments(3, template)"
+          class="btn btn-primary button">Upload Documents!</button>
+        </div>
+        <div class="footer"></div>
+    </div>  
+  </div>
+  <h4 
+  *ngIf="AdditionalImage.length > 0 || EditEnable"
+  style="float: left;
+  margin-bottom: 20px;
+  margin-left: 25px;
+  "><strong>Additional Documents: 
+  <button 
+          class="EditDoc"
+        *ngIf="EditEnable  "
+        mat-button [matMenuTriggerFor]="menuLicence"><mat-icon>more_vert</mat-icon></button>
+      <mat-menu #menuLicence="matMenu">
+        <button 
+          class="menuOption"
+          mat-menu-item
+          (click)="openModal(template, 4)"
+          ><mat-icon class="menuOption"> <i class="fa fa-pencil right"></i></mat-icon>
+          <span>Edit</span></button>
+          <button 
+          class="menuOption"
+          mat-menu-item
+          (click)="deleteDocuments(4)"
+          ><mat-icon class="menuOption"> <i class="fa fa-trash-o right"></i></mat-icon>
+          Delete</button>
+      </mat-menu>
+  <!-- <i 
+    *ngIf="EditEnable "
+    (click)="openModal(template, 4)"
+    class="fa fa-pencil EditDoc" ></i> --
+  </strong>
+  </h4> 
+  <div 
+    class="column">
+    <div
+      *ngIf="AdditionalImage.length > 0 "
+      >      
+      <carousel>
+        <slide 
+        *ngFor="let image of AdditionalImage;let i = index">
+          <img 
+          class="img-rounded img-responsive "
+          [src]="ImagePath + image"
+          alt=""
+          style="height: 400px; width:980px;"
+          (click)="showImage(4, i)"
+          >
+        </slide>
+      </carousel>
+    </div>
+    <div 
+      *ngIf='AdditionalImage.length === 0 && EditEnable'
+      >
+      <button 
+      style="text-align: center"
+      (click)="uploadDocuments(4, template)"
+      class="btn btn-primary buttonAdditional">Upload Documents!</button>
+    </div>
+  </div>
+</div>
+
+
+<div 
+  *ngIf='!DocumentsStatus'
+  class="col-xs-10 wrapper">
+  <h4 
+  style="text-align: center"
+  ><strong> No Documents Uploaded Yet!</strong></h4>
+</div>
+
+
+
+<ng-template #template>
+    <div class="modal-header">
+      <h4 class="modal-title pull-left">{{ModalHeader}}</h4>
+      <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-body">
+        <form
+        (ngSubmit)="save(f)" 
+        #f="ngForm" 
+      >
+      <div class="postsignup">
+          <div class="error" *ngIf="postSubmit" >{{error}}</div>
+    </div>
+      <div
+        *ngIf="ModalInputFieldTitle !== ''"
+        class="form-group">
+        <label for="title"><h5><strong>{{ModalInputFieldTitle}}</strong></h5>
+
+        </label>
+        <input 
+        type="text" 
+        id="name" 
+        name="title" 
+        ngModel 
+        [(ngModel)]="ModalInputField"
+        class="form-control input"
+        required
+        style="text-transform:uppercase;"
+        #title="ngModel"
+        >
+        <span 
+        *ngIf="!title.valid && title.touched" 
+        class="help-block">Enter Valid Input!</span>
+      </div>
+      
+      <!-- Images --
+      <h5><strong> Document Image </strong></h5>
+      <div class="row" *ngFor="let image of ModalImages;let i = index ">
+
+          <div class="form-group img-wrap">
+              <input  
+                type="file"  
+                id={{i}} 
+                class="inputfile inputfile-1" 
+                name="categoryPic" 
+                ngModel
+                accept="image/*"
+                (change)="onFileChange($event.target.files, i)"
+              > 
+
+              <span 
+                (click)="deleteImage(i)"
+                *ngIf="image !== 'assets/images/camera-icon.gif' && (editing === 3 || editing === 4)"
+                class="close ">&times;</span>
+              <label for={{i}} >
+                
+                <img 
+                id="blah" 
+                [src]="image"
+                class="img-responsive img-rounded " 
+                width="200" 
+                height="200"
+                >
+              </label>
+          </div>
+      </div>
+    
+      <div class="row">
+          <button class="btn btn-modal" type="submit" >Save</button>
+          <button class="btn btn-modal" type="button" (click)="modalRef.hide()" >Cancel</button>
+      </div>
+  </form>
+    </div>
+  </ng-template>
+ -->

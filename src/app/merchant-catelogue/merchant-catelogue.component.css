@@ -127,7 +127,7 @@ a h4 {
 .btn.btnAdd:hover{
     background-color: #49b6d6; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
 
@@ -149,7 +149,7 @@ a h4 {
 .btn.btndownload:hover{
     background-color: #49b6d6; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
 
@@ -170,7 +170,7 @@ a h4 {
 .btn.btnnew:hover{
     background-color: #49b6d6; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
 
@@ -189,7 +189,7 @@ a h4 {
 .btn.btnnew2:hover{
     background-color: #49b6d6; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
 
@@ -286,7 +286,7 @@ input[type=file] {
 .btn.btn-modal:hover{
     background-color: #333333; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1px 0 0px #B6B6B5;
 }
 
@@ -486,7 +486,7 @@ hr {
 .accordion.overflow:hover{
     background-color: #49b6d6; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1.5px 0 0px #B6B6B5;
 } 
 

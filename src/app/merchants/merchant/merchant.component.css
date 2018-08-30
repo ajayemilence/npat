@@ -97,7 +97,7 @@ td {
 .btn.btnAdd:hover{
     background-color: rgb(78, 174, 223); 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
 
@@ -115,6 +115,7 @@ td {
 
 .value {
     margin-top: -5px;
+    font-size: 18px;
 }
 
 .vl {

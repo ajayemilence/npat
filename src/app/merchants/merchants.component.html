@@ -42,15 +42,17 @@
             >
               Status
             </th>
+            <th style="width: 5%"></th>
           </tr>
           <ng-container *ngIf="!isLoading">
               <tr 
               *ngFor="let merchant of merchants"
-              routerLink="/merchants/merchant/info"
-              (click)="info(merchant)"
-              style="cursor: pointer;"
               >
-                <td class="id">{{ merchant.merchant_id }}</td>
+                <td 
+                  style="cursor: pointer;"
+                  routerLink="/merchants/merchant/info"
+                  (click)="info(merchant)"  
+                  class="id">{{ merchant.merchant_id }}</td>
                 <td>{{ merchant.merchant_display_name}}</td>
                 <td>{{merchant.merchant_email}}</td>
                 <td>{{merchant.merchant_address}}</td>
@@ -60,6 +62,10 @@
                 <td
                 style="padding-right: 5px"
                 >{{merchant.merchant_verification_status}}</td>
+                <td><i 
+                    (click)="openModal(template,  merchant)"
+                    class="fa fa-times deleteIcon"></i></td>
+                    <!-- (click)="deleteMerchant(merchant.merchant_id)" -->
               </tr>
           </ng-container>
           
@@ -108,3 +114,31 @@ class="paginator"
 [pageSizeOptions]="pageSizeOptions"
 (page)="pageEvent = changePage($event)">
 </mat-paginator> -->
+
+ 
+<ng-template #template>
+  <div class="modal-header">
+    <h4 class="modal-title pull-left"><strong> Delete Merchant </strong></h4>
+    <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+      <h4>Are you sure you want to delete {{deleteMerchnat.merchant_display_name}} ? </h4>
+
+        <hr>
+
+      <div class="row"
+          style="float: right; margin-right: 18px;"
+      >
+        <button class="btn btnAdd btn-primary"
+          (click)="modalRef.hide()"
+          >Cancel</button>
+        <button 
+          (click)="deleteMerchant(deleteMerchnat.merchant_id)"
+          class="btn btnAdd btn-primary"> Delete </button>
+      </div>
+      <div class="row"></div>
+      <div class="row"></div>
+  </div>
+</ng-template>

@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { Http, Headers, Response } from '@angular/http';
+import { Http, Headers, Response, RequestOptions } from '@angular/http';
 import 'rxjs/add/operator/map';
 import {Observable} from 'rxjs/Observable';
 import 'rxjs/add/operator/catch';
@@ -12,7 +12,7 @@ import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 export class MerchantService {
     loggedIn = false;
     merchantInfo;
-    // private messageSource = new BehaviorSubject('default message');
+    // private messageSource = new BehaviorSubject(0);
     // currentMessage = this.messageSource.asObservable();
     constructor(private http: Http,
                 private localStorageService: LocalStorageService,
@@ -38,6 +38,7 @@ export class MerchantService {
         body.append('merchant_phone_no', data.form.phoneNumber);
         body.append('merchant_lat', data.lat);
         body.append('merchant_long', data.lng);
+        body.append('merchant_altitude', data.altitude);
 
 
         if (data.image === null) {
@@ -82,6 +83,7 @@ export class MerchantService {
         body.append('merchant_lat', data.lat);
         body.append('merchant_long', data.lng);
         body.append('merchant_id', data.merchantID);
+        body.append('merchant_altitude', data.altitude);
         // body.append('merchant_parent_admin', (user.merchant_id === undefined) ? user.admin_id : '' );
 
         if (data.image === null || data.image === undefined) {
@@ -227,7 +229,6 @@ export class MerchantService {
 
 
     verifyMerchant() {
-        // /merchant/en/get_single_merchant?merchant_id=39
         const headers = new Headers({
             'd_token':  JSON.parse(localStorage.getItem('token'))
          });
@@ -243,6 +244,127 @@ export class MerchantService {
             }
         ).catch(
             (error: Response) => {
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    // get merchant doc's
+
+    getMerchantDocuments(data: any) {
+        const headers = new Headers({
+            'd_token':  JSON.parse(localStorage.getItem('token'))
+         });
+        //  const merchant_id = JSON.parse(localStorage.getItem('user-data')).merchant_id;
+
+        return this.http.get(
+            this.global.serverUrl + 'merchant/en/get_merchant_doc?merchant_id=' + data,
+            {headers: headers})
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+    }
+
+    EditMerchantDocument(data: any) {
+        const headers = new Headers({
+            'd_token':  JSON.parse(localStorage.getItem('token'))
+         });
+
+        const body = new FormData();
+        body.append('merchant_docment_id', data.docId);
+        body.append('merchant_pan_id', data.panId);
+        body.append('merchant_licence_id', data.licenceId);
+        body.append('merchant_gst_id', data.gstId);
+        if (data.gstImage === '') {
+            body.append('merchant_gst_image', '');
+        } else {
+            body.append('merchant_gst_image', data.gstImage, data.gstImage.name);
+        }
+
+        if (data.imgPan === '') {
+            body.append('merchant_pan_image', '');
+        } else {
+            body.append('merchant_pan_image', data.imgPan, data.imgPan.name);
+        }
+
+        if (data.imgLicence === undefined) {
+            body.append('merchant_licence_image', '');
+        } else {
+            data.imgLicence.forEach(image => {
+                body.append('merchant_licence_image', image, image.name);
+            });
+        }
+
+
+        if (data.doc === undefined) {
+            body.append('additional_image', '');
+        } else {
+            data.doc.forEach(image => {
+                body.append('additional_image', image, image.name );
+            });
+
+        }
+
+
+        body.append('delete_merchant_licence_image', data.deleteLicenceImage);
+        body.append('delete_additional_image', data.deleteDoc);
+
+
+        return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant_doc',
+        body,
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+
+    }
+
+    deleteMerchant(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token),
+            'Content-Type': 'application/x-www-form-urlencoded'
+        });
+
+
+
+        const body = new URLSearchParams();
+        body.append('merchant_ids', data);
+
+        const options = new RequestOptions({
+            headers: headers,
+            body : body.toString()
+          });
+        return this.http.delete(this.global.serverUrl + 'merchant/en/delete_multiple_merchant',
+            options )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
                 const output = error.json();
                 return Observable.throw('Something went wrong', output);
             }

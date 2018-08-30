@@ -28,10 +28,9 @@ export class AuthService {
         // body.append('admin_account_type', '');
 
         if (data.image === null) {
-            console.log('image null');
             body.append('admin_profile_pic', '');
         } else {
-            console.log('image not null', data.image);
+
             body.append('admin_profile_pic', data.image, data.image.name );
         }
         return this.http.post(this.global.serverUrl + 'admin/en/register',

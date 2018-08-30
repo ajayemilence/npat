@@ -20,9 +20,9 @@
 
 
 .btn.btnAccept:hover{
-    background-color: #49b6d6; 
+    background-color: #46bee2; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     /* box-shadow: 0 1.5px 0 0px #B6B6B5; */
 }
 
@@ -39,14 +39,14 @@
 }
 
 .btn.btnReject:hover{
-    background-color: #ff4f4f; 
+    background-color: #f92a2a;; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     /* box-shadow: 0 1.5px 0 0px #B6B6B5; */
 }
 
 .btn.btnEdit {
-    background-color: #444444;
+    background-color: #333333;
     border: none;
     color: white;
     border-radius: 50px;
@@ -60,7 +60,7 @@
 .btn.btnEdit:hover{
     background-color: #444444; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     /* box-shadow: 0 1.5px 0 0px #B6B6B5; */
 }
 
@@ -96,7 +96,7 @@ tr {
 .btn.btn-modal:hover{
     background-color: #333333; 
     color:#fff;
-    transform:translateY(4px);
+    /* transform:translateY(4px); */
     box-shadow: 0 1px 0 0px #B6B6B5;
 }
 

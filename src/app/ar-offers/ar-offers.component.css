@@ -1,190 +1,32 @@
-.RequestForm {
-    border: #333333;
-    box-shadow: 0 0 30px -3px rgba(175, 175, 175, 0.5);
-}
-
-.table {
-    width:100%;
-    border: #333333;
-    box-shadow: 0 0 30px -3px rgba(153, 153, 153, 0.5);
-}
-.btn.btnAccept {
-    background-color: #49b6d6;
-    border: none;
-    color: white;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 0px #FFFFFE;
-    position: absolute;
-    width: 8%;
-    margin-top: -2px;
-}
-
-
-.btn.btnAccept:hover{
-    background-color: #46bee2; 
-    color:#fff;
-    /* transform:translateY(4px); */
-    /* box-shadow: 0 1.5px 0 0px #B6B6B5; */
-}
-
-.btn.btnReject {
-    background-color: #ff4f4f;
-    border: none;
-    color: white;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 0px #FFFFFE;
-    position: absolute;
-    width: 8%;
-    margin-top: -2px;
-}
-
-.btn.btnReject:hover{
-    background-color: #f92a2a; 
-    color:#fff;
-    /* transform:translateY(4px); */
-    /* box-shadow: 0 1.5px 0 0px #B6B6B5; */
-}
-
-.btn.btnEdit {
-    background-color: #333333;
-    border: none;
-    color: white;
-    border-radius: 50px;
-    cursor: pointer;
-    box-shadow: 0 4px 0 0px #FFFFFE;
-    position: absolute;
-    width: 8%;
-    margin-top: -2px;
-}
-
-.btn.btnEdit:hover{
-    background-color: #444444; 
-    color:#fff;
-    /* transform:translateY(4px); */
-    /* box-shadow: 0 1.5px 0 0px #B6B6B5; */
-}
-
-.button {
-    width:10%
-}
-
-tr {
-    height: 40px;
-}
-.tableRow {
-    width: 11%;
-    height :60px;
-    text-align: center;
-    font-size: 16px;
-}
-.tableRowImage {
-    width: 11%;
-}
-
-.btn.btn-modal{
+.right {
     float: right;
-    background-color:  #B6B6B5;
+    /* margin-right: 35px; */
+}
+
+.btn.btnAdd {
+    background-color: #020202;
     border: none;
-    color: #333333;
+    color: white;
     padding: 12px 16px;
     font-size: 16px;
-    border-radius: 45px;
+    border-radius: 25px;
     cursor: pointer;
     box-shadow: 0 4px 0 0px #FFFFFE;
     position: relative;
-    margin-right: 20px;
-    margin-bottom: 20px;
+    margin-top: 10px;
 }
-
-.btn.btn-modal:hover{
-    background-color: #000000; 
-    color:#fff;
-    /* transform:translateY(4px); */
-    box-shadow: 0 1px 0 0px #B6B6B5;
+  
+.btn.btnAdd:hover {
+    background-color: rgb(78, 174, 223);
+    color: #fff;
+    transform: translateY(4px);
+    box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
-
-.blue{
-    color: #49b6d6; 
+  
+.left {
+    float: left;
+    /* margin-left: 5px; */
 }
-/* Input File */
-input[type=file] {
-    display:none;
-    margin:10px;
-  }
-  
-
-/* loader */
-
-/* Center the loader */
-#overlay {
-    position: fixed;
-    display: none;
-    width: 100%;
-    height: 100%;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 2;
-    cursor: pointer;
-}
-
-#loader {
-    position: absolute;
-    left: 50%;
-    top: 50%;
-    z-index: 1;
-    width: 120px;
-    height: 120px;
-    margin: -75px 0 0 -75px;
-    border: 16px solid #f3f3f3;
-    border-radius: 50%;
-    border-top: 16px solid #49b6d6;
-    width: 120px;
-    height: 120px;
-    -webkit-animation: spin 2s linear infinite;
-    animation: spin 2s linear infinite;
-  }
-  
-  @-webkit-keyframes spin {
-    0% { -webkit-transform: rotate(0deg); }
-    100% { -webkit-transform: rotate(360deg); }
-  }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-  }
-
-  /* Add animation to "page content" */
-.animate-bottom {
-    position: relative;
-    -webkit-animation-name: animatebottom;
-    -webkit-animation-duration: 1s;
-    animation-name: animatebottom;
-    animation-duration: 1s
-  }
-  
-  @-webkit-keyframes animatebottom {
-    from { bottom:-100px; opacity:0 } 
-    to { bottom:0px; opacity:1 }
-  }
-  
-  @keyframes animatebottom { 
-    from{ bottom:-100px; opacity:0 } 
-    to{ bottom:0; opacity:1 }
-  }
-  
-  #myDiv {
-    display: none;
-    text-align: center;
-  }
-
-
-  /*  In loader with overlay */
 
 /* Absolute Center Spinner */
 .loading {
@@ -306,12 +148,39 @@ input[type=file] {
     }
   }
 
-  .image {
-    background-image : url('../../../assets/images/upload.png');
-    width: 60px;
-    height: 60px;
-  }
 
-  table tr {
-    height: 40px
-  }
+/* Input File */
+input[type=file] {
+  display:none;
+  margin:10px;
+}
+
+.error {
+  color: red;
+  border: 1px solid #ccc;
+  padding: 10px;
+  background: #faffbd;
+  text-align: center;
+} 
+
+.btn.btn-modal{
+  float: right;
+  background-color:  #49b6d6;
+  border: none;
+  color: #FFFFFE;
+  padding: 12px 16px;
+  font-size: 16px;
+  border-radius: 45px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 0px #FFFFFE;
+  position: relative;
+  margin-right: 20px;
+  margin-bottom: 20px;
+}
+
+.btn.btn-modal:hover{
+  background-color: #333333; 
+  color:#fff;
+  /* transform:translateY(4px); */
+  box-shadow: 0 1px 0 0px #B6B6B5;
+}

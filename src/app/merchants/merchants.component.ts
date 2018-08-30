@@ -1,8 +1,8 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, TemplateRef } from '@angular/core';
 import { MerchantService } from './merchants.service';
-import { PageChangedEvent } from 'ngx-bootstrap';
+import { PageChangedEvent, BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { LocalStorageService } from '../shared/local-storage.service';
-import {PageEvent} from '@angular/material';
+import {PageEvent, MatSnackBar} from '@angular/material';
 
 @Component({
   selector: 'app-merchants',
@@ -19,7 +19,7 @@ export class MerchantsComponent implements OnInit {
   params;
   pageDetail = [];
   current = {};
-
+  modalRef: BsModalRef;
 
   // MatPaginator Inputs
   datasource: null;
@@ -29,8 +29,12 @@ export class MerchantsComponent implements OnInit {
 
   // MatPaginator Output
   pageEvent: PageEvent;
+  deleteMerchnat;
 
-  constructor(private merchantService: MerchantService) { }
+  constructor(private merchantService: MerchantService,
+              private snackBar: MatSnackBar,
+              private modalService: BsModalService
+            ) { }
 
   ngOnInit() {
     localStorage.removeItem('merchant-data');
@@ -55,11 +59,19 @@ export class MerchantsComponent implements OnInit {
             this.length = response.data.count;
           } else {
             // navigate to error page
+            this.isLoading = false;
             console.log(response);
+            this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
+                duration: 4000
+            });
           }
         },
         (error) => {
           console.log('error!!', error);
+          this.isLoading = false;
+            this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
+                duration: 4000
+            });
         });
   }
 
@@ -69,7 +81,7 @@ export class MerchantsComponent implements OnInit {
   }
 
   changePage(event) {
-    console.log(event.pageIndex );
+
     // if (event.pageIndex > this.currentIndex) {
     //   this.currentIndex = event.pageIndex;
     //   // console.log(this.currentIndex);
@@ -86,7 +98,7 @@ export class MerchantsComponent implements OnInit {
         token: this.token,
         last_id: '',
         pre_id : '',
-        page_no : event.pageIndex
+        page_no : event.pageIndex + 1
         // limit: event.pageSize
     };
     // }
@@ -114,7 +126,7 @@ export class MerchantsComponent implements OnInit {
       //     };
       //   }
       // }
-      console.log(this.params.last_id, this.params.pre_id);
+
       this.merchantService.getMerchants(this.params)
       .subscribe(
       (response) => {
@@ -129,13 +141,77 @@ export class MerchantsComponent implements OnInit {
           // };
         } else {
           // navigate to error page
+          this.isLoading = false;
           console.log(response);
+          this.snackBar.open('Something went wrong, please try again later!', 'Dismiss', {
+            duration: 5000,
+          });
         }
       },
       (error) => {
         console.log('error!!', error);
+        this.isLoading = false;
+        this.snackBar.open('Something went wrong, please try again later!', 'Dismiss', {
+          duration: 5000,
+        });
       });
       return event;
+  }
+
+  openModal(template: TemplateRef<any>, name) {
+    this.modalRef = this.modalService.show(template);
+    this.deleteMerchnat = name;
+  }
+
+  deleteMerchant(id) {
+
+    this.merchantService.deleteMerchant(id).subscribe(
+      (response) => {
+            if (response.success === 200) {
+              const data = {
+                token: this.token,
+                last_id: '',
+                pre_id : '',
+                page_no: ''
+              };
+
+              this.merchantService.getMerchants(data)
+                .subscribe(
+                  (responseData) => {
+                    this.modalRef.hide();
+                    this.deleteMerchnat = '';
+                    if (responseData.success === 200) {
+                      this.isLoading = false;
+                      this.merchants = responseData.data.rows;
+                      this.length = responseData.data.count;
+                    } else {
+                      this.isLoading = false;
+                      this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
+                          duration: 4000
+                      });
+                    }
+                  },
+                  (error) => {
+                    console.log('error!!', error);
+                    this.isLoading = false;
+                      this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
+                          duration: 4000
+                      });
+                  });
+            } else {
+              console.log(response.output.payload.message);
+              this.snackBar.open('Something went wrong, please try again later!', 'Dismiss', {
+                duration: 5000,
+              });
+            }
+      }, (error) => {
+          console.log('error!!', error);
+          this.isLoading = false;
+          this.snackBar.open('Something went wrong, please try again later!', 'Dismiss', {
+            duration: 5000,
+          });
+      }
+    );
   }
 
 }

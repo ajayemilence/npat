@@ -31,7 +31,9 @@ showSubcategory = false;
 collapsed = 0;
 subCollapsed = 0;
 childCollapsed = 0;
-productImage = 'assets/images/upload.png';
+dummyProductImage = 'assets/images/upload.png';
+instoreIcon = 'assets/images/ic_in_store.png';
+productImage = [];
 totalSuperCategory = 0;
 totalProducts = 0;
 superCategories = [];
@@ -54,6 +56,7 @@ selectedItem2;
 
 modalRef: BsModalRef;
 displayImage = 'assets/images/upload.png';
+requestLoader = false;
 userImage: File = null;
 inventory = true;
 templateTitle;
@@ -70,6 +73,7 @@ productApproved = false;
 
 // list super category
 listSuperCategories = [];
+listSuperCategoryOption = [];
 listSuperCategoryChange = '';
 visible: Boolean = true;
 selectable: Boolean = true;
@@ -106,6 +110,22 @@ merchantVerified = false;
 merchantFreeListing = false;
 DataPlan; // upgrading
 planModalRef: BsModalRef;
+
+ImagePath = '';
+showSelectedProductDetail;
+
+showProductCategory = {
+  super: '',
+  cat: '',
+  sub: '',
+  product: ''
+};
+
+postSubmit = false;
+error = '';
+attributeArray = [];
+
+productInstore = false;
 constructor(private modalService: BsModalService,
             private localStorageService: LocalStorageService,
             private catalogueService: CatalogueService,
@@ -118,12 +138,11 @@ constructor(private modalService: BsModalService,
           ) {}
 
 ngOnInit() {
-
     const user = JSON.parse(localStorage.getItem('user-data'));
     if (user.merchant_id !== undefined) {
       if (user.merchant_subscription === undefined ||
-          user.merchant_display_name === '' ||
-          user.documents === 0 ) {
+          user.merchant_display_name === ''
+        ) {
               this.router.navigate(['/verify']);
           }
     const docs = JSON.parse(localStorage.getItem('doc'));
@@ -398,6 +417,8 @@ ngOnInit() {
 
   }
 
+  this.ImagePath = this.globalService.ImagePath;
+
 
 
 }
@@ -417,10 +438,11 @@ onFileChange(file: FileList) {
 }
 
 openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
+  this.requestLoader = false;
   this.displayImage = 'assets/images/upload.png';
   if (this.router.url === '/merchants/merchant/catalogue') {
     this.fruits = [];
-    this.modalRef = this.modalService.show(superCategoryList);
+
 
     // use data when admin adding supercategories in merchant
     const data = this.currentMerchant.merchant_id;
@@ -428,7 +450,13 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
     this.catalogueService.listSuperCategories(data).subscribe(
       (response) => {
         if (response.success === 200) {
-          this.listSuperCategories = response.data;
+          response.data.forEach(category => {
+            if (category.already_selected === 0) {
+              this.listSuperCategories.push(category);
+            }
+          });
+          // this.listSuperCategories = response.data;
+          this.modalRef = this.modalService.show(superCategoryList);
 
         } else {
           console.log(response);
@@ -455,13 +483,19 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
       this.modalRef = this.modalService.show(template);
     } else if (user.merchant_id !== undefined) {
       this.fruits = [];
-      this.modalRef = this.modalService.show(superCategoryList);
+
       const data = {}; // use data when admin adding supercategories in merchant
       this.catalogueService.listSuperCategories(data).subscribe(
         (response) => {
           if (response.success === 200) {
-            this.listSuperCategories = response.data;
+            response.data.forEach(category => {
+              if (category.already_selected === 0) {
+                this.listSuperCategories.push(category);
+              }
+            });
 
+            // this.listSuperCategories = response.data;
+            this.modalRef = this.modalService.show(superCategoryList);
           }
         },
         (error) => {
@@ -473,6 +507,7 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
 }
 
 addCategoryModel(template: TemplateRef<any>, detail) {
+  this.requestLoader = false;
   this.currentSuperCategoryName = '';
   this.currentSuperCategoryDesc = '';
   this.templateTitle = 'Add a Category';
@@ -481,6 +516,7 @@ addCategoryModel(template: TemplateRef<any>, detail) {
 }
 
 addSubCategoryModel(template: TemplateRef<any>, currentSuper, currentCategory) {
+  this.requestLoader = false;
   this.currentSuperCategoryName = '';
   this.currentSuperCategoryDesc = '';
   this.templateTitle = 'Add a Sub Category';
@@ -503,91 +539,174 @@ upgradePlanModal(template: TemplateRef<any>) {
 planDetailModal(template: TemplateRef<any>) {
   this.planModalRef = this.modalService.show(template);
 }
-addSuperCategory(form: NgForm) {
 
+openInventoryModal(template: TemplateRef<any>) {
+  this.Heading = [];
+  this.InventoryTableEdit = [];
+  this.tempAttributeArray = [];
+
+  this.showSelectedProductDetail.pricing_array[0].product_spec.forEach(spec => {
+    const obj = {
+      product_spec_name : spec.ProductSpecType.product_spec_name,
+      product_spec_id : spec.product_spec_id
+    };
+
+
+    this.Heading.push(obj);
+  });
+
+  this.Heading.sort(function(a, b) {
+    return a.product_spec_id - b.product_spec_id;
+  });
+
+  this.showSelectedProductDetail.pricing_array[0].product_inventory.forEach(inventory => {
+
+      const rowTable = {
+        quantity: inventory.product_inventory,
+        type : inventory.product_spec_values.split(',')
+
+      };
+
+
+      rowTable.type.forEach(val => {
+        const data2 = val.split('_');
+          const quantity = {
+                id : JSON.parse(data2[0]),
+                name : data2[1]
+          };
+          this.tempAttributeArray.push(quantity);
+      });
+
+      this.tempAttributeArray.sort(function(a, b) {
+        return a.id - b.id;
+      });
+
+      const finalRow = {
+          quantity : rowTable.quantity,
+          type : this.tempAttributeArray
+      };
+
+      this.tempAttributeArray = [];
+      this.InventoryTableEdit.push(finalRow);
+  });
+
+  // adding empty space for missing values
+  this.InventoryTableEdit.forEach(row => {
+        if (row.type.length < this.Heading.length) {
+            this.Heading.forEach(attribute => {
+                const index = row.type.findIndex(val => JSON.parse(val.id) === attribute.product_spec_id );
+                if (index < 0) {
+                  const obj = {
+                    id : attribute.product_spec_id,
+                    name : ''
+                  };
+                  row.type.push(obj);
+                }
+                row.type.sort(function(a, b) {
+                  return a.id - b.id;
+                });
+            });
+        }
+  });
+
+  this.modalRef = this.modalService.show(template);
+
+}
+addSuperCategory(form: NgForm) {
+  this.requestLoader = true;
   const data = {
     form: form.value,
     image: this.userImage,
     merchantID: (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
   };
-  if (this.editMode === true) {
-    const input = {
-      categoryID : this.editCategory.super_category_id,
-      form : data.form,
-      image: data.image
-    };
+  if (form.valid === false) {
+      this.requestLoader = false;
+      this.postSubmit = true;
+      this.error = 'Mandatory Fields Missing!';
+  } else {
+    if (this.editMode === true) {
+      const input = {
+        categoryID : this.editCategory.super_category_id,
+        form : data.form,
+        image: data.image
+      };
 
 
 
-    this.catalogueService.editSuperCategory(input)
-    .subscribe(
-      (response) => {
+      this.catalogueService.editSuperCategory(input)
+      .subscribe(
+        (response) => {
 
-        if (response.success === 200) {
+          if (response.success === 200) {
 
-          this.currentSuperCategoryName = '';
-          this.currentSuperCategoryDesc = '';
-          this.displayImage = 'assets/images/upload.png';
-          form.reset();
-          this.modalRef.hide();
-          this.editMode = false;
-          if (this.currentMerchant === undefined) {
+            this.currentSuperCategoryName = '';
+            this.currentSuperCategoryDesc = '';
+            this.displayImage = 'assets/images/upload.png';
+            this.requestLoader = false;
+            form.reset();
+            this.modalRef.hide();
+            this.editMode = false;
+            if (this.currentMerchant === undefined) {
 
-            this.getData();
-          } else {
+              this.getData();
+            } else {
 
-              this.getMerchantData();
-          }
+                this.getMerchantData();
+            }
 
-       } else {
+
+         } else {
+            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+              duration: 5000,
+            });
+         }
+        },
+        (error) => {
+          console.log('error', error);
           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
             duration: 5000,
           });
-       }
-      },
-      (error) => {
-        console.log('error', error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
-      }
-    );
+        }
+      );
 
-  } else {
-    this.catalogueService.addSuperCategory(data)
-    .subscribe(
-      (response) => {
+    } else {
+      this.catalogueService.addSuperCategory(data)
+      .subscribe(
+        (response) => {
 
 
-       if (response.success === 200) {
-          this.displayImage = 'assets/images/upload.png';
-          this.modalRef.hide();
-            if (this.currentMerchant === undefined) {
-              this.getData();
-            } else {
-              this.getMerchantData();
-          }
-         const user = JSON.parse(localStorage.getItem('user-data'));
-         if (user.merchant_id !== undefined) {
-          this.snackBar.open('Super Category Requested To Admin Successfully', 'ok', {
+         if (response.success === 200) {
+            this.displayImage = 'assets/images/upload.png';
+            this.requestLoader = false;
+            this.modalRef.hide();
+              if (this.currentMerchant === undefined) {
+                this.getData();
+              } else {
+                this.getMerchantData();
+            }
+           const user = JSON.parse(localStorage.getItem('user-data'));
+           if (user.merchant_id !== undefined) {
+            this.snackBar.open('Super Category Requested To Admin Successfully', 'ok', {
+              duration: 5000,
+            });
+           }
+
+         } else {
+          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
             duration: 5000,
           });
          }
-
-       } else {
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
-       }
-      },
-      (error) => {
-        console.log('error', error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
-      }
-    );
+        },
+        (error) => {
+          console.log('error', error);
+          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+            duration: 5000,
+          });
+        }
+      );
+    }
   }
+
 
 }
 
@@ -628,113 +747,36 @@ addProductForm(form: NgForm) {
 
 
 addCategory(form: NgForm) {
-
-  if (this.editMode === true) {
-
-    const data = {
-      form: form.value,
-      image: this.userImage,
-      superID: this.editParentCategory.super_category_id,
-      categoryID : this.editCategory.category_id,
-      merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
-    };
-
-
-
-    this.catalogueService.editCategory(data)
-   .subscribe(
-     (response) => {
-
-
-      if (response.success === 200) {
-        this.displayImage = 'assets/images/upload.png';
-        this.editMode = false;
-
-        form.reset();
-        this.modalRef.hide();
-        this.getData();
-      } else {
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
-      }
-     },
-     (error) => {
-        console.log('error', error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
-     }
-   );
-
+  this.requestLoader = true;
+  if (form.valid === false) {
+    this.requestLoader = false;
+    this.postSubmit = true;
+    this.error = 'Mandatory Fields Missing!';
   } else {
+    if (this.editMode === true) {
 
-    const data = {
-      form: form.value,
-      image: this.userImage,
-      superID: this.superCategoryName.super_category_id,
-      merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
-    };
-    this.catalogueService.addCategory(data)
-   .subscribe(
-     (response) => {
-
-       this.displayImage = 'assets/images/upload.png';
-       this.modalRef.hide();
-      if (response.success === 200) {
-        const user = JSON.parse(localStorage.getItem('user-data'));
-         if (user.merchant_id !== undefined) {
-          this.snackBar.open('Category Requested To Admin Successfully', 'ok', {
-            duration: 5000,
-          });
-         } else {
-          if (this.currentMerchant === undefined) {
-            this.getData();
-          } else {
-              this.getMerchantData();
-          }
-
-         }
-      } else {
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
-      }
-     },
-     (error) => {
-       console.log('error', error);
-       this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-        duration: 5000,
-       });
-     }
-   );
-  }
-
-}
-
-addSubCategory(form: NgForm) {
-
-  if (this.editMode === true) {
-    const data = {
-      form: form.value,
-      image: this.userImage,
-      superID: this.editParentCategory.category_id,
-      categoryID : this.editCategory.sub_category_id,
-      merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
-    };
+      const data = {
+        form: form.value,
+        image: this.userImage,
+        superID: this.editParentCategory.super_category_id,
+        categoryID : this.editCategory.category_id,
+        merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
+      };
 
 
-    this.catalogueService.editSubCategory(data)
+
+      this.catalogueService.editCategory(data)
      .subscribe(
        (response) => {
 
-         this.editMode = false;
 
         if (response.success === 200) {
           this.displayImage = 'assets/images/upload.png';
-         form.reset();
-         this.modalRef.hide();
-         this.getData();
+          this.editMode = false;
+          this.requestLoader = false;
+          form.reset();
+          this.modalRef.hide();
+          this.getData();
         } else {
           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
             duration: 5000,
@@ -742,40 +784,42 @@ addSubCategory(form: NgForm) {
         }
        },
        (error) => {
-         console.log('error', error);
-         this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+          console.log('error', error);
+          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+            duration: 5000,
+          });
        }
      );
-  } else {
 
-    const data = {
-      form: form.value,
-      image: this.userImage,
-      catID: this.currentCategoryName.category_id,
-      merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
-    };
-    this.catalogueService.addSubCategory(data)
+    } else {
+
+      const data = {
+        form: form.value,
+        image: this.userImage,
+        superID: this.superCategoryName.super_category_id,
+        merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
+      };
+      this.catalogueService.addCategory(data)
      .subscribe(
        (response) => {
 
          this.displayImage = 'assets/images/upload.png';
+         this.requestLoader = false;
          this.modalRef.hide();
         if (response.success === 200) {
-        const user = JSON.parse(localStorage.getItem('user-data'));
-         if (user.merchant_id !== undefined) {
-          this.snackBar.open('Sub-Category Requested To Admin Successfully', 'ok', {
-            duration: 5000,
-          });
-         } else {
-          if (this.currentMerchant === undefined) {
-            this.getData();
-          } else {
-            this.getMerchantData();
-          }
+          const user = JSON.parse(localStorage.getItem('user-data'));
+           if (user.merchant_id !== undefined) {
+            this.snackBar.open('Category Requested To Admin Successfully', 'ok', {
+              duration: 5000,
+            });
+           } else {
+            if (this.currentMerchant === undefined) {
+              this.getData();
+            } else {
+                this.getMerchantData();
+            }
 
-         }
+           }
         } else {
           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
             duration: 5000,
@@ -786,11 +830,104 @@ addSubCategory(form: NgForm) {
          console.log('error', error);
          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
           duration: 5000,
-        });
+         });
        }
      );
-
+    }
   }
+
+
+}
+
+addSubCategory(form: NgForm) {
+  this.requestLoader = true;
+
+  if (form.valid === false) {
+    this.requestLoader = false;
+    this.postSubmit = true;
+    this.error = 'Mandatory Fields Missing!';
+  } else {
+    if (this.editMode === true) {
+      const data = {
+        form: form.value,
+        image: this.userImage,
+        superID: this.editParentCategory.category_id,
+        categoryID : this.editCategory.sub_category_id,
+        merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
+      };
+
+
+      this.catalogueService.editSubCategory(data)
+       .subscribe(
+         (response) => {
+
+           this.editMode = false;
+
+          if (response.success === 200) {
+            this.displayImage = 'assets/images/upload.png';
+           form.reset();
+           this.requestLoader = false;
+           this.modalRef.hide();
+           this.getData();
+          } else {
+            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+              duration: 5000,
+            });
+          }
+         },
+         (error) => {
+           console.log('error', error);
+           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+            duration: 5000,
+          });
+         }
+       );
+    } else {
+
+      const data = {
+        form: form.value,
+        image: this.userImage,
+        catID: this.currentCategoryName.category_id,
+        merchantID : (this.currentMerchant === undefined) ? '' : this.currentMerchant.merchant_id
+      };
+      this.catalogueService.addSubCategory(data)
+       .subscribe(
+         (response) => {
+
+           this.displayImage = 'assets/images/upload.png';
+           this.requestLoader = false;
+           this.modalRef.hide();
+          if (response.success === 200) {
+          const user = JSON.parse(localStorage.getItem('user-data'));
+           if (user.merchant_id !== undefined) {
+            this.snackBar.open('Sub-Category Requested To Admin Successfully', 'ok', {
+              duration: 5000,
+            });
+           } else {
+            if (this.currentMerchant === undefined) {
+              this.getData();
+            } else {
+              this.getMerchantData();
+            }
+
+           }
+          } else {
+            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+              duration: 5000,
+            });
+          }
+         },
+         (error) => {
+           console.log('error', error);
+           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
+            duration: 5000,
+          });
+         }
+       );
+
+    }
+  }
+
 
 }
 
@@ -820,6 +957,7 @@ showCategories() {
     //     this.collapsed = newProduct.super;
     //     this.subCollapsed = newProduct.cat;
     // } else {
+      this.productInstore = false;
       if (this.collapsed === i) {
         this.collapsed = -1;
       } else {
@@ -832,6 +970,7 @@ showCategories() {
   }
 
   subHeaderClicked(i) {
+    this.productInstore = false;
     if (this.subCollapsed === i) {
       this.subCollapsed = -1;
     } else {
@@ -870,7 +1009,7 @@ showCategories() {
 
   // Edit Category
   editSuperCategory(superCategory: any, template: TemplateRef<any>) {
-    console.log(superCategory, 'selected Super Category');
+
     this.templateTitle = 'Edit Super Category';
     // super category
     this.currentSuperCategoryName = superCategory.super_category_name;
@@ -888,7 +1027,7 @@ showCategories() {
 
 
   editCategoryDetail(category: any, template: TemplateRef<any>, superCategory: any) {
-    console.log(category.category_image, 'selected Super Category');
+
     this.templateTitle = 'Edit Category';
     // category
     this.currentSuperCategoryName = category.category_name;
@@ -906,7 +1045,7 @@ showCategories() {
   }
 
   editSubCategoryDetail(sub: any, template: TemplateRef<any>, category: any) {
-    console.log(category, 'selected Super Category', sub);
+
     this.templateTitle = 'Edit Category';
     // category
     this.currentSuperCategoryName = sub.sub_category_name;
@@ -927,12 +1066,11 @@ showCategories() {
 
   // get product
   showProducts(category) {
-    console.log('here', category);
     this.Heading = [];
     this.tempAttributeArray = [];
     this.InventoryTableEdit = [];
 
-    this.productImage = 'assets/images/upload.png';
+    this.productImage = [];
     if (category.super_category_id !== undefined && category.super_category_hasChild === 0) {
       this.products = [];
       this.showViewMore = false;
@@ -997,7 +1135,7 @@ showCategories() {
   }
 
   getSuperCatProducts(data) {
-    this.productImage = 'assets/images/upload.png';
+    // this.productImage = [];
     this.catalogueService.getSuperCategoryProduct(data)
     .subscribe(
       (response) => {
@@ -1017,14 +1155,42 @@ showCategories() {
             this.products = response.data.rows;
 
           if (response.data.rows.length > 0) {
-            this.totalProducts = response.data.count;
-              const productOne = response.data.rows[0];
-              this.productName = productOne.product_name;
-              this.productDesc =  productOne.product_description;
-              if (productOne.product_image !== '') {
-                const imageArray = JSON.parse(productOne.product_image);
-                this.productImage = this.globalService.ImagePath + imageArray[0];
-                console.log(this.productImage);
+              this.totalProducts = response.data.count;
+              this.showSelectedProductDetail = response.data.rows[0];
+              this.attributeArray = [];
+              this.productListLoading = false;
+
+
+              this.showProductCategory.super = this.superCategories[this.collapsed].super_category_name;
+              this.showProductCategory.cat = (this.superCategories[this.collapsed].category.length > 0) ?
+                            this.superCategories[this.collapsed].category[this.subCollapsed].category_name : '';
+              this.showProductCategory.sub = (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
+                            // tslint:disable-next-line:max-line-length
+                            this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '';
+              this.showProductCategory.product = (this.showSelectedProductDetail !== undefined) ?
+                            this.showSelectedProductDetail.product_name : '';
+
+              this.showSelectedProductDetail.pricing_array[0].product_spec.forEach(attribute => {
+                    const obj = {
+                        name : attribute.ProductSpecType.product_spec_name,
+                        values : attribute.product_spec_value.split(',')
+                    };
+
+                    this.attributeArray.push(obj);
+              });
+
+              // const productOne = response.data.rows[0];
+              // this.productName = productOne.product_name;
+              // this.productDesc =  productOne.product_description;
+              if (this.showSelectedProductDetail.product_image !== '') {
+                const imageArray = JSON.parse(this.showSelectedProductDetail.product_image);
+                this.productImage = imageArray; // this.globalService.ImagePath + imageArray[0];
+
+              }
+              if (this.showSelectedProductDetail.product_type === 'INSTORE') {
+                  this.productInstore = true;
+              } else {
+                  this.productInstore = false;
               }
 
               // if (productOne.pricing_array[0].product_inventory.length > 0 &&
@@ -1093,8 +1259,8 @@ showCategories() {
               // this.productQuantity = productOne.pricing_array[0].pricing_product_stock;
 
               // product_authorized
-              this.productApproved = (productOne.product_authorized === 0) ? false : true;
-              this.productPrice = productOne.pricing_array[0].product_pricing_price;
+              this.productApproved = (this.showSelectedProductDetail.product_authorized === 0) ? false : true;
+              // this.productPrice = productOne.pricing_array[0].product_pricing_price;
               // removing product detail loader
               this.productDetailLoading = false;
               this.showProductDetails = true;
@@ -1127,14 +1293,12 @@ showCategories() {
   }
 
   getCatProducts(data) {
-    this.productImage = 'assets/images/upload.png';
-    console.log(data);
+    // this.productImage = [];
     this.catalogueService.getCategoryProduct(data)
     .subscribe(
       (response) => {
 
         if (response.success === 200) {
-          console.log(response.data);
           this.productListLoading = false;
           if (data.last !== undefined) {
             this.products = [...this.products, ...response.data.rows];
@@ -1145,27 +1309,50 @@ showCategories() {
             }
           } else {
             this.products = response.data.rows;
-
-            console.log(response.data);
             // if (response.data.length > 0) {
 
             // }
             if (response.data.rows.length > 0) {
               this.totalProducts = response.data.count;
               this.productListLoading = false;
+              this.showSelectedProductDetail = response.data.rows[0];
 
-                const productOne = response.data.rows[0];
-                this.productName = productOne.product_name;
-                this.productDesc =  productOne.product_description;
-                if (productOne.product_image !== '') {
-                  const imageArray = JSON.parse(productOne.product_image);
-                  this.productImage = this.globalService.ImagePath + imageArray[0];
+              this.attributeArray = [];
+              this.showProductCategory.super = this.superCategories[this.collapsed].super_category_name;
+              this.showProductCategory.cat = (this.superCategories[this.collapsed].category.length > 0) ?
+                           this.superCategories[this.collapsed].category[this.subCollapsed].category_name : '';
+              this.showProductCategory.sub = (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
+                            // tslint:disable-next-line:max-line-length
+                            this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '';
+              this.showProductCategory.product = (this.showSelectedProductDetail !== undefined) ?
+                            this.showSelectedProductDetail.product_name : '';
+
+              this.showSelectedProductDetail.pricing_array[0].product_spec.forEach(attribute => {
+                    const obj = {
+                        name : attribute.ProductSpecType.product_spec_name,
+                        values : attribute.product_spec_value.split(',')
+                    };
+
+                    this.attributeArray.push(obj);
+              });
+
+                // const productOne = response.data.rows[0];
+                // this.productName = productOne.product_name;
+                // this.productDesc =  productOne.product_description;
+                if (this.showSelectedProductDetail.product_image !== '') {
+                  const imageArray = JSON.parse(this.showSelectedProductDetail.product_image);
+                  this.productImage =  imageArray; // this.globalService.ImagePath + imageArray[0];
 
                 }
+                if (this.showSelectedProductDetail.product_type === 'INSTORE') {
+                    this.productInstore = true;
+                } else {
+                    this.productInstore = false;
+                }
 
-                this.productPrice = productOne.pricing_array[0].product_pricing_price;
+                // this.productPrice = productOne.pricing_array[0].product_pricing_price;
                 // removing product detail loader
-                this.productApproved = (productOne.product_authorized === 0) ? false : true;
+                this.productApproved = (this.showSelectedProductDetail.product_authorized === 0) ? false : true;
                 this.showProductDetails = true;
                 this.productDetailLoading = false;
                 if (response.data.rows.length < 15) {
@@ -1207,11 +1394,11 @@ showCategories() {
 
 
   getSubCatProducts(data) {
-    this.productImage = 'assets/images/upload.png';
+    // this.productImage = [];
     this.catalogueService.getSubCategoryProduct(data)
     .subscribe(
       (response) => {
-        console.log(response);
+
         if (response.success === 200) {
           this.productListLoading = false;
           this.NoProductToShow = false;
@@ -1234,22 +1421,51 @@ showCategories() {
 
 
           if (response.data.rows.length > 0) {
-
+            this.productListLoading = false;
             this.totalProducts = response.data.count;
-            const productOne = response.data.rows[0];
-            this.showProductDetails = true;
-            this.productName = productOne.product_name;
-            this.productDesc =  productOne.product_description;
-            if (productOne.product_image !== '') {
-              const imageArray = JSON.parse(productOne.product_image);
-              this.productImage = this.globalService.ImagePath + imageArray[0];
-              console.log(this.productImage);
-            }
+            this.showSelectedProductDetail = response.data.rows[0];
 
-             this.productPrice = productOne.pricing_array[0].product_pricing_price;
+
+            this.attributeArray = [];
+
+
+
+            this.showProductCategory.super = this.superCategories[this.collapsed].super_category_name;
+            this.showProductCategory.cat = (this.superCategories[this.collapsed].category.length > 0) ?
+                          this.superCategories[this.collapsed].category[this.subCollapsed].category_name : '';
+            this.showProductCategory.sub = (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
+                          // tslint:disable-next-line:max-line-length
+                          this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '';
+            this.showProductCategory.product = (this.showSelectedProductDetail !== undefined) ?
+                          this.showSelectedProductDetail.product_name : '';
+
+            this.showSelectedProductDetail.pricing_array[0].product_spec.forEach(attribute => {
+                  const obj = {
+                      name : attribute.ProductSpecType.product_spec_name,
+                      values : attribute.product_spec_value.split(',')
+                  };
+
+                  this.attributeArray.push(obj);
+            });
+
+            // const productOne = response.data.rows[0];
+            this.showProductDetails = true;
+            // this.productName = productOne.product_name;
+            // this.productDesc =  productOne.product_description;
+            if (this.showSelectedProductDetail.product_image !== '') {
+              const imageArray = JSON.parse(this.showSelectedProductDetail.product_image);
+              this.productImage = imageArray; // this.globalService.ImagePath + imageArray[0];
+
+            }
+            if (this.showSelectedProductDetail.product_type === 'INSTORE') {
+                this.productInstore = true;
+            } else {
+                this.productInstore = false;
+            }
+            //  this.productPrice = productOne.pricing_array[0].product_pricing_price;
             // removing product detail loader
             this.productDetailLoading = false;
-            this.productApproved = (productOne.product_authorized === 0) ? false : true;
+            this.productApproved = (this.showSelectedProductDetail.product_authorized === 0) ? false : true;
             if (response.data.rows.length < 15) {
               this.showViewMore = false;
             } else if (response.data.rows.length === 15) {
@@ -1287,79 +1503,110 @@ showCategories() {
     this.Heading = [];
     this.tempAttributeArray = [];
     this.InventoryTableEdit = [];
-    this.productImage = 'assets/images/upload.png';
-    console.log(product, typeof product);
-    const productOne = product;
-    this.productName = productOne.product_name;
-    this.productDesc =  productOne.product_description;
-    if (productOne.product_image !== '') {
-      const imageArray = JSON.parse(productOne.product_image);
-      this.productImage = this.globalService.ImagePath + imageArray[0];
-      console.log(this.productImage);
-    }
-    if (productOne.pricing_array[0].product_inventory.length > 0 &&
-        productOne.pricing_array[0].product_spec.length > 0) {
-        // this.productInventory.push
-        this.singleQuantity = false;
-        productOne.pricing_array[0].product_spec.forEach(spec => {
-          console.log(spec);
+    // this.productImage = [];
+    console.log(product);
+
+    this.showSelectedProductDetail = product;
+    this.productListLoading = false;
+    this.attributeArray = [];
+    this.showProductDetails = true;
+
+
+    this.showProductCategory.super = this.superCategories[this.collapsed].super_category_name;
+    this.showProductCategory.cat = (this.superCategories[this.collapsed].category.length > 0) ?
+                  this.superCategories[this.collapsed].category[this.subCollapsed].category_name : '';
+    this.showProductCategory.sub = (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
+                  // tslint:disable-next-line:max-line-length
+                  this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '';
+    this.showProductCategory.product = (this.showSelectedProductDetail !== undefined) ?
+                  this.showSelectedProductDetail.product_name : '';
+
+    this.showSelectedProductDetail.pricing_array[0].product_spec.forEach(attribute => {
           const obj = {
-            product_spec_name : spec.ProductSpecType.product_spec_name,
-            product_spec_type_values : spec.ProductSpecType.product_spec_type_values.split(','),
-            product_spec_id : spec.product_spec_id
+              name : attribute.ProductSpecType.product_spec_name,
+              values : attribute.product_spec_value.split(',')
           };
-          console.log(obj.product_spec_type_values, typeof obj.product_spec_type_values);
-          this.Heading.push(obj);
-        });
 
+          this.attributeArray.push(obj);
+    });
 
-        this.Heading.sort(function(a, b) {
-          return a.product_spec_id - b.product_spec_id;
-        });
-        // if (this.EditProduct.pricing_array[0].product_inventory.length > 0) {}
-        productOne.pricing_array[0].product_inventory.forEach(inventory => {
+    // const productOne = product;
+    // this.productName = productOne.product_name;
+    // this.productDesc =  productOne.product_description;
+    if (this.showSelectedProductDetail.product_image !== '') {
+      const imageArray = JSON.parse(this.showSelectedProductDetail.product_image);
+      this.productImage = imageArray; // this.globalService.ImagePath + imageArray[0];
 
-            const rowTable = {
-              quantity: inventory.product_inventory,
-              type : inventory.product_spec_values.split(',')
-
-            };
-            rowTable.type.forEach(val => {
-              const data2 = val.split('_');
-                const quantity = {
-                      id : data2[0],
-                      name : data2[1]
-                };
-                this.tempAttributeArray.push(quantity);
-            });
-            if (this.Heading.length > this.tempAttributeArray.length) {
-              this.Heading.forEach(attribute => {
-                  const indexOne = this.tempAttributeArray.findIndex(val => JSON.parse(val.id) === attribute.product_spec_id );
-
-                  if (indexOne < 0) {
-                    const obj = {
-                      id : JSON.stringify(attribute.product_spec_id),
-                      name : ''
-                    };
-                    this.tempAttributeArray.push(obj);
-                    // const indexTwo = this.Heading.findIndex
-                  }
-              });
-            }
-            this.tempAttributeArray.sort(function(a, b) {
-              return a.id - b.id;
-            });
-            const finalRow = {
-                quantity : rowTable.quantity,
-                type : this.tempAttributeArray
-            };
-            this.tempAttributeArray = [];
-            this.InventoryTableEdit.push(finalRow);
-        });
-    } else {
-    this.productImage = 'assets/images/upload.png';
     }
-    this.productPrice = product.pricing_array[0].product_pricing_price;
+    if (this.showSelectedProductDetail.product_type === 'INSTORE') {
+        this.productInstore = true;
+    } else {
+        this.productInstore = false;
+    }
+    this.productApproved = (this.showSelectedProductDetail.product_authorized === 0) ? false : true;
+    // if (productOne.pricing_array[0].product_inventory.length > 0 &&
+    //     productOne.pricing_array[0].product_spec.length > 0) {
+    //     // this.productInventory.push
+    //     this.singleQuantity = false;
+    //     productOne.pricing_array[0].product_spec.forEach(spec => {
+    //       console.log(spec);
+    //       const obj = {
+    //         product_spec_name : spec.ProductSpecType.product_spec_name,
+    //         product_spec_type_values : spec.ProductSpecType.product_spec_type_values.split(','),
+    //         product_spec_id : spec.product_spec_id
+    //       };
+    //       console.log(obj.product_spec_type_values, typeof obj.product_spec_type_values);
+    //       this.Heading.push(obj);
+    //     });
+
+
+    //     this.Heading.sort(function(a, b) {
+    //       return a.product_spec_id - b.product_spec_id;
+    //     });
+    //     // if (this.EditProduct.pricing_array[0].product_inventory.length > 0) {}
+    //     productOne.pricing_array[0].product_inventory.forEach(inventory => {
+
+    //         const rowTable = {
+    //           quantity: inventory.product_inventory,
+    //           type : inventory.product_spec_values.split(',')
+
+    //         };
+    //         rowTable.type.forEach(val => {
+    //           const data2 = val.split('_');
+    //             const quantity = {
+    //                   id : data2[0],
+    //                   name : data2[1]
+    //             };
+    //             this.tempAttributeArray.push(quantity);
+    //         });
+    //         if (this.Heading.length > this.tempAttributeArray.length) {
+    //           this.Heading.forEach(attribute => {
+    //               const indexOne = this.tempAttributeArray.findIndex(val => JSON.parse(val.id) === attribute.product_spec_id );
+
+    //               if (indexOne < 0) {
+    //                 const obj = {
+    //                   id : JSON.stringify(attribute.product_spec_id),
+    //                   name : ''
+    //                 };
+    //                 this.tempAttributeArray.push(obj);
+    //                 // const indexTwo = this.Heading.findIndex
+    //               }
+    //           });
+    //         }
+    //         this.tempAttributeArray.sort(function(a, b) {
+    //           return a.id - b.id;
+    //         });
+    //         const finalRow = {
+    //             quantity : rowTable.quantity,
+    //             type : this.tempAttributeArray
+    //         };
+    //         this.tempAttributeArray = [];
+    //         this.InventoryTableEdit.push(finalRow);
+    //     });
+    // } else {
+    // this.productImage = 'assets/images/upload.png';
+    // }
+    // this.productPrice = product.pricing_array[0].product_pricing_price;
   }
 
 
@@ -1478,7 +1725,6 @@ showCategories() {
   productScreen(productInfo) {
 
 
-    console.log(this.superCategories);
     if (this.superCategories.length < 1) {
         this.snackBar.open('Please Choose or Add Categories, before adding products.', 'Dismiss', {
           duration: 5000,
@@ -1489,6 +1735,8 @@ showCategories() {
           this.localStorageService.set('merchant-data', user);
         } else if (this.currentMerchant !== undefined) {
           this.localStorageService.set('merchant-data', this.currentMerchant);
+        } else if (user.admin_id !== undefined) {
+          this.localStorageService.set('merchant-data', productInfo.pricing_array[0].Merchant);
         }
 
         if (productInfo === undefined) {
@@ -1505,6 +1753,7 @@ showCategories() {
   }
 
   childHeaderClicked(index) {
+    this.productInstore = false;
     this.childCollapsed = index;
   }
   viewmoreProducts() {

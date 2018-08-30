@@ -43,6 +43,8 @@ import {MatButtonModule,
 import { AgmCoreModule } from '@agm/core';
 import { AccordionModule } from 'ngx-bootstrap';
 import { AngularFileUploaderModule } from 'angular-file-uploader';
+import { CarouselModule } from 'ngx-bootstrap';
+
 
 import { AppComponent } from './app.component';
 import { AuthComponent } from './auth/auth.component';
@@ -77,6 +79,10 @@ import { ProductRequestsComponent } from './request/product-requests/product-req
 import { VerificationComponent } from './verification/verification.component';
 import { VerifyMerchantComponent } from './verify-merchant/verify-merchant.component';
 import { VerifyMerchantService } from './verify-merchant/verify-merchant.service';
+import { ShowDocumentsComponent } from './show-documents/show-documents.component';
+import { ArOffersComponent } from './ar-offers/ar-offers.component';
+import { AROffersService } from './ar-offers/ar-offers.service';
+
 
 
 @NgModule({
@@ -99,7 +105,9 @@ import { VerifyMerchantService } from './verify-merchant/verify-merchant.service
     MerchantCatelogueComponent,
     ProductRequestsComponent,
     VerificationComponent,
-    VerifyMerchantComponent
+    VerifyMerchantComponent,
+    ShowDocumentsComponent,
+    ArOffersComponent
   ],
   imports: [
     BrowserModule,
@@ -137,7 +145,8 @@ import { VerifyMerchantService } from './verify-merchant/verify-merchant.service
     MatMenuModule,
     MatStepperModule,
     MatTooltipModule,
-    MatDialogModule
+    MatDialogModule,
+    CarouselModule.forRoot()
   ],
   exports: [
     MatNativeDateModule ,
@@ -185,7 +194,8 @@ import { VerifyMerchantService } from './verify-merchant/verify-merchant.service
     ProductService,
     RequestService,
     MerchantCatelogueService,
-    VerifyMerchantService
+    VerifyMerchantService,
+    AROffersService
     // provide: LocationStrategy,
     // useClass: HashLocationStrategy
   ],

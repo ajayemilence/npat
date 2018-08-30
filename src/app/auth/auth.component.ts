@@ -54,9 +54,7 @@ onSignin(form: NgForm) {
   };
   this.authService.signin(body).subscribe(
   (response) => {
-    console.log(response);
-    // if response 2 verify account
-    console.log(response.message);
+
     if (response.success === 200) {
     //   console.log('print error message');
     //   this.showMessage = true;
@@ -105,11 +103,11 @@ onSignup(form: NgForm) {
     image: this.userImage,
     admin_phone_no: form.value.phoneNumber
   };
-  console.log(typeof body.admin_phone_no, 'register');
+
   this.authService.signup(body)
   .subscribe(
     (response) => {
-      console.log(response, 'response');
+
     if (response.success === 200) {
       this.postSubmit = false;
       this.router.navigate(['/']);

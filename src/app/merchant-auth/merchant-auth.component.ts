@@ -42,15 +42,15 @@ export class MerchantAuthComponent implements OnInit {
 
 
   ngOnInit() {
-    const newMerchant = JSON.parse(localStorage.getItem('new-merchant'));
-    if (newMerchant !== null) {
-        this.newNumber = newMerchant.phoneNumber;
-        this.newPwd = newMerchant.password;
-        this.newEmail = newMerchant.email;
-        this.showRegister = true;
-        this.showLogin = false;
-        this.postSubmit = false;
-    }
+    // const newMerchant = JSON.parse(localStorage.getItem('new-merchant'));
+    // if (newMerchant !== null) {
+    //     this.newNumber = newMerchant.phoneNumber;
+    //     this.newPwd = newMerchant.password;
+    //     this.newEmail = newMerchant.email;
+    //     this.showRegister = true;
+    //     this.showLogin = false;
+    //     this.postSubmit = false;
+    // }
     if (this.searchElement !== undefined) {
       this.mapsAPILoader.load().then(
         () => {
@@ -160,6 +160,7 @@ onSignup(form: NgForm) {
               localStorage.clear();
               this.localStorageService.set('pin', response.data);
               this.localStorageService.set('new-merchant' , form.value);
+              form.reset();
               this.router.navigate(['/verify']);
           } else if (response.output.payload.statusCode === 1102) {
             this.postSubmit = true;

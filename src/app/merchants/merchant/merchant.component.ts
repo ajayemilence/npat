@@ -2,6 +2,7 @@ import { Component, OnInit, Input } from '@angular/core';
 import { MerchantService } from '../merchants.service';
 import { Router } from '@angular/router';
 import { GlobalService } from '../../shared/global.service';
+import { LocalStorageService } from '../../shared/local-storage.service';
 
 @Component({
   selector: 'app-merchant',
@@ -14,7 +15,8 @@ export class MerchantComponent implements OnInit {
   displayImage = 'assets/images/upload.png';
   constructor(private merchantService: MerchantService,
               private router: Router,
-              private globalService: GlobalService
+              private globalService: GlobalService,
+              private localStorageService: LocalStorageService
             ) { }
 
   ngOnInit() {
@@ -36,5 +38,10 @@ export class MerchantComponent implements OnInit {
 
   editMerchant() {
     this.merchantService.setMerchant(this.message);
+  }
+
+  viewDocuments() {
+    this.localStorageService.set('merchant_id' , this.message.merchant_id);
+    this.router.navigate(['/documents']);
   }
 }

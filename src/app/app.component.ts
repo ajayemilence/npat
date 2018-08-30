@@ -25,6 +25,8 @@ export class AppComponent implements OnInit {
   RequestClicked = false;
   private _mobileQueryListener: () => void;
   DataPlan;
+  currentPlan;
+  UserName;
   constructor(changeDetectorRef: ChangeDetectorRef,
               media: MediaMatcher,
               private router: Router,
@@ -43,6 +45,7 @@ export class AppComponent implements OnInit {
 
 
   ngOnInit() {
+
     this.router.events.subscribe((event) => {
       if (this.router.url === '/auth' ||
           this.router.url === '/merchant/auth' ||
@@ -52,15 +55,19 @@ export class AppComponent implements OnInit {
       } else if (this.router.url === '/' ) {
         this.admin = true;
         const user = JSON.parse(localStorage.getItem('user-data'));
+
         if (user !== null) {
           if (user.merchant_id !== undefined) {
             this.merchant = true;
+            this.UserName = user.merchant_first_name;
             if (user.merchant_verification_status === 'Not verified') {
               this.merchantVerified = false;
             } else {
               this.merchantVerified = true;
             }
+            this.currentPlan = user.merchant_subscription;
           } else if (user.admin_id !== undefined) {
+            this.UserName = user.admin_first_name + user.admin_last_name;
             this.merchant = false;
           }
         }
@@ -135,7 +142,7 @@ export class AppComponent implements OnInit {
     } else if (option === 4) {
         this.DataPlan = 'ONLINE/INSTORE';
     }
-    console.log(this.DataPlan);
+
     this.merchantService.editMerchantPlans(this.DataPlan).subscribe(
       (response) => {
           if (response.success === 200 ) {
@@ -186,10 +193,10 @@ clickOnceVerified () {
 logoClicked() {
     const user = JSON.parse(localStorage.getItem('user-data'));
     if (user.merchant_id !== undefined ) {
-      this.router.navigate(['catalogue']);
+      this.router.navigate(['/catalogue']);
 
     } else {
-      this.router.navigate(['merchants']);
+      this.router.navigate(['/merchants']);
     }
 
 }

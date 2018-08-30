@@ -30,7 +30,11 @@ export class ProductService {
             'd_token':  JSON.parse(token)
          });
 
-        return this.http.get(this.global.serverUrl + 'product_attributes/en/search_product_spec_types?product_spec_name=' + data,
+        return this.http.get(this.global.serverUrl + 'product_attributes/en/search_product_spec_types?' +
+                'product_spec_name=' + data.searchValue +
+                '&super_category_id=' + data.super +
+                '&category_id=' + data.cat +
+                '&sub_category_id=' + data.sub,
         {headers: headers}  )
         .map(
             (response: Response) => {
@@ -225,13 +229,13 @@ export class ProductService {
         body.append('product_inventory', this.inventory);
         body.append('pricing_product_inventory', (data.form.value.avail === undefined) ? '' : data.form.value.avail);
         body.append('pricing_product_stock', (data.form.value.avail === undefined) ? '' : data.form.value.avail);
-        body.append('product_pricing_price', data.form.value.sellingPrice);
-        body.append('product_pricing_discount', '0');
+        body.append('product_pricing_price', data.form.value.mrp);
+        body.append('product_pricing_discount', data.form.value.sellingPrice);
         body.append('product_description', data.form.value.desc);
         body.append('product_type', data.productType);
         body.append('product_commision', '0');
         body.append('delete_image', data.deleteImages);
-
+        body.append('product_pricing_id', data.pricingID);
         // editing attribute
         // if (data.attribute.length === 0) {
         //     body.append('attr_values', '');

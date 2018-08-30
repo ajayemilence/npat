@@ -55,7 +55,7 @@ td {
 }
 
 .btn.btnAdd {
-  background-color: #020202;
+  background-color: #333333;
   border: none;
   color: white;
   padding: 12px 16px;
@@ -67,10 +67,10 @@ td {
 }
 
 .btn.btnAdd:hover {
-  background-color: rgb(78, 174, 223);
+  background-color: #000000;
   color: #fff;
-  transform: translateY(4px);
-  box-shadow: 0 1.5px 0 0px #B6B6B5;
+  /* transform: translateY(4px);
+  box-shadow: 0 1.5px 0 0px #B6B6B5; */
 }
 
 .left {
@@ -284,4 +284,9 @@ section.InterimLoader .fa{
     -o-transform: rotate(360deg);
     transform: rotate(360deg);
   }
+}
+
+.deleteIcon {
+  color: #fc5555;
+  cursor: pointer;
 }

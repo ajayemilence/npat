@@ -183,18 +183,29 @@
                     font-size: 16px; 
                     font-family: 'SFMedium';
                     margin-top: 3px; " >
-            UserName</a></li>
+            {{UserName}}</a></li>
             <li class="dropdown">
-              <a class="dropdown-hover"><i 
-                style="font-size: 10px; margin-left: -20px;"
-                class="glyphicon glyphicon-menu-down"></i></a>
+              <a class="dropdown-hover">
+              <i
+              style=" margin-left: -20px; margin-top: -15px;"
+              class="fa fa-chevron-down" ></i>
+                <!-- <i 
+                style="font-size: 20px; margin-left: -20px;"
+                class="glyphicon glyphicon-menu-down"></i> -->
+              </a>
                 <ul class="dropdown-menu dropdown-hover-menu">
                   <li *ngIf="merchant == true"><a (click)="editProfile()">Edit Profile</a></li>
                   <li><a *ngIf="merchant == true" 
                     (click)="upgradePlanModal(upgradePlanTemplate)"
                     >Subscription Plans</a></li>
                   <li><a *ngIf="merchant == true">Change Password</a></li>
-                  <li><a *ngIf="merchant == true">My Documents</a></li>
+                  <li><a *ngIf="merchant == true"
+                    routerLink="/documents"
+                    >My Documents</a></li>
+
+                  <!-- <li><a *ngIf="merchant == true"
+                    routerLink="/merchant/ar_offers"
+                    >AR Offers</a></li> -->
                   <li><a (click)="logout()">Logout</a></li>
                 </ul>
               </li>  
@@ -315,9 +326,22 @@
     </div>
     <div class="modal-body">
         <!-- <button class="btn btn-primary login-btn" (click)="planSelected(1)" >Free Listing</button> -->
-          <button class="btn btn-primary login-btn" (click)="planSelected(2)" >Instore</button>
-          <button class="btn btn-primary login-btn" (click)="planSelected(3)" >Online</button>
-          <button class="btn btn-primary login-btn" (click)="planSelected(4)" >Online & Instore</button>
+          <button 
+              [ngClass]="{
+                'selectedPlan':currentPlan === 'INSTORE'
+              }"
+              class="btn btn-primary login-btn" (click)="planSelected(2)" >Instore</button>
+          <button 
+              [ngClass]="{
+                'selectedPlan':currentPlan === 'ONLINE'
+              }"
+              class="btn btn-primary login-btn" (click)="planSelected(3)" >Online</button>
+          <button 
+              class="btn btn-primary login-btn" (click)="planSelected(4)" 
+              [ngClass]="{
+                'selectedPlan':currentPlan === 'ONLINE/INSTORE'
+              }"    
+          >Online & Instore</button>
       
                 <i 
                 (click)="planDetailModal(PlanDetailTemplate)"

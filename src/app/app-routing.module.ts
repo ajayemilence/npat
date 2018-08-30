@@ -18,6 +18,8 @@ import { MerchantCatelogueComponent } from './merchant-catelogue/merchant-catelo
 import { ProductRequestsComponent } from './request/product-requests/product-requests.component';
 import { VerificationComponent } from './verification/verification.component';
 import { VerifyMerchantComponent } from './verify-merchant/verify-merchant.component';
+import { ShowDocumentsComponent } from './show-documents/show-documents.component';
+import { ArOffersComponent } from './ar-offers/ar-offers.component';
 
 const appRoutes: Routes = [
     { path: '',
@@ -27,6 +29,7 @@ const appRoutes: Routes = [
         { path: 'orders', component: OrdersComponent},
         { path: 'merchants', component: MerchantsComponent},
         { path: 'merchants/new', component: MerchantNewComponent},
+        { path: 'merchant/ar_offers', component: ArOffersComponent},
         { path: 'merchants/edit', component: MerchantEditComponent},
         { path: 'merchants/merchant/info', component: MerchantComponent},
         { path: 'merchants/merchant/catalogue', component: CatalogueComponent},
@@ -37,6 +40,7 @@ const appRoutes: Routes = [
         { path: 'requests', component: RequestComponent},
         { path: 'requests/merchants', component: VerifyMerchantComponent},
         { path: 'requests/products', component: ProductRequestsComponent},
+        { path: 'documents', component: ShowDocumentsComponent}
     ]
     },
 

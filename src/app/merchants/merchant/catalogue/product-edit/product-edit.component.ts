@@ -12,6 +12,7 @@ import * as _ from 'lodash';
 import { Router } from '@angular/router';
 import { GlobalService } from '../../../../shared/global.service';
 import { LocalStorageService } from '../../../../shared/local-storage.service';
+import { ThrowStmt } from '@angular/compiler';
 
 declare var x;
 declare var y;
@@ -140,6 +141,10 @@ noMoreImages = false;
 
 subscriptionStatus =  0;
 userData;
+productPricingID;
+
+// checked attributes
+newAttributes = [];
   constructor(private catalogueService: CatalogueService,
               private modalService: BsModalService,
               private productService: ProductService,
@@ -155,7 +160,6 @@ userData;
     this.catalogueService.getSuperCategory()
    .subscribe(
      (response) => {
-      // console.log(this.superCategories, 'response');
       if (response.success === 200) {
 
          // super categories
@@ -220,9 +224,14 @@ userData;
             this.defaultProductSku = this.EditProduct.product_sku;
             this.defaultProductName = this.EditProduct.product_name;
             this.defaultProductDesc = this.EditProduct.product_description;
-            // this.defaultProductMRP = this.EditProduct.product_tax;
+
             this.defaultProductSellingPrice = (this.EditProduct.pricing_array === undefined) ?
-                this.EditProduct.product_pricing_price : this.EditProduct.pricing_array[0].product_pricing_price;
+                this.EditProduct.product_pricing_price : this.EditProduct.pricing_array[0].product_pricing_discount;
+
+
+            this.defaultProductMRP = (this.EditProduct.pricing_array === undefined) ?
+            this.EditProduct.product_pricing_price : this.EditProduct.pricing_array[0].product_pricing_price;
+
 
             if (this.subscriptionStatus === 1) {
                 this.defaultProductType = (this.EditProduct.product_type !== undefined) ? this.EditProduct.product_type.toLowerCase() : '';
@@ -339,19 +348,21 @@ userData;
               }
 
             } else if (this.EditProduct.product_category !== '0') {
-
-               this.superCategories.forEach(superCategory => {
+              this.superCategories.forEach(superCategory => {
                 const index = superCategory.category.findIndex(category => JSON.parse(category.category_id) ===
                   JSON.parse(this.EditProduct.product_category));
-                  if (index > -1) {
 
-                      const indexSuper = this.superCategories.findIndex(category => JSON.parse(category.super_category_id) ===
-                         JSON.parse(superCategory.super_category_id));
+                  if (index > -1) {
+                      const indexSuper = this.superCategories.findIndex(category =>
+                        JSON.parse(category.super_category_id) ===
+                          JSON.parse(superCategory.super_category_id));
                       this.defaultProductSuperCategory = JSON.stringify(indexSuper);
-                      this.categories = response.data[indexSuper].category;
+                      this.categories = this.superCategories[indexSuper].category;
                       this.defaultProductCategory = JSON.stringify(index);
                   }
               });
+
+
             } else if (this.EditProduct.product_sub_category_id !== '0') {
                // product from sub category
 
@@ -450,9 +461,17 @@ userData;
   }
 
   onSearchChange(searchValue: string ) {
+    // if (this.selected)
     this.valueOption = [];
     // autocomplete
-     this.productService.getAttribute(searchValue).subscribe(
+    const search = {
+      searchValue: searchValue,
+      sub: (this.selectedSub !== undefined) ? this.selectedSub.sub_category_id : '' ,
+      cat: (this.selectedSub === undefined && this.selectedCategory !== undefined) ? this.selectedCategory.category_id : '' ,
+      super: (this.selectedSub === undefined && this.selectedCategory === undefined) ? this.selectedSuper.category_id : ''
+    };
+    console.log(search);
+     this.productService.getAttribute(search).subscribe(
      (response) => {
 
        if (response.success === 200) {
@@ -563,7 +582,7 @@ onFileChange(file: FileList) {
            this.noMoreImages = true;
       } else {
         this.noMoreImages = true;
-        if (this.router.url === '/catalogue/product/edi') {
+        if (this.router.url === '/catalogue/product/edit') {
           this.snackBar.open('Only upto 5 Images can be uploaded', 'ok', {
             duration: 5000,
           });
@@ -637,6 +656,9 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
             form.value.subCategory === '') {
               this.postSubmit = true;
               this.error = 'Please Select Valid Categories';
+        } else if ( +form.value.mrp < +form.value.sellingPrice) {
+              this.postSubmit = true;
+              this.error = 'Selling Price cannot be more MRP';
         } else {
 
         const attributes = [];
@@ -721,7 +743,8 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
                       'super_category_id': attribute.super_category_id,
                       'category_id': attribute.category_id,
                       'sub_category_id' : attribute.sub_category_id,
-                      'selectedValue' : ''
+                      'selectedValue' : '',
+                      'checked' : false
                   };
                   this.attributes.push(singleAttribute);
 
@@ -773,7 +796,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
       }
     } else {
         // edit Mode
-
+        console.log('EditMode');
 
 
         const images = [];
@@ -802,6 +825,9 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
               form.value.subCategory === '') {
                 this.postSubmit = true;
                 this.error = 'Please Select Valid Categories';
+          } else if ( +form.value.mrp < +form.value.sellingPrice) {
+            this.postSubmit = true;
+            this.error = 'Selling Price cannot be more MRP';
           } else {
 
           const attributes = [];
@@ -814,6 +840,12 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
               };
               attributes.push(obj);
           });
+          const array = form.controls;
+          if (array.sellingPrice.touched === false && array.mrp.touched === false) {
+             this.productPricingID = '';
+          } else {
+            this.productPricingID = this.EditProduct.pricing_array[0].product_pricing_id;
+          }
 
 
           const data = {
@@ -830,7 +862,8 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
               attribute: attributes,
               product : this.EditProduct,
               deleteImages : this.deleteImages.toString(),
-              productType: (this.subscriptionStatus === 0) ? this.defaultProductType.toUpperCase() : form.value.productType.toUpperCase()
+              productType: (this.subscriptionStatus === 0) ? this.defaultProductType.toUpperCase() : form.value.productType.toUpperCase(),
+              pricingID : this.productPricingID
           };
 
           this.isLoading = true;
@@ -884,9 +917,52 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
   addAttribute(template: TemplateRef<any>) {
 
-    this.modalRef = this.modalService.show(template, {
-      backdrop: 'static'
-   });
+
+    if (this.router.url === '/catalogue/product/edit') {
+        console.log(this.defaultProductSuperCategory);
+        console.log(this.defaultProductCategory);
+        console.log(this.defaultProductSubCategory);
+        this.selectedSuper = (this.defaultProductSuperCategory === '') ? undefined : this.superCategories[this.defaultProductSuperCategory];
+        this.selectedCategory = (this.defaultProductCategory === '') ? undefined :
+                  this.superCategories[this.defaultProductSuperCategory].category[this.defaultProductCategory];
+        this.selectedSub = (this.defaultProductSubCategory === '') ? undefined :
+                this.superCategories[this.defaultProductSuperCategory].category[this.defaultProductCategory]
+                .Sub_Category[this.defaultProductSubCategory];
+
+        this.modalRef = this.modalService.show(template, {
+          backdrop: 'static'
+        });
+    } else if (this.router.url === '/catalogue/product/new') {
+        if (this.selectedSuper === undefined) {
+          this.snackBar.open('Please Select a Category', 'Dismiss', {duration: 3000});
+        } else if (this.selectedSuper.super_category_hasChild === 1 ) {
+            if (this.selectedSuper.category.length === 0) {
+              this.modalRef = this.modalService.show(template, {
+                backdrop: 'static'
+              });
+            } else if (this.selectedSuper.category.length > 0 && this.selectedCategory === undefined)  {
+              this.snackBar.open('Please Select a Category', 'Dismiss', {duration: 3000});
+            } else if ( this.selectedCategory.category_hasChild === 2) {
+                this.modalRef = this.modalService.show(template, {
+                  backdrop: 'static'
+                });
+            } else if (this.selectedCategory.category_hasChild === 1) {
+              if (this.selectedCategory.Sub_Category.length > 0 && this.selectedSub === undefined) {
+                this.snackBar.open('Please Select a Category', 'Dismiss', {duration: 3000});
+              } else {
+                this.modalRef = this.modalService.show(template, {
+                  backdrop: 'static'
+                });
+              }
+            }
+        } else if (this.selectedSuper.super_category_hasChild === 2) {
+          this.modalRef = this.modalService.show(template, {
+            backdrop: 'static'
+          });
+        }
+    }
+
+
   }
 
   openAddQuantity(template: TemplateRef<any>) {
@@ -1036,7 +1112,8 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
                     'super_category_id': attribute.super_category_id,
                     'category_id': attribute.category_id,
                     'sub_category_id' : attribute.sub_category_id,
-                    'selectedValue' : ''
+                    'selectedValue' : '',
+                    'checked' : false
                 };
                 this.newAttributesAdded.push(singleAttribute);
               });
@@ -1200,7 +1277,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
 
   onChangeQuantityOption(optionIndex, attribute) {
-      this.attributes[attribute].selectedValue = optionIndex;
+      this.newAttributes[attribute].selectedValue = optionIndex;
       // attribute.selectedValue = optionIndex;
   }
 
@@ -1212,7 +1289,8 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
       if (this.editQuantityStatus === true ) {
           // const index = this.attributes.findIndex(val => val.selectedValue !== '');
-          const index = this.attributes.findIndex(val => val.selectedValue === '');
+          const index = this.newAttributes.findIndex(val => val.selectedValue === '');
+          console.log(this.newAttributes);
           // if (index > -1) {
           if (index < 0) {
           this.attributes.forEach(attribute => {
@@ -1239,7 +1317,8 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
       } else {
         // val => val.name === this.keyName
         // const index = this.attributes.findIndex(val => val.selectedValue !== '');
-        const index = this.attributes.findIndex(val => val.selectedValue === '');
+        const index = this.newAttributes.findIndex(val => val.selectedValue === '');
+        console.log(this.newAttributes);
         if (index < 0) {
           this.attributes.forEach(attribute => {
             const arry2 = {
@@ -1257,6 +1336,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
               quantity : form.value.quantity
             };
             this.tempTable.push(currentRow);
+            console.log(this.tempTable);
             form.reset();
         } else {
           this.quantityError = true;
@@ -1332,7 +1412,10 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
     this.tempTable.forEach(row => {
       const optionArray = [];
       row.options.forEach (option => {
-         optionArray.push(option.product_spec_id + '_' + option.selectedItem);
+        if (option.selectedItem !== '') {
+          optionArray.push(option.product_spec_id + '_' + option.selectedItem);
+        }
+
       });
       const id = row.options[0].product_pricing_id;
       const array = [...optionArray].toString();
@@ -1345,7 +1428,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
     });
 
 
-
+    console.log(final);
     this.productService.addQuantity(final).subscribe(
       (response) => {
         if (response.success === 200) {
@@ -1372,6 +1455,18 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
                       };
                       this.tempAttributeArray.push(saveQuantity);
                   });
+                  if (this.tempAttributeArray.length < this.Heading.length) {
+                      this.Heading.forEach(attribute => {
+                          const index = this.tempAttributeArray.findIndex(val => JSON.parse(val.id) === attribute.product_spec_id );
+                          if (index < 0) {
+                            const obj = {
+                              id : attribute.product_spec_id,
+                              name : ''
+                            };
+                            this.tempAttributeArray.push(obj);
+                          }
+                      });
+                  }
                   this.tempAttributeArray.sort(function(a, b) {
                     return a.id - b.id;
                   });
@@ -1379,6 +1474,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
                       quantity : rowTable.quantity,
                       type : this.tempAttributeArray
                   };
+
                   this.tempAttributeArray = [];
                   this.InventoryTableEdit.push(finalRow);
               });
@@ -1524,14 +1620,79 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
   // open qunatity modal when adding only quantity
   addQuantityModal(template) {
+    this.newAttributes = [] ;
+
+    this.attributes.forEach(attribute => {
+      if (attribute.checked === true) {
+          this.newAttributes.push(attribute);
+      }
+    });
+
+    this.modalRef.hide();
     this.defaultquantity = '';
     this.modalRef = this.modalService.show(template, {
       backdrop: 'static'
     });
+    // // use when going back
+    // this.tempTable = [];
+    // this.attributes = [];
+    // this.tempAttribute = [...this.EditProduct.pricing_array[0].product_spec, ...this.newAttributesAdded];
+    // this.tempAttribute.forEach(attribute => {
+    //     attribute.product_spec_value.split(',');
+    //     const singleAttribute = {
+    //         'product_spec_value_created_on' : attribute.product_spec_value_created_on,
+    //         'product_spec_value_id' : attribute.product_spec_value_id,
+    //         'product_pricing_id' : attribute.product_pricing_id,
+    //         'product_spec_value' : attribute.product_spec_value.split(','),
+    //         'merchant_id' : attribute.merchant_id,
+    //         'product_spec_id' : attribute.product_spec_id,
+    //         'product_spec_name': (attribute.ProductSpecType === undefined)
+    //                               ? attribute.product_spec_name : attribute.ProductSpecType.product_spec_name,
+    //         'super_category_id': (attribute.ProductSpecType === undefined)
+    //                               ? attribute.super_category_id : attribute.ProductSpecType.super_category_id,
+    //         'category_id':  (attribute.ProductSpecType === undefined)
+    //                         ? attribute.category_id : attribute.ProductSpecType.category_id,
+    //         'sub_category_id' : (attribute.ProductSpecType === undefined)
+    //                           ? attribute.sub_category_id : attribute.ProductSpecType.sub_category_id,
+    //         'selectedValue' : ''
+    //     };
+    //     this.attributes.push(singleAttribute);
+
+    //   });
+
+  }
+
+  ngOnDestroy() {
+    this.tempTable = [];
+    this.attributes = [];
+  }
+
+  cancelInventory () {
+    this.modalRef.hide();
+    const user = JSON.parse(localStorage.getItem('user-data'));
+      if (user.merchant_id !== undefined) {
+        this.router.navigate(['/catalogue']);
+      } else if (user.admin_id !== undefined) {
+
+        if (this.router.url === '/catalogue/product/new') {
+          this.router.navigate(['/merchants/merchant/catalogue']);
+        }
+      }
+  }
+
+
+  onChangeSubcategory(subcategoryIndex) {
+      this.selectedSub = this.subCategory[subcategoryIndex];
+  }
+
+  openModalToSelectAttributes(template: TemplateRef<any>) {
+    this.modalRef = this.modalService.show(template);
+
     // use when going back
     this.tempTable = [];
     this.attributes = [];
     this.tempAttribute = [...this.EditProduct.pricing_array[0].product_spec, ...this.newAttributesAdded];
+    console.log(this.tempAttribute);
     this.tempAttribute.forEach(attribute => {
         attribute.product_spec_value.split(',');
         const singleAttribute = {
@@ -1549,27 +1710,16 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
                             ? attribute.category_id : attribute.ProductSpecType.category_id,
             'sub_category_id' : (attribute.ProductSpecType === undefined)
                               ? attribute.sub_category_id : attribute.ProductSpecType.sub_category_id,
-            'selectedValue' : ''
+            'selectedValue' : '',
+            'checked' : false
         };
         this.attributes.push(singleAttribute);
 
       });
-
   }
 
-  ngOnDestroy() {
-    this.tempTable = [];
-    this.attributes = [];
-  }
-
-  cancelInventory () {
-    this.modalRef.hide();
-    const user = JSON.parse(localStorage.getItem('user-data'));
-      if (user.merchant_id !== undefined) {
-        this.router.navigate(['/catalogue']);
-      } else if (user.admin_id !== undefined) {
-        this.router.navigate(['/merchants/merchant/catalogue']);
-      }
+  attributeClicked(i) {
+     this.attributes[i].checked = !this.attributes[i].checked;
   }
 }
 
