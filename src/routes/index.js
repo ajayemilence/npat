@@ -16,6 +16,7 @@ let adminAnimal = require('../controller/adminAnimal');
 let adminPlant = require('../controller/adminPlant');
 let adminThing = require('../controller/adminThing');
 let adminPlace = require('../controller/adminPlace');
+let credits = require('../controller/credits');
 
 let router = express();
 
@@ -35,6 +36,7 @@ initdb(db => {
     router.use('/adminPlant', adminPlant({ config, db }));
     router.use('/adminThing', adminThing({ config, db }));
     router.use('/adminPlace', adminPlace({ config, db }));
+    router.use('/credits', credits({ config, db }));
 
  });
 
