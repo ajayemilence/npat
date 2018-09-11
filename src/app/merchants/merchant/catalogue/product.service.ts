@@ -8,6 +8,7 @@ import { LocalStorageService } from '../../../shared/local-storage.service';
 import { GlobalService } from '../../../shared/global.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ColdObservable } from 'rxjs/testing/ColdObservable';
+import { HttpRequestService } from '../../../shared/http-requests.service';
 
 @Injectable()
 export class ProductService {
@@ -19,6 +20,7 @@ export class ProductService {
     // private messageSource = new BehaviorSubject('default message');
     // currentMessage = this.messageSource.asObservable();
     constructor(private http: Http,
+                private httpRequests: HttpRequestService,
                 private localStorageService: LocalStorageService,
                 private global: GlobalService) { }
 
@@ -30,8 +32,10 @@ export class ProductService {
             'd_token':  JSON.parse(token)
          });
 
-        return this.http.get(this.global.serverUrl + 'product_attributes/en/search_product_spec_types?' +
-                'product_spec_name=' + data.searchValue +
+        return this.http.get(
+                // this.global.serverUrl + 'product_attributes/en/search_product_spec_types?' +
+            this.global.serverUrl + this.httpRequests.productSearchSpec +
+                '?product_spec_name=' + data.searchValue +
                 '&super_category_id=' + data.super +
                 '&category_id=' + data.cat +
                 '&sub_category_id=' + data.sub,
@@ -128,7 +132,9 @@ export class ProductService {
                 });
             }
 
-        return this.http.post(this.global.serverUrl + 'product/en/add_product',
+        return this.http.post(
+        // this.global.serverUrl + 'product/en/add_product',
+        this.global.serverUrl + this.httpRequests.productAdd,
         body,
         {headers: headers}  )
         .map(
@@ -160,16 +166,16 @@ export class ProductService {
         const body = new URLSearchParams();
         body.append('inventory_json', JSON.stringify(dataVal));
 
-        console.log(JSON.stringify(dataVal));
 
 
-        return this.http.post(this.global.serverUrl + 'product_attributes/en/add_product_inventory',
+        return this.http.post(
+        // this.global.serverUrl + 'product_attributes/en/add_product_inventory',
+        this.global.serverUrl + this.httpRequests.productAddInventory,
         body.toString(),
         {headers: headers}  )
         .map(
             (response: Response) => {
                 const output = response.json();
-                console.log(output, 'output');
                 return output;
             }
         ).catch(
@@ -259,7 +265,9 @@ export class ProductService {
 
 
 
-        return this.http.put(this.global.serverUrl + 'product/en/update_product',
+        return this.http.put(
+        // this.global.serverUrl + 'product/en/update_product',
+        this.global.serverUrl + this.httpRequests.productUpdate,
         body,
         {headers: headers}  )
         .map(
@@ -302,7 +310,9 @@ export class ProductService {
         console.log(JSON.stringify(data));
 
 
-        return this.http.post(this.global.serverUrl + 'product/en/add_product_attributes',
+        return this.http.post(
+        // this.global.serverUrl + 'product/en/add_product_attributes',
+        this.global.serverUrl + this.httpRequests.productAddAttributes,
         body.toString(),
         {headers: headers}  )
         .map(
@@ -336,7 +346,9 @@ export class ProductService {
 
 
 
-        return this.http.put(this.global.serverUrl + 'product_attributes/en/update_product_inventory',
+        return this.http.put(
+        // this.global.serverUrl + 'product_attributes/en/update_product_inventory',
+        this.global.serverUrl + this.httpRequests.productUpdateInventory,
         body.toString(),
         {headers: headers}  )
         .map(
@@ -372,7 +384,9 @@ export class ProductService {
 
 
 
-        return this.http.put(this.global.serverUrl + 'product_attributes/en/update_product_attributes',
+        return this.http.put(
+            // this.global.serverUrl + 'product_attributes/en/update_product_attributes',
+        this.global.serverUrl + this.httpRequests.productUpdateAttribute,
         body.toString(),
         {headers: headers}  )
         .map(
@@ -408,7 +422,9 @@ export class ProductService {
             headers: headers,
             body : body.toString()
           });
-        return this.http.delete(this.global.serverUrl + 'product_attributes/en/delete_product_attributes',
+        return this.http.delete(
+            // this.global.serverUrl + 'product_attributes/en/delete_product_attributes',
+        this.global.serverUrl + this.httpRequests.productDeleteAttribute,
         options )
         .map(
             (response: Response) => {
@@ -443,7 +459,9 @@ export class ProductService {
             headers: headers,
             body : body.toString()
           });
-        return this.http.delete(this.global.serverUrl + 'product_attributes/en/delete_product_inventory',
+        return this.http.delete(
+        // this.global.serverUrl + 'product_attributes/en/delete_product_inventory',
+        this.global.serverUrl + this.httpRequests.productDeleteInventory,
         options )
         .map(
             (response: Response) => {

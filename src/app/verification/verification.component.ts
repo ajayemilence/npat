@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, NgZone, Inject, TemplateRef } from '@angular/core';
+import { Component, OnInit, ViewChild, ElementRef, NgZone, Inject, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { NgForm } from '@angular/forms';
 import { MerchantAuthService } from '../merchant-auth/merchant-auth.service';
 import { MatSnackBar, MatDialogRef, MAT_DIALOG_DATA, MatDialog } from '@angular/material';
@@ -8,12 +8,16 @@ import { MapsAPILoader } from '@agm/core';
 import { MerchantService } from '../merchants/merchants.service';
 import * as _ from 'lodash';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
+import { GLobalErrorService } from '../shared/global-error.service';
 @Component({
   selector: 'app-verification',
   templateUrl: './verification.component.html',
-  styleUrls: ['./verification.component.css']
+  styleUrls: ['./verification.component.css'],
+  encapsulation: ViewEncapsulation.None
+
 })
 export class VerificationComponent implements OnInit {
+  loaderImage = 'assets/images/loader-new.gif';
   isLoading = false;
   modalRef: BsModalRef;
   stepperTwo = true;
@@ -25,21 +29,25 @@ export class VerificationComponent implements OnInit {
   postSubmit = false;
   error = '';
   ErrorMsg = '';
-  displayImageLicence = 'assets/images/upload.png';
-  displayImagePan = 'assets/images/upload.png';
-  displayImageGst = 'assets/images/upload.png';
-  displayImage = 'assets/images/upload.png';
-  displayImageMerchant = 'assets/images/profile-pic.png';
+  displayImageLicence = 'assets/images/add_image.jpg';
+  displayImageLicenceTwo = 'assets/images/add_image.jpg';
+  displayImagePan = 'assets/images/add_image.jpg';
+  displayImageGst = 'assets/images/add_image.jpg';
+  displayImage = 'assets/images/add_image.jpg';
+  displayImageMerchant = 'assets/images/userImage.png';
 
   // images
   imgLicence;
-  imgLicenceArray = [];
+  // imgLicenceArray = [];
+  imgLicenceOne;
+  imgLicenceTwo;
   imgPan;
   imgGst;
   imgDoc;
   imgDocArray = [];
   imgMerchant;
 
+  logoImage = 'assets/images/app-logo.png';
   // location
   @ViewChild('search') public searchElement: ElementRef;
   lat;
@@ -47,6 +55,14 @@ export class VerificationComponent implements OnInit {
   place;
   altitude;
   DataPlan;
+
+  config = {
+    animated: true,
+    keyboard: true,
+    backdrop: true,
+    ignoreBackdropClick: false,
+    class: 'my-modal'
+  };
   constructor(
     public snackBar: MatSnackBar,
     private merchantAuthService: MerchantAuthService,
@@ -55,7 +71,8 @@ export class VerificationComponent implements OnInit {
     private mapsAPILoader: MapsAPILoader,
     private ngZone: NgZone,
     private merchantsService: MerchantService,
-    private modalService: BsModalService
+    private modalService: BsModalService,
+    private globalErrorService: GLobalErrorService
   ) { }
 
   ngOnInit() {
@@ -86,17 +103,17 @@ export class VerificationComponent implements OnInit {
                   this.lng = JSON.stringify(place.geometry.location.lng());
                   this.place = place.formatted_address;
 
-                  const location = {lat: place.geometry.location.lat(), lng: place.geometry.location.lng()};
+                  const location = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
 
                   const elevator = new google.maps.ElevationService;
-                   this.displayLocationElevation(location, elevator).then(alt => {
-                     this.altitude =  alt;
-                   });
+                  this.displayLocationElevation(location, elevator).then(alt => {
+                    this.altitude = alt;
+                  });
                 });
               });
             }
           );
-        // } else if (doc !== null) {
+          // } else if (doc !== null) {
           // console.log('here3');
           // this.router.navigate(['/']);
         } else if (user.documents === 0 || user.documents === undefined) {
@@ -158,33 +175,33 @@ export class VerificationComponent implements OnInit {
   onFileChange(file: FileList, index) {
     if (index === 1) {
       if (file.length === 0) {
-        this.displayImageLicence = 'assets/images/upload.png';
+        this.displayImageLicence = 'assets/images/add_image.jpg';
       } else {
-        this.imgLicenceArray = [];
-        this.imgLicence = file.item(0);
+        // this.imgLicenceArray = [];
+        this.imgLicenceOne = file.item(0);
         const reader = new FileReader();
         reader.onload = (event: any) => {
           this.displayImageLicence = event.target.result;
         };
 
-        const filesIndex = _.range(file.length);
+        // const filesIndex = _.range(file.length);
 
         // if (this.imgLicenceArray.length < 2) {
 
-          _.each(filesIndex, (idx) => {
-            if (idx < 2) {
-            this.imgLicenceArray.push(file[idx]);
-            }
-          }
-          );
+        // _.each(filesIndex, (idx) => {
+        //   if (idx < 2) {
+        //   this.imgLicenceArray.push(file[idx]);
+        //   }
+        // }
+        // );
         // }
 
-        reader.readAsDataURL(this.imgLicence);
+        reader.readAsDataURL(this.imgLicenceOne);
       }
 
     } else if (index === 3) {
       if (file.length === 0) {
-        this.displayImageGst = 'assets/images/upload.png';
+        this.displayImageGst = 'assets/images/add_image.jpg';
       } else {
         this.imgGst = file.item(0);
         const reader = new FileReader();
@@ -196,7 +213,7 @@ export class VerificationComponent implements OnInit {
 
     } else if (index === 2) {
       if (file.length === 0) {
-        this.displayImagePan = 'assets/images/upload.png';
+        this.displayImagePan = 'assets/images/add_image.jpg';
       } else {
         this.imgPan = file.item(0);
         const reader = new FileReader();
@@ -207,7 +224,7 @@ export class VerificationComponent implements OnInit {
       }
     } else if (index === 4) {
       if (file.length === 0) {
-        this.displayImage = 'assets/images/upload.png';
+        this.displayImage = 'assets/images/add_image.jpg';
       } else {
         this.imgDoc = file.item(0);
         this.imgDocArray = [];
@@ -217,13 +234,12 @@ export class VerificationComponent implements OnInit {
         };
         const filesIndex = _.range(file.length);
         // if (this.imgDocArray.length < 4) {
-          console.log(this.imgDocArray.length, 'Doc');
-          _.each(filesIndex, (idx) => {
-            if (idx < 4) {
+        _.each(filesIndex, (idx) => {
+          if (idx < 4) {
             this.imgDocArray.push(file[idx]);
-            }
           }
-          );
+        }
+        );
         // }
 
         // _.each(filesIndex, (idx) => {
@@ -234,6 +250,17 @@ export class VerificationComponent implements OnInit {
 
         reader.readAsDataURL(this.imgDoc);
       }
+    } else if (index === 5) {
+      if (file.length === 0) {
+        this.displayImageLicenceTwo = 'assets/images/add_image.jpg';
+      } else {
+        this.imgLicenceTwo = file.item(0);
+        const reader = new FileReader();
+        reader.onload = (event: any) => {
+          this.displayImageLicenceTwo = event.target.result;
+        };
+        reader.readAsDataURL(this.imgLicenceTwo);
+      }
     }
 
 
@@ -241,74 +268,71 @@ export class VerificationComponent implements OnInit {
 
 
   submitPin(form: NgForm) {
-
+    this.isLoading = true;
     const storedPin = localStorage.getItem('pin');
     if (JSON.parse(form.value.pin) === JSON.parse(storedPin)) {
 
       const data = JSON.parse(localStorage.getItem('new-merchant'));
 
-      if (data.email !== '' && data.email !== null ) {
+      if (data.email !== '' && data.email !== null) {
         this.merchantAuthService.signup(data)
-        .subscribe(
-          (response) => {
+          .subscribe(
+            (response) => {
+              this.isLoading = false;
+              if (response.success === 200) {
+                // this.router.navigate(['/verify']);
+                this.stepperTwo = false;
+                this.stepperThree = true;
+                form.reset();
+                localStorage.clear();
+                this.localStorageService.set('token', response.data.token);
+                this.localStorageService.set('user-data', response.data);
 
-            if (response.success === 200) {
-              // this.router.navigate(['/verify']);
-              this.stepperTwo = false;
-              this.stepperThree = true;
-              form.reset();
-              localStorage.clear();
-              this.localStorageService.set('token', response.data.token);
-              this.localStorageService.set('user-data', response.data);
+                // location
+                this.mapsAPILoader.load().then(
+                  () => {
 
-              // location
-              this.mapsAPILoader.load().then(
-                () => {
+                    const autocomplete = new google.maps.places.Autocomplete(this.searchElement.nativeElement, {});
+                    autocomplete.addListener('place_changed', () => {
+                      this.ngZone.run(() => {
+                        const place: google.maps.places.PlaceResult = autocomplete.getPlace();
+                        if (place.geometry === undefined || place.geometry === null) {
+                          return;
+                        }
+                        this.lat = JSON.stringify(place.geometry.location.lat());
+                        this.lng = JSON.stringify(place.geometry.location.lng());
+                        this.place = place.formatted_address;
 
-                  const autocomplete = new google.maps.places.Autocomplete(this.searchElement.nativeElement, {});
-                  autocomplete.addListener('place_changed', () => {
-                    this.ngZone.run(() => {
-                      const place: google.maps.places.PlaceResult = autocomplete.getPlace();
-                      if (place.geometry === undefined || place.geometry === null) {
-                        return;
-                      }
-                      this.lat = JSON.stringify(place.geometry.location.lat());
-                      this.lng = JSON.stringify(place.geometry.location.lng());
-                      this.place = place.formatted_address;
+                        const location = { lat: place.geometry.location.lat(), lng: place.geometry.location.lng() };
 
-                      const location = {lat: place.geometry.location.lat(), lng: place.geometry.location.lng()};
-
-                      const elevator = new google.maps.ElevationService;
-                       this.displayLocationElevation(location, elevator).then(alt => {
-                         this.altitude =  alt;
-                       });
+                        const elevator = new google.maps.ElevationService;
+                        this.displayLocationElevation(location, elevator).then(alt => {
+                          this.altitude = alt;
+                        });
+                      });
                     });
-                  });
-                }
-              );
+                  }
+                );
 
 
-            } else if (response.output.statusCode === 1102) {
-              this.router.navigate(['/merchant/auth']);
-              this.snackBar.open('Phone Number Already Registered!', 'Dismiss', {
-                duration: 5000,
-              });
-            } else {
-              // this.postSubmit = true;
-              // this.error = response.output.payload.message;
-              console.log(response.output.payload.message);
-              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-                duration: 5000,
-              });
+              } else if (response.output.statusCode === 1102) {
+                this.router.navigate(['/merchant/auth']);
+                // this.snackBar.open('Phone Number Already Registered!', 'Dismiss', {
+                //   duration: 5000,
+                // });
+                this.globalErrorService.errorOccured(response);
+              } else {
+                // this.postSubmit = true;
+                // this.error = response.output.payload.message;
+                console.log(response.output.payload.message);
+                this.globalErrorService.errorOccured(response);
+              }
+            },
+            (error) => {
+              console.log('error', error);
+              this.globalErrorService.errorOccured(error);
             }
-          },
-          (error) => {
-            console.log('error', error);
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
-          }
-        );
+          );
       } else {
         localStorage.clear();
         this.router.navigate(['/merchant/auth']);
@@ -316,32 +340,36 @@ export class VerificationComponent implements OnInit {
       }
 
     } else {
-      this.showErrorMsg = true;
-      this.ErrorMsg = 'Enter Valid PIN!';
+      setInterval(() => {
+        this.isLoading = false;
+        this.showErrorMsg = true;
+        this.ErrorMsg = 'Enter Valid PIN!';
+      }, 1000);
+
     }
   }
 
   resendPin() {
+    this.isLoading = true;
     const data = JSON.parse(localStorage.getItem('new-merchant'));
     if (data === null) {
       this.router.navigate(['/merchant/auth']);
       localStorage.clear();
     }
+
     this.merchantAuthService.sendPin(data.phoneNumber).subscribe(
       (response) => {
+        this.isLoading = false;
         if (response.success === 200) {
           this.localStorageService.set('pin', response.data);
+          this.globalErrorService.showSnackBar('Pin Resent Successfully');
         } else {
           console.log(response);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
       }, (error) => {
         console.log(error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -351,12 +379,13 @@ export class VerificationComponent implements OnInit {
   // Docmument Page form
 
   submitDocs(form: NgForm) {
-
+    console.log(form);
     if (form.status === 'INVALID') {
       this.postSubmit = true;
       this.error = 'Mandatory Parameter Missing!';
     } else if (this.imgPan === undefined || this.imgPan === '' ||
-      this.imgLicence === undefined || this.imgLicence === '') {
+      this.imgLicenceOne === undefined || this.imgLicenceOne === '') {
+        console.log('here');
       this.postSubmit = true;
       this.error = 'Mandatory Parameter Missing!!!';
     } else {
@@ -368,11 +397,12 @@ export class VerificationComponent implements OnInit {
         const data = {
           form: form.value,
           gstImage: this.imgGst,
-          imgLicence: this.imgLicenceArray,
+          imgLicence: [this.imgLicenceOne, this.imgLicenceTwo],
           imgPan: this.imgPan,
           doc: this.imgDocArray
         };
         this.isLoading = true;
+        console.log(data);
         // Post request to store user data
         this.merchantsService.uploadDocuments(data)
           .subscribe(
@@ -382,17 +412,15 @@ export class VerificationComponent implements OnInit {
                 this.localStorageService.set('doc', response.data);
                 form.reset();
                 this.imgDocArray = [];
-                this.imgLicenceArray = [];
-                this.displayImageLicence = 'assets/images/upload.png';
-                this.displayImagePan = 'assets/images/upload.png';
-                this.displayImageGst = 'assets/images/upload.png';
-                this.displayImage = 'assets/images/upload.png';
+                // this.imgLicenceArray = [];
+                this.displayImageLicence = 'assets/images/add_image.jpg';
+                this.displayImagePan = 'assets/images/add_image.jpg';
+                this.displayImageGst = 'assets/images/add_image.jpg';
+                this.displayImage = 'assets/images/add_image.jpg';
                 this.stepperFour = false;
                 this.router.navigate(['/']);
               } else {
-                this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-                  duration: 5000,
-                });
+                this.globalErrorService.errorOccured(response);
 
                 console.log(response.output.payload.message);
               }
@@ -401,13 +429,11 @@ export class VerificationComponent implements OnInit {
             (error) => {
               // handle all error cases
               console.log(error);
-              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-                duration: 5000,
-              });
+              this.globalErrorService.errorOccured(error);
             }
           );
 
-    } else {
+      } else {
 
         this.postSubmit = true;
         this.error = 'Add Both GST number as well as image';
@@ -423,7 +449,7 @@ export class VerificationComponent implements OnInit {
       this.error = 'Mandatory Parameter Missing!';
     } else {
       this.postSubmit = false;
-
+      this.isLoading = true;
 
       const data = {
         form: form.value,
@@ -439,6 +465,7 @@ export class VerificationComponent implements OnInit {
       this.merchantsService.editMerchant(data)
         .subscribe(
           (response) => {
+            this.isLoading = false;
             if (response.success === 200) {
 
               this.localStorageService.set('user-data', response.data);
@@ -448,9 +475,7 @@ export class VerificationComponent implements OnInit {
               this.stepperFour = true;
               // stepper handle here
             } else {
-              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-                duration: 5000,
-              });
+              this.globalErrorService.errorOccured(response);
               console.log(response.output.payload.message);
             }
 
@@ -458,45 +483,40 @@ export class VerificationComponent implements OnInit {
           (error) => {
             // handle all error cases
             console.log(error);
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(error);
           }
         );
     }
   }
 
   planSelected(option) {
+    this.isLoading = true;
+    if (option === 1) {
+      this.DataPlan = 'FREELISTING';
+    } else if (option === 2) {
+      this.DataPlan = 'ONLINE';
+    } else if (option === 3) {
+      this.DataPlan = 'INSTORE';
+    } else if (option === 4) {
+      this.DataPlan = 'ONLINE/INSTORE';
+    }
 
-      if (option === 1) {
-          this.DataPlan = 'FREELISTING';
-      } else if (option === 2) {
-          this.DataPlan = 'ONLINE';
-      } else if (option === 3) {
-          this.DataPlan = 'INSTORE';
-      } else if (option === 4) {
-          this.DataPlan = 'ONLINE/INSTORE';
-      }
-
-      this.merchantsService.editMerchantPlans(this.DataPlan).subscribe(
-        (response) => {
-            if (response.success === 200 ) {
-              this.stepperFour = false;
-              this.stepperFive = true;
-              this.localStorageService.set('plan-selected', true);
-            } else {
-              console.log(response);
-              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-                duration: 5000,
-              });
-            }
-        }, (error) => {
-            console.log(error);
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+    this.merchantsService.editMerchantPlans(this.DataPlan).subscribe(
+      (response) => {
+        this.isLoading = false;
+        if (response.success === 200) {
+          this.stepperFour = false;
+          this.stepperFive = true;
+          this.localStorageService.set('plan-selected', true);
+        } else {
+          console.log(response);
+          this.globalErrorService.errorOccured(response);
         }
-      );
+      }, (error) => {
+        console.log(error);
+        this.globalErrorService.errorOccured(error);
+      }
+    );
   }
 
   openModal(template: TemplateRef<any>) {
@@ -504,12 +524,12 @@ export class VerificationComponent implements OnInit {
   }
 
   displayLocationElevation(loc, elevator2) {
-    return new Promise ((resolve, reject) => {
-        return elevator2.getElevationForLocations({
-          'locations': [loc]
-        }, function(results, status) {
-          resolve(results[0].elevation);
-        });
+    return new Promise((resolve, reject) => {
+      return elevator2.getElevationForLocations({
+        'locations': [loc]
+      }, function (results, status) {
+        resolve(results[0].elevation);
+      });
     });
 
   }

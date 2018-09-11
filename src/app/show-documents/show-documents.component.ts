@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { MerchantService } from '../merchants/merchants.service';
 import { MatSnackBar } from '@angular/material';
 import { GlobalService } from '../shared/global.service';
@@ -6,11 +6,14 @@ import { Router } from '@angular/router';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 import { NgForm } from '@angular/forms';
 import { ɵPRE_STYLE } from '@angular/animations';
+import { GLobalErrorService } from '../shared/global-error.service';
 
 @Component({
   selector: 'app-show-documents',
   templateUrl: './show-documents.component.html',
-  styleUrls: ['./show-documents.component.css']
+  styleUrls: ['./show-documents.component.css'],
+  encapsulation: ViewEncapsulation.None
+
 })
 export class ShowDocumentsComponent implements OnInit {
 merchantId;
@@ -24,10 +27,10 @@ LicenceImageTwo;
 GstNumber;
 GstImage;
 AdditionalImage = [];
-displayImage = 'assets/images/camera-icon.gif';
+displayImage = 'assets/images/add_image.jpg';
 ImagePath;
 showLicenceImage;
-DocumentsStatus = true;
+DocumentsStatus = undefined;
 // zooming Image
 ZoomImage;
 ZoomImageAlt;
@@ -54,12 +57,11 @@ EditEnable = false;
               private snackbar: MatSnackBar,
               private globalService: GlobalService,
               private router: Router,
-              private modalService: BsModalService
+              private modalService: BsModalService,
+              private globalErrorService: GLobalErrorService
             ) { }
 
   ngOnInit() {
-
-
     const user = JSON.parse(localStorage.getItem('user-data'));
     if (user.merchant_id !== undefined) {
         this.merchantId = user.merchant_id;
@@ -278,7 +280,6 @@ EditEnable = false;
 
         this.merchantService.EditMerchantDocument(data).subscribe(
           (response) => {
-            console.log(response);
             if (response.success === 200) {
                 this.modalRef.hide();
                 form.reset();
@@ -295,11 +296,11 @@ EditEnable = false;
                 this.isLoading = true;
             } else {
               console.log(response.output.payload.message);
-              this.snackbar.open('Somethimg went wrong, please try again later', 'Dismiss', {duration: 5000});
+              this.globalErrorService.errorOccured(response);
             }
           }, (error) => {
             console.log(error);
-            this.snackbar.open('Somethimg went wrong, please try again later', 'Dismiss', {duration: 5000});
+            this.globalErrorService.errorOccured(error);
           }
         );
 
@@ -350,7 +351,6 @@ EditEnable = false;
       (response) => {
           if (response.success === 200) {
              this.documents = response.data;
-             console.log(this.documents);
              if (this.documents.length < 1) {
                 this.DocumentsStatus = false;
                 this.isLoading = false;
@@ -379,15 +379,11 @@ EditEnable = false;
 
           } else {
             console.log(response);
-            this.snackbar.open('Something went wrong, please try again later!', 'Dismiss', {
-              duration: 5000
-            });
+            this.globalErrorService.errorOccured(response);
           }
       }, (error) => {
           console.log(error);
-          this.snackbar.open('Something went wrong, please try again later!', 'Dismiss', {
-              duration: 5000
-          });
+          this.globalErrorService.errorOccured(error);
       }
     );
   }

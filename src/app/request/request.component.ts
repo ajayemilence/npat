@@ -6,6 +6,7 @@ import { NgForm } from '@angular/forms';
 import { CatalogueService } from '../merchants/merchant/catalogue/catalogue.service';
 import { MatSnackBar } from '@angular/material';
 import { Router } from '@angular/router';
+import { GLobalErrorService } from '../shared/global-error.service';
 
 @Component({
   selector: 'app-request',
@@ -51,7 +52,8 @@ export class RequestComponent implements OnInit {
               private globalService: GlobalService,
               private catalogueService: CatalogueService,
               public snackBar: MatSnackBar,
-              private router: Router
+              private router: Router,
+              private globalErrorService: GLobalErrorService
             ) { }
 
   ngOnInit() {
@@ -91,7 +93,7 @@ export class RequestComponent implements OnInit {
 // get super-category requests
 
 getSuperCategoryRequest(data: any) {
-  console.log(data, '--');
+
   this.requestService.getSuperCategoryRequest(data).subscribe(
     (response) => {
 
@@ -100,8 +102,6 @@ getSuperCategoryRequest(data: any) {
             if (response.data.length < 1) {
               this.superCategoryRequests = [];
             } else {
-              console.log(data);
-              console.log(response.data);
               if (data.count === 1) {
                   this.superCategoryRequests.push(response.data);
                   if (response.data < 15) {
@@ -114,16 +114,13 @@ getSuperCategoryRequest(data: any) {
             }
 
         } else {
-          this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-            duration: 5000,
-          });
+          console.log(response);
+          this.globalErrorService.errorOccured(response);
         }
     },
     (error) => {
         console.log(error);
-        this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
     }
   );
 }
@@ -142,17 +139,13 @@ getCategoryRequest(data: any) {
           } else {
             this.superCategoryRequests = response.data;
           }
-
-        this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-          duration: 5000,
-        });
+      } else {
+        this.globalErrorService.errorOccured(response);
       }
     },
     (error) => {
         console.log(error);
-        this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
     }
   );
 }
@@ -175,16 +168,12 @@ getSubCategoryRequest(data: any) {
           // this.superCategoryRequests.splice(0, 1);
 
       } else {
-        this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(response);
       }
     },
     (error) => {
         console.log(error);
-        this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
     }
   );
 }
@@ -200,10 +189,8 @@ requestStatus(categoryID, val) {
       (response) => {
 
         if (response.success === 200) {
-          const message = (val === 0) ? 'Successfully to rejected Request' : 'Successfully to accepted Request';
-          this.snackBar.open(message, 'Dismiss', {
-            duration: 5000,
-          });
+          const message = (val === 0) ? 'Successfully  rejected Request' : 'Successfully accepted Request';
+          this.globalErrorService.showSnackBar(message);
           const data2 = {
             last_id: '',
             count : 0
@@ -226,16 +213,12 @@ requestStatus(categoryID, val) {
 
         } else {
           const message = (val === 0) ? 'Unsuccessful to reject Request' : 'Unsuccessful to accept Request';
-          this.snackBar.open(message, 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.showSnackBar(message);
         }
       },
       (error) => {
         console.log(error);
-        this.snackBar.open('Request Unsuccessful', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
 }
@@ -265,16 +248,12 @@ getProductRequest(data: any) {
 
 
         } else {
-          this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
     },
     (error) => {
         console.log(error);
-        this.snackBar.open('Failed To Load Requests', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
     }
   );
 }
@@ -358,9 +337,7 @@ editCategoryForm (form: NgForm) {
           this.displayImage = 'assets/images/upload.png';
           form.reset();
           this.modalRef.hide();
-          this.snackBar.open('successfully Edited Category', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.showSnackBar('Successfully Edited Category');
           // reloading Data
           const data = {
             last_id: ''
@@ -371,16 +348,12 @@ editCategoryForm (form: NgForm) {
             form.reset();
             this.modalRef.hide();
             form.reset();
-            this.snackBar.open('Unsuccessful to Edit Super Category', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
          }
         },
         (error) => {
           console.log('error', error);
-          this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
         }
       );
     } else if (this.currentCategory.category_id !== undefined) {
@@ -406,9 +379,7 @@ editCategoryForm (form: NgForm) {
           form.reset();
           this.modalRef.hide();
           form.reset();
-          this.snackBar.open('successfully Edited Category', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.showSnackBar('Successfully Edited Category');
           // reloading Data
           const data = {
             last_id: ''
@@ -419,13 +390,12 @@ editCategoryForm (form: NgForm) {
             form.reset();
             this.modalRef.hide();
             form.reset();
-            this.snackBar.open('Unsuccessful to Edit Category', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
          }
         },
         (error) => {
           console.log('error', error);
+          this.globalErrorService.errorOccured(error);
         }
       );
     } else if (this.currentCategory.sub_category_id !== undefined) {
@@ -449,9 +419,7 @@ editCategoryForm (form: NgForm) {
           form.reset();
           this.modalRef.hide();
           form.reset();
-          this.snackBar.open('successfully Edited Category', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.showSnackBar('Successfully Edited Category');
           // reloading Data
           const data = {
             last_id: ''
@@ -462,13 +430,12 @@ editCategoryForm (form: NgForm) {
             form.reset();
             this.modalRef.hide();
             form.reset();
-            this.snackBar.open('Unsuccessful to Edit Sub Category', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
          }
         },
         (error) => {
           console.log('error', error);
+          this.globalErrorService.errorOccured(error);
         }
       );
     }

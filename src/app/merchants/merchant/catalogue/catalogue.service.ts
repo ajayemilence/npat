@@ -8,6 +8,7 @@ import { LocalStorageService } from '../../../shared/local-storage.service';
 import { GlobalService } from '../../../shared/global.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
 import { ColdObservable } from 'rxjs/testing/ColdObservable';
+import { HttpRequestService } from '../../../shared/http-requests.service';
 
 @Injectable()
 export class CatalogueService {
@@ -20,7 +21,9 @@ export class CatalogueService {
     // currentMessage = this.messageSource.asObservable();
     constructor(private http: Http,
                 private localStorageService: LocalStorageService,
-                private global: GlobalService) { }
+                private global: GlobalService,
+                private httpRequests: HttpRequestService
+            ) { }
 
 
 
@@ -58,7 +61,9 @@ export class CatalogueService {
 
 
 
-        return this.http.post(this.global.serverUrl + 'product/en/add_product',
+        return this.http.post(
+            // this.global.serverUrl + 'product/en/add_product',
+        this.global.serverUrl + this.httpRequests.productAdd,
         body,
         {headers: headers}  )
         .map(
@@ -99,7 +104,9 @@ export class CatalogueService {
             body.append('super_category_image', data.image, data.image.name );
         }
 
-        return this.http.post(this.global.serverUrl + 'super_category/en/add_super_category',
+        return this.http.post(
+        // this.global.serverUrl + 'super_category/en/add_super_category',
+        this.global.serverUrl + this.httpRequests.superCatAdd,
         body,
         {headers: headers}  )
         .map(
@@ -137,7 +144,9 @@ export class CatalogueService {
 
         body.append('merchant_id', (user.merchant_id !== undefined) ? user.merchant_id : data.merchantID);
 
-        return this.http.post(this.global.serverUrl + 'category/en/add_category',
+        return this.http.post(
+        // this.global.serverUrl + 'category/en/add_category',
+        this.global.serverUrl + this.httpRequests.catAdd,
         body,
         {headers: headers}  )
         .map(
@@ -177,7 +186,9 @@ export class CatalogueService {
         body.append('merchant_id', (user.merchant_id !== undefined) ? user.merchant_id : data.merchantID);
 
 
-        return this.http.post(this.global.serverUrl + 'sub_category/en/add_sub_category',
+        return this.http.post(
+        // this.global.serverUrl + 'sub_category/en/add_sub_category',
+        this.global.serverUrl + this.httpRequests.subCatAdd,
         body,
         {headers: headers}  )
         .map(
@@ -206,7 +217,10 @@ export class CatalogueService {
             if (user.merchant_id !== undefined) {
             // Merchant catalogue
 
-                return this.http.get(this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id=' + user.merchant_id ,
+                return this.http.get(
+                // this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id=' + user.merchant_id ,
+                this.global.serverUrl + this.httpRequests.merchantGetAllCat +
+                '?merchant_id=' + user.merchant_id ,
                 {headers: headers}  )
                 .map(
                     (response: Response) => {
@@ -226,8 +240,11 @@ export class CatalogueService {
                 const requestMerchant = JSON.parse(localStorage.getItem('request-merchant'));
                 if (merchant !== null || requestMerchant !== null) {
                     const merchantID = (merchant !== null) ? merchant.merchant_id : requestMerchant.merchant_id;
-                    return this.http.get(this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id='
-                        + merchantID ,
+                    // merchantGetAllCat
+                    return this.http.get(
+                    // this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id='
+                    this.global.serverUrl + this.httpRequests.merchantGetAllCat +
+                    '?merchant_id=' + merchantID ,
                 {headers: headers}  )
                 .map(
                     (response: Response) => {
@@ -246,7 +263,8 @@ export class CatalogueService {
                 } else {
                 // Admin catalogue
 
-                return this.http.get(this.global.serverUrl + 'admin/en/get_all_category_admin',
+                // return this.http.get(this.global.serverUrl + 'admin/en/get_all_category_admin',
+                return this.http.get(this.global.serverUrl + this.httpRequests.adminGetAllCategory,
                     {headers: headers}  )
                     .map(
                         (response: Response) => {
@@ -287,7 +305,9 @@ export class CatalogueService {
             body.append('super_category_image', data.image, data.image.name );
         }
 
-        return this.http.put(this.global.serverUrl + 'super_category/en/update_super_category',
+        return this.http.put(
+        // this.global.serverUrl + 'super_category/en/update_super_category',
+        this.global.serverUrl + this.httpRequests.superCatUpdate,
         body,
         {headers: headers}  )
         .map(
@@ -324,7 +344,9 @@ export class CatalogueService {
             body.append('category_image', data.image, data.image.name );
         }
 
-        return this.http.put(this.global.serverUrl + 'category/en/update_category',
+        return this.http.put(
+        // this.global.serverUrl + 'category/en/update_category',
+        this.global.serverUrl + this.httpRequests.catUpdate,
         body,
         {headers: headers}  )
         .map(
@@ -361,7 +383,9 @@ export class CatalogueService {
             body.append('sub_category_image', data.image, data.image.name );
         }
 
-        return this.http.put(this.global.serverUrl + 'sub_category/en/update_sub_category',
+        return this.http.put(
+        // this.global.serverUrl + 'sub_category/en/update_sub_category',
+        this.global.serverUrl + this.httpRequests.subCatUpdate,
         body,
         {headers: headers}  )
         .map(
@@ -398,7 +422,10 @@ export class CatalogueService {
                  this.merchantID = (data.merchantID === '') ? user.admin_id : data.merchantID;
              }
              const role = (user.admin_id !== undefined && data.merchantID === '') ? 1 : '';
-            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_super_category=' + data.ID +
+            return this.http.get(
+            // this.global.serverUrl + 'product/en/get_products_by_category'
+            this.global.serverUrl + this.httpRequests.productGetByCat
+            + '?product_super_category=' + data.ID +
             '&static_user_id=' + this.merchantID  +
             '&static_role=' + role +
             '&last_id=' + last_id,
@@ -437,7 +464,10 @@ export class CatalogueService {
                 this.merchantID = (data.merchantID === '') ? user.admin_id : data.merchantID;
             }
             const role = (user.admin_id !== undefined && data.merchantID === '') ? 1 : '';
-            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_category=' + data.ID +
+            return this.http.get(
+            // this.global.serverUrl + 'product/en/get_products_by_category'
+            this.global.serverUrl + this.httpRequests.productGetByCat +
+            '?product_category=' + data.ID +
             '&static_user_id=' + this.merchantID  +
             '&static_role=' + role +
             '&last_id=' + last_id,
@@ -476,7 +506,10 @@ export class CatalogueService {
                 this.merchantID = (data.merchantID === '') ? user.admin_id : data.merchantID;
             }
             const role = (user.admin_id !== undefined && data.merchantID === '') ? 1 : '';
-            return this.http.get(this.global.serverUrl + 'product/en/get_products_by_category?product_sub_category_id=' + data.ID +
+            return this.http.get(
+            // this.global.serverUrl + 'product/en/get_products_by_category?product_sub_category_id=' + data.ID +
+            this.global.serverUrl + this.httpRequests.productGetByCat +
+            '?product_sub_category_id=' + data.ID +
             '&static_user_id=' + this.merchantID  +
             '&static_role=' + role +
             '&last_id=' + last_id,
@@ -552,7 +585,9 @@ export class CatalogueService {
 
         const merchantID = (user.merchant_id === undefined) ? data : user.merchant_id;
         const adminID = (user.merchant_id === undefined) ? user.admin_id : user.merchant_parent_admin;
-        return this.http.get(this.global.serverUrl + '/super_category/en/get_all_super_category' +
+        return this.http.get(
+        // this.global.serverUrl + '/super_category/en/get_all_super_category' +
+        this.global.serverUrl + this.httpRequests.superCatGet +
         '?super_category_admin=' + adminID +
         '&merchant_id=' + merchantID +
         '&last_id=' + '&limit='
@@ -591,7 +626,10 @@ export class CatalogueService {
         body.append('super_category_ids', data.superCategories);
         body.append('merchant_id' , merchantID);
 
-        return this.http.post(this.global.serverUrl + 'merchant/en/select_super_category?merchant_id=' + merchantID,
+        return this.http.post(
+        // this.global.serverUrl + 'merchant/en/select_super_category?merchant_id=' + merchantID,
+        this.global.serverUrl + this.httpRequests.merchantSelectSuperCat
+        + '?merchant_id=' + merchantID,
         body.toString(),
         {headers: headers}  )
         .map(
@@ -616,7 +654,10 @@ export class CatalogueService {
             'd_token':  JSON.parse(token)
         });
         const merchantID = (user.merchant_id !== undefined) ? user.merchant_id : data;
-        return this.http.get(this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id=' + merchantID,
+        return this.http.get(
+        // this.global.serverUrl + 'merchant/en/get_all_category_merchant?merchant_id=' + merchantID,
+        this.global.serverUrl + this.httpRequests.merchantGetAllCat
+        + '?merchant_id=' + merchantID,
         {headers: headers}  )
         .map(
             (response: Response) => {
@@ -638,6 +679,104 @@ export class CatalogueService {
     }
     getUser() {
         return this.userdata;
+    }
+
+
+    addAttributeToCategory(data: any) {
+        const headers = new Headers({
+            'd_token':  JSON.parse(localStorage.getItem('token')),
+            'Content-Type': 'application/x-www-form-urlencoded'
+         });
+
+        const body = new URLSearchParams();
+        body.append('product_spec_type_values', data.values);
+        body.append('product_spec_name', data.name);
+        body.append('super_category_id', data.super);
+        body.append('sub_category_id', data.sub);
+        body.append('category_id', data.cat);
+
+
+        return this.http.post(
+        this.global.serverUrl + this.httpRequests.addAttributeCat,
+        body.toString(),
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+
+    }
+
+    getAttributeOfCategory(data: any) {
+        const token = localStorage.getItem('token');
+        const user = JSON.parse(localStorage.getItem('user-data'));
+
+        const headers = new Headers({
+            'd_token':  JSON.parse(token)
+        });
+
+
+            return this.http.get(
+            // this.global.serverUrl + 'product/en/get_products_by_category'
+            this.global.serverUrl + this.httpRequests.getAttributeCat
+            +  '?category_id=' + data,
+            {headers: headers}  )
+            .map(
+                (response: Response) => {
+                    const output = response.json();
+                    return output;
+                }
+            ).catch(
+                (error: Response) => {
+                    console.log('error', error);
+                    const output = error.json();
+                    return Observable.throw('Something went wrong', output);
+                }
+            );
+
+
+
+    }
+
+
+    // edit attribute
+    editAttributeToCategory(data: any) {
+        const headers = new Headers({
+            'd_token':  JSON.parse(localStorage.getItem('token')),
+            'Content-Type': 'application/x-www-form-urlencoded'
+         });
+
+        const body = new URLSearchParams();
+        body.append('product_spec_type_values', data.values);
+        body.append('product_spec_name', data.name);
+        body.append('product_spec_id', data.id);
+
+
+        return this.http.put(
+        this.global.serverUrl + this.httpRequests.editAttributeCat,
+        body.toString(),
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+
     }
 }
 

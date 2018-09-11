@@ -5,6 +5,8 @@ import { Router } from '@angular/router';
 import { MapsAPILoader } from '@agm/core';
 import {} from '@types/googlemaps';
 import { MatSnackBar } from '@angular/material';
+import { MerchantAuthService } from '../../merchant-auth/merchant-auth.service';
+import { GLobalErrorService } from '../../shared/global-error.service';
 
 @Component({
   selector: 'app-merchant-new',
@@ -25,15 +27,20 @@ export class MerchantNewComponent implements OnInit {
   phone;
   address;
   profilepic;
-  displayImage = 'assets/images/profile-pic.png';
+  defaultUserImage = 'assets/images/userImage.png';
+  displayImage = this.defaultUserImage;
   userImage: File = null;
   altitude;
-
+  validEmail = false;
+  ErrorEmail = '';
+  isLoading = false;
   constructor(private merchantsService: MerchantService,
               private router: Router,
               private mapsAPILoader: MapsAPILoader,
               private ngZone: NgZone,
-              private snackbar: MatSnackBar
+              private snackbar: MatSnackBar,
+              private merchantAuthService: MerchantAuthService,
+              private globalErrorService: GLobalErrorService
             ) { }
 
   ngOnInit() {
@@ -41,13 +48,12 @@ export class MerchantNewComponent implements OnInit {
         ) {
           this.currentMerchant = this.merchantsService.getMerchant();
           if (this.currentMerchant !== undefined) {
-            console.log('in If part');
+
             this.fname = this.currentMerchant.merchant_first_name;
             this.lname = this.currentMerchant.merchant_last_name;
             this.url = this.currentMerchant.merchant_description;
             this.phone = this.currentMerchant.merchant_phone_no;
             this.address = this.currentMerchant.merchant_address;
-           //  this.profilepic = this.currentMerchant.merchant_profile_pic;
           }
 
 
@@ -81,11 +87,33 @@ export class MerchantNewComponent implements OnInit {
     );
   }
 
+onSearchEmail(searchValue: string ) {
+     this.merchantAuthService.checkEmail(searchValue).subscribe(
+     (response) => {
+      if (response.success === 200 ) {
+        this.validEmail = false;
+      } else if (response.output.statusCode === 1102 &&
+        response.output.payload.message === 'This email is already registered. Please try logging in.' ) {
+          this.validEmail = true;
+          this.ErrorEmail = 'Email Already Taken!';
 
+      } else {
+          console.log(response);
+          this.globalErrorService.errorOccured(response);
+      }
+
+     },
+     (error) => {
+       console.log(error);
+       this.globalErrorService.errorOccured(error);
+     }
+   );
+}
     // Image
 onFileChange(file: FileList) {
+  console.log(file);
   if (file.length === 0 ) {
-    this.displayImage = 'assets/images/profile-pic.png';
+    this.displayImage = this.defaultUserImage;
   } else {
     console.log(file, 'file');
     this.userImage = file.item(0);
@@ -100,9 +128,11 @@ onFileChange(file: FileList) {
 
   addMerchant(form: NgForm) {
     if (form.status === 'INVALID') {
+      console.log('Invalid Form');
       this.postSubmit = true;
       this.error = 'Mandatory Parameter Missing!';
     } else {
+      this.isLoading = true;
       this.postSubmit = false;
       const data = {
           form : form.value,
@@ -122,17 +152,18 @@ onFileChange(file: FileList) {
           this.router.navigate(['/merchants']);
           form.reset();
         } else {
-          this.postSubmit = true;
-          this.error = response.output.payload.message;
+          this.isLoading = false;
+          // this.postSubmit = true;
+          // this.error = response.output.payload.message;
+          this.globalErrorService.errorOccured(response);
         }
 
         },
         (error) => {
           // handle all error cases
           console.log(error);
-          this.snackbar.open('Something went wrong, please try again later', 'Dismiss', {
-            duration: 5000
-          });
+          this.isLoading = false;
+          this.globalErrorService.errorOccured(error);
         }
       );
     }

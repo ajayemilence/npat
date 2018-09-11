@@ -4,6 +4,7 @@ import { MatSnackBar } from '@angular/material';
 import { GlobalService } from '../shared/global.service';
 import { BsModalService, BsModalRef } from 'ngx-bootstrap';
 import * as _ from 'lodash';
+import { GLobalErrorService } from '../shared/global-error.service';
 @Component({
   selector: 'app-verify-merchant',
   templateUrl: './verify-merchant.component.html',
@@ -30,7 +31,8 @@ DocumentsProvided = false;
   constructor(private verifyMerchantService: VerifyMerchantService,
               private snackBar: MatSnackBar,
               private globalService: GlobalService,
-              private modalService: BsModalService
+              private modalService: BsModalService,
+              private globalErrorService: GLobalErrorService
             ) { }
 
   ngOnInit() {
@@ -42,19 +44,17 @@ DocumentsProvided = false;
 
   getMerchantDetail(index) {
     this.selectedMerchant = this.merchants[index];
-    console.log(this.selectedMerchant);
+
     const documents = this.merchants[index].Documents;
 
     if (_.isEmpty(documents) === false) {
 
       this.DocumentsProvided = true;
-      console.log(this.merchants[index].Documents.merchant_licence_image);
 
 
 
       if (this.merchants[index].Documents.merchant_licence_image !== '') {
         const licenceImages = JSON.parse(this.merchants[index].Documents.merchant_licence_image);
-        console.log(licenceImages);
         this.licenceImageOne = (licenceImages[0] === '' || licenceImages[0] === undefined)
                                ? this.displayImage : this.globalService.ImagePath + licenceImages[0];
         this.licenceImageTwo = (licenceImages[1] === ''  || licenceImages[1] === undefined)
@@ -125,15 +125,11 @@ DocumentsProvided = false;
 
           } else {
             console.log(response);
-            this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
           }
       }, (error) => {
         console.log(error);
-        this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -169,20 +165,17 @@ DocumentsProvided = false;
           const data = '';
           this.getMerchantsToVerify(data, 1);
           this.selectedMerchant = undefined;
-          this.snackBar.open('Merchant Approved Successfully!', 'Dismiss', {
-            duration: 5000,
-          });
+          // this.snackBar.open('Merchant Approved Successfully!', 'Dismiss', {
+          //   duration: 5000,
+          // });
+          this.globalErrorService.showSnackBar('Merchant Approved Successfully!');
         } else {
           console.log(response);
-          this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
       }, (error) => {
         console.log(error);
-        this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }

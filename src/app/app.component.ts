@@ -9,6 +9,8 @@ import { RequestService } from './request/request.service';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
 import { MatSnackBar } from '@angular/material';
 import { CatalogueService } from './merchants/merchant/catalogue/catalogue.service';
+import { GlobalService } from './shared/global.service';
+import { GLobalErrorService } from './shared/global-error.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
@@ -27,6 +29,9 @@ export class AppComponent implements OnInit {
   DataPlan;
   currentPlan;
   UserName;
+  logoImage = 'assets/images/app-logo.png';
+  userImage = 'assets/images/userImage.png';
+  viewSidebar = false;
   constructor(changeDetectorRef: ChangeDetectorRef,
               media: MediaMatcher,
               private router: Router,
@@ -36,7 +41,9 @@ export class AppComponent implements OnInit {
               private modalService: BsModalService,
               private snackbar: MatSnackBar,
               private localStorageService: LocalStorageService,
-              private catalogueService:  CatalogueService
+              private catalogueService:  CatalogueService,
+              private global: GlobalService,
+              private globalErrorService: GLobalErrorService
             ) {
     this.mobileQuery = media.matchMedia('(max-width: 600px)');
     this._mobileQueryListener = () => changeDetectorRef.detectChanges();
@@ -49,7 +56,8 @@ export class AppComponent implements OnInit {
     this.router.events.subscribe((event) => {
       if (this.router.url === '/auth' ||
           this.router.url === '/merchant/auth' ||
-          this.router.url === '/verify'
+          this.router.url === '/verify' ||
+          this.router.url === '/forgot_password'
         ) {
         this.admin = false;
       } else if (this.router.url === '/' ) {
@@ -60,6 +68,10 @@ export class AppComponent implements OnInit {
           if (user.merchant_id !== undefined) {
             this.merchant = true;
             this.UserName = user.merchant_first_name;
+
+            if (user.merchant_profile_pic !== '') {
+              this.userImage = this.global.ImagePath + user.merchant_profile_pic;
+            }
             if (user.merchant_verification_status === 'Not verified') {
               this.merchantVerified = false;
             } else {
@@ -69,8 +81,16 @@ export class AppComponent implements OnInit {
           } else if (user.admin_id !== undefined) {
             this.UserName = user.admin_first_name + user.admin_last_name;
             this.merchant = false;
+
+            if (user.admin_profile_pic !== '') {
+              this.userImage = this.global.ImagePath + user.admin_profile_pic;
+            }
+
           }
         }
+
+
+
 
       }
 
@@ -80,8 +100,16 @@ export class AppComponent implements OnInit {
   }
 
   logout() {
+    const user = JSON.parse(localStorage.getItem('user-data'));
+
+    if (user.admin_id !== undefined) {
+      // admin
+      this.router.navigate(['/auth']);
+    } else if (user.merchant_id !== undefined) {
+      this.router.navigate(['/merchant/auth']);
+    }
     localStorage.clear();
-    this.router.navigate(['/auth']);
+
   }
 
   editProfile() {
@@ -150,15 +178,11 @@ export class AppComponent implements OnInit {
             this.modalRef.hide();
           } else {
             console.log(response);
-            this.snackbar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
           }
       }, (error) => {
           console.log(error);
-          this.snackbar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
       }
     );
 }
@@ -177,15 +201,11 @@ clickOnceVerified () {
             this.catalogueService.setUser(localStorage.getItem('user-data'));
         } else {
           console.log(response.output.payload.message);
-          this.snackbar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
     }, (error) => {
       console.log(error);
-      this.snackbar.open('Something Went Wrong, try again', 'Dismiss', {
-        duration: 5000,
-      });
+      this.globalErrorService.errorOccured(error);
     }
   );
 }
@@ -199,6 +219,11 @@ logoClicked() {
       this.router.navigate(['/merchants']);
     }
 
+}
+
+
+showSideBar() {
+    this.viewSidebar = !this.viewSidebar;
 }
 
 }

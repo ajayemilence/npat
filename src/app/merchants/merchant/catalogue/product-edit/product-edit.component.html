@@ -51,7 +51,7 @@
             >
             <span 
             *ngIf="!sku.valid && sku.touched" 
-            class="help-block">Enter Valid Input!</span>
+            style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
          </div>
 
          <div class="form-group">
@@ -68,7 +68,7 @@
             >
             <!-- <span 
             *ngIf="!tax.valid && tax.touched" 
-            class="help-block">Enter Valid Input!</span> -->
+            style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span> -->
          </div>
 
       <div class="form-group">
@@ -142,7 +142,7 @@
         >
         <span 
         *ngIf="!name.valid && name.touched" 
-        class="help-block">Enter Valid Input!</span>
+        style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
       </div>
       
       
@@ -175,7 +175,7 @@
             >
             <span 
             *ngIf="!mrp.valid && mrp.touched" 
-            class="help-block">Enter Valid Input!</span>
+            style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
        </div>
 
        <div class="form-group">
@@ -193,7 +193,7 @@
             >
             <span 
             *ngIf="!sellingPrice.valid && sellingPrice.touched" 
-            class="help-block">Enter Valid Input!</span>
+            style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
        </div>
 
        <div class="form-group">
@@ -361,7 +361,7 @@
         >
         <span 
         *ngIf="!avail.valid && avail.touched" 
-        class="help-block">Enter Valid Input!</span>
+        style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
       </div>
       <!-- <div class="form-group">
             <label for="gst">GST : </label>
@@ -377,7 +377,7 @@
             >
             <span 
             *ngIf="!gst.valid && gst.touched" 
-            class="help-block">Enter Valid Input!</span>
+            style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
          </div> -->
 
 
@@ -874,7 +874,7 @@
                     >
                     <span 
                     *ngIf="!quantity.valid && quantity.touched" 
-                    class="help-block">Enter Valid Input!</span>
+                    style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
             </div>
                  <div class="error" *ngIf="quantityError" >{{quantityErrorMessage}}</div>
     
@@ -946,14 +946,17 @@
             [for]="attribute.product_spec_name">{{attribute.product_spec_name}} : </label>
             <ul class="list-group" >
                 <li 
-                style="background: transparent;"
-                class="list-group-item">{{attribute.selectedVal}}</li>
+                style="background: transparent; cursor:not-allowed"
+                class="list-group-item">
+                <p>{{attribute.selectedVal}} </p>
+                </li>
             </ul>
         </div>
        
         <div class="form-group">
                 <label for="quantity">Quantity : </label>
                 <input 
+                style="cursor: pointer;"
                 type="number" 
                 id="quantity" 
                 name="quantity" 
@@ -965,7 +968,7 @@
                 >
                 <span 
                 *ngIf="!quantity.valid && quantity.touched" 
-                class="help-block">Enter Valid Input!</span>
+                style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
         </div>
              <div class="error" *ngIf="quantityError" >{{quantityErrorMessage}}</div>
 
@@ -1005,3 +1008,7 @@
             
 </div>
 </ng-template>
+
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+  crossorigin="anonymous"></script>

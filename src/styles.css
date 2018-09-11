@@ -1,29 +1,48 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import '~@angular/material/prebuilt-themes/indigo-pink.css';
-/* Tree Component  */
-@import '~angular-tree-component/dist/angular-tree-component.css';
 
-body,html{
-    height: 100%;
-    /* background-color: rgb(218, 218, 218); */
- }
+@import "https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700";
 
-@font-face {
-   font-family: Magettas;
-   src: url(/assets/fonts/Magettas\ Bold\ DEMO.otf) format("opentype");
+:root {
+    --orange: #f7941e;   
+    --yellow: #faffbd; 
+    --white: white;
+    --white-two: #fff;
+    --white-three: #ffffff;
+    --red: red;
+    --table-border-grey: #d2d2d7;
+    --loader-bg-color: rgba(0,0,0,0.3);
+    --loader-bg-grey:rgba(0, 0, 0, 0.75);
+    --grey-two: rgba(0, 0, 0, 0.1);
+    --grey-three: #ddd;  /* #ccc */
+    --grey-five: #999;
+    --grey-four-hover: #f1f1f1;
+    --grey-six: rgba(0,0,0,0.2);
+    --black: black;
+    --black-two: #333;
+    --green: #179b77;
+    --auth-green-two: #1ab188;
+    --auth-forgot-pwd: #dd4b39;
+    --form-box-shadow: rgba(19, 35, 47, 0.3);
+    --auth-tab-color: #a0b3b0;
+    --auth-tab-bg: rgba(160, 179, 176, 0.25);
+    --auth-form-input: #aeaeae;
+    --loader-color-one: rgb(162, 225, 248);
+    --loader-color-two: rgb(85, 182, 211);
+    --loader-color-three: rgb(0, 187, 255);
 }
 
-@font-face {
-    font-family: SFBold;
-    src: url(/assets/fonts/SF-Pro-Text-Bold.otf) format("opentype");
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #fafafa;
 }
 
-@font-face {
-    font-family: SFMedium;
-    src: url(/assets/fonts/SF-Pro-Text-Medium.otf) format("opentype");
+.mat-simple-snackbar-action {
+    color: var(--orange);
 }
-@font-face {
-    font-family: SFSemiBold;
-    src: url(/assets/fonts/SF-Pro-Text-Semibold.otf) format("opentype");
+
+.mat-snack-bar-container {
+    background: var(--loader-bg-grey);
+    color: #fff;
 }

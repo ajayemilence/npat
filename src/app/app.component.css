@@ -1,3 +1,376 @@
+/* p, h1, h2, h3, h4, h5, h6, ul, li, body, html, *{
+    margin: 0;
+    padding: 0;
+}
+ */
+
+
+
+
+.logout p {
+    font-family: 'Poppins', sans-serif;
+    font-size: 1.1em;
+    font-weight: 300;
+    line-height: 1.7em;
+    color: var(--grey-five);;
+}
+
+.brand {
+    width: 100%;
+}
+
+
+a, a:hover, a:focus {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.navbar {
+    padding: 15px 10px;
+    background-color: var(--white-two);
+    border-bottom: 3px solid var(--orange);
+    border-radius: 0;
+    margin-bottom: 40px;
+    color: var(--white-two);
+    box-shadow: 1px 1px 3px var(--grey-two);;
+
+}
+
+.navbar-btn {
+    box-shadow: none;
+    outline: none !important;
+    border: none;
+}
+
+.line {
+    width: 100%;
+    height: 1px;
+    border-bottom: 1px dashed var(--grey-three);
+    margin: 40px 0;
+}
+
+/* ---------------------------------------------------
+    SIDEBAR STYLE
+----------------------------------------------------- */
+
+
+
+.wrapper {
+    display: flex;
+    width: 100%;
+    align-items: stretch;
+    perspective: 1500px;
+}
+#sidebar li {
+    padding-bottom: 10px;
+}
+
+
+
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    background: var(--black-two);
+    color: var(--white-two);
+    transition: all 0.6s cubic-bezier(0.945, 0.020, 0.270, 0.665);
+    transform-origin: bottom left;
+    z-index: 999;
+}
+
+#sidebar.active {
+    margin-left: -250px;
+    transform: rotateY(100deg);
+}
+#sidebar .svg-inline--fa {
+    margin-right: 7px;
+}
+
+#pageSubmenu li {
+    padding: 0px;
+}
+
+#sidebar ul.components {
+    padding: 20px 0;
+}
+
+
+
+#sidebar ul li a {
+    padding: 10px;
+    font-size: 1.1em;
+    display: block;
+}
+#sidebar ul li a:hover {
+    color: var(--orange);
+    background: var(--white-two);
+}
+
+#sidebar ul li.active > a, a[aria-expanded="true"] {
+    color: var(--white-two);
+    background: var(--orange);
+}
+
+
+a[data-toggle="collapse"] {
+    position: relative;
+}
+
+.dropdown-toggle::after {
+    display: block;
+    position: absolute;
+    top: 50%;
+    right: 20px;
+    transform: translateY(-50%);
+}
+
+ul ul a {
+    font-size: 0.9em !important;
+    padding-left: 30px !important;
+    background: transparent;
+}
+
+
+
+/* ---------------------------------------------------
+    CONTENT STYLE
+----------------------------------------------------- */
+#content {
+    width: 100%;
+    padding: 5px;
+    min-height: 100vh;
+    transition: all 0.3s;
+}
+
+#sidebarCollapse {
+    width: 40px;
+    height: 40px;
+    background:transparent;
+    cursor: pointer;
+    margin-right: 25px; 
+}
+
+#sidebarCollapse span {
+    width: 80%;
+    height: 2px;
+    margin: 0 auto;
+    display: block;
+    background: var(--orange);
+    transition: all 0.8s cubic-bezier(0.810, -0.330, 0.345, 1.375);
+    transition-delay: 0.2s;
+}
+
+#sidebarCollapse span:first-of-type {
+    transform: rotate(45deg) translate(2px, 2px);
+}
+#sidebarCollapse span:nth-of-type(2) {
+    opacity: 0;
+}
+#sidebarCollapse span:last-of-type {
+    transform: rotate(-45deg) translate(1px, -1px);
+}
+
+
+#sidebarCollapse.active span {
+    transform: none;
+    opacity: 1;
+    margin: 5px auto;
+}
+
+
+.brand img {
+    width: 110px;
+}
+
+
+/* ---------------------------------------------------
+    MEDIAQUERIES
+----------------------------------------------------- */
+@media (max-width: 768px) {
+    #sidebar {
+        margin-left: -250px;
+        transform: rotateY(90deg);
+    }
+    #sidebar.active {
+        margin-left: 0;
+        transform: none;
+    }
+    #sidebarCollapse span:first-of-type,
+    #sidebarCollapse span:nth-of-type(2),
+    #sidebarCollapse span:last-of-type {
+        transform: none;
+        opacity: 1;
+        margin: 5px auto;
+    }
+    #sidebarCollapse.active span {
+        margin: 0 auto;
+    }
+    #sidebarCollapse.active span:first-of-type {
+        transform: rotate(45deg) translate(2px, 2px);
+    }
+    #sidebarCollapse.active span:nth-of-type(2) {
+        opacity: 0;
+    }
+    #sidebarCollapse.active span:last-of-type {
+        transform: rotate(-45deg) translate(1px, -1px);
+    }
+
+    .logout ul {
+        padding-left: 0px;
+        margin-bottom: 0px;
+        width: 150px;
+    }
+
+    .modal {
+        position: relative;
+    }
+
+    
+
+}
+
+/*-------------DROPDOWN-----------------*/
+
+
+
+
+.dropbtn {
+    background-color:transparent;
+    color: var(--white);;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    padding-bottom: 0px;
+    cursor:pointer;
+}
+
+.dropbtn img {
+    width: 50px;
+    height: 50px;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: var(--grey-four-hover);;
+    /* min-width: 125px; */
+    box-shadow: 0px 8px 16px 0px var(--grey-six);;
+    z-index: 1;
+    padding: 5px;
+    min-width: 160px;
+}
+.dropdown-content p {
+    font-size: 14px;
+} 
+.dropdown p {
+    text-align: center;
+}
+
+.dropdown-content a {
+    color: #fff;
+    padding: 15px 10px;
+    background-color: #f7941e !important;
+    border:1px solid #f7941e; 
+    /* color: var(--black); */
+    /* padding: 12px 16px; */
+    text-decoration: none;
+    text-align: center;
+    width: 157px;
+    display: block;
+}
+
+.dropdown-content a:hover {
+    /* background-color: var(--grey-three); */
+    color: #f7941e;
+    background-color: #fff !important;
+    border:1px solid #f7941e;
+}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+
+.navbar {
+    border-bottom: 1px solid #f7941e;
+}
+
+
+
+/* current plans */
+.current_plans  .btn.btn-primary {
+    background-color: transparent;
+    color: var(--orange);
+    border: 1px solid var(--orange);
+    width: 80%;
+    margin-top:10px;
+}
+
+.current_plans  .btn.btn-primary:hover {
+    background-color: var(--orange);
+    color: #fff;
+    border: 1px solid var(--orange);
+    transition: 0.8s;
+}
+
+/* .current_plans {
+    margin-top: 60px;
+} */
+
+.current_plans .jumbotron{
+  background-color:#fff ;
+}
+
+.current_plans .jumbotron {
+    padding: 4rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0px 0px 8px 5px #f2f2f7;
+    width: 55%;
+}
+
+.logo img{
+  width:100px;
+  padding-bottom:30px;
+}
+
+.current_plans h1{
+    font-size:25px;
+    color:var(--orange);
+  }
+
+.fa-info-circle {
+      color: var(--orange);
+      font-size: 34px;
+      cursor: pointer;
+}
+.popup{
+   margin-top: 30px;
+}
+  
+         
+  @media screen and (min-width:320px) and (max-width:768px){
+    .current_plans .jumbotron{
+      width:100%;
+    }
+  }
+
+
+.selectedPlan {
+    background-color: var(--orange);
+    color: #fff;
+    border: 1px solid var(--orange);
+}
+
+/* ------------------------------------------------------------------ */
+
+
+
+
+
+/*
 p, h1, h2, h3, h4, h5, h6, ul, li, body, html, *{
     margin: 0;
     padding: 0;
@@ -25,15 +398,6 @@ p, h1, h2, h3, h4, h5, h6, ul, li, body, html, *{
 }
 
 
-/* *{transition: 0.15s all ease-in; outline:0;} */
-
-/* body{
-font-size: 16px;
-font-family: 'Lato', sans-serif;
-line-height: 1.5;
-color: #222;
-overflow-x: hidden;
-} */
 
 
 .example-container {
@@ -80,7 +444,6 @@ overflow-x: hidden;
 }
 
 .nav-options a:hover {
-  /* color: rgb(78, 174, 223); */
   transform: translateY(4px);
   background: transparent
 }
@@ -109,8 +472,6 @@ overflow-x: hidden;
   font-size: 16px;
   line-height: 1.5;
   border-bottom: 1px solid #aaa;
-  /* font-family: 'Oswald', sans-serif; 
-  text-transform: uppercase; */
 }
 .dropdown-menu>li:last-child>a{ 
   border:none;  
@@ -123,14 +484,6 @@ overflow-x: hidden;
   position: absolute;
   white-space: nowrap;
 }
-/* .dropdown-hover-menu>li>a {
-  padding: 10px 20px;
-  font-size: 16px;
-  line-height: 1.5;
-  border-bottom: 1px solid #aaa;
-  display: block;
-  background-color: transparent; 
-} */
 .dropdown-hover-menu>li>a:hover {
   background-color: #f0f0f0;
 }
@@ -194,7 +547,6 @@ overflow-x: hidden;
   font-size: 20px;
   line-height: 1.5;
   color: #fff;
-  /* text-transform: uppercase; */
   width: 95%;
   height: 55px;
   display: -webkit-box;
@@ -221,12 +573,11 @@ overflow-x: hidden;
 .my-float{
   margin-top: 2px;
   float: right;
-  /* margin-left:-10px; */
   color: #428BCA
 }
 
 .my-float:hover {
 
 transform: translateY(4px);
-/* box-shadow: 0 1.5px 0 0px #B6B6B5; */
-}
+} */
+

@@ -82,6 +82,10 @@ import { VerifyMerchantService } from './verify-merchant/verify-merchant.service
 import { ShowDocumentsComponent } from './show-documents/show-documents.component';
 import { ArOffersComponent } from './ar-offers/ar-offers.component';
 import { AROffersService } from './ar-offers/ar-offers.service';
+import { HttpRequestService } from './shared/http-requests.service';
+import { ForgotPwdComponent } from './merchant-auth/forgot-pwd/forgot-pwd.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
+import { GLobalErrorService } from './shared/global-error.service';
 
 
 
@@ -107,7 +111,9 @@ import { AROffersService } from './ar-offers/ar-offers.service';
     VerificationComponent,
     VerifyMerchantComponent,
     ShowDocumentsComponent,
-    ArOffersComponent
+    ArOffersComponent,
+    ForgotPwdComponent,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -195,9 +201,9 @@ import { AROffersService } from './ar-offers/ar-offers.service';
     RequestService,
     MerchantCatelogueService,
     VerifyMerchantService,
-    AROffersService
-    // provide: LocationStrategy,
-    // useClass: HashLocationStrategy
+    AROffersService,
+    HttpRequestService,
+    GLobalErrorService
   ],
   bootstrap: [AppComponent]
 })

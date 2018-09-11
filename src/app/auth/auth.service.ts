@@ -6,6 +6,7 @@ import 'rxjs/add/operator/catch';
 import 'rxjs/add/observable/throw';
 import { LocalStorageService } from '../shared/local-storage.service';
 import { GlobalService } from '../shared/global.service';
+import { HttpRequestService } from '../shared/http-requests.service';
 
 @Injectable()
 export class AuthService {
@@ -13,7 +14,9 @@ export class AuthService {
 
     constructor(private http: Http,
                 private localStorageService: LocalStorageService,
-                private global: GlobalService) { }
+                private global: GlobalService,
+                private  httpService: HttpRequestService
+            ) { }
 
 
     signup(data: any) {
@@ -33,7 +36,8 @@ export class AuthService {
 
             body.append('admin_profile_pic', data.image, data.image.name );
         }
-        return this.http.post(this.global.serverUrl + 'admin/en/register',
+        // return this.http.post(this.global.serverUrl + 'admin/en/register',
+        return this.http.post(this.global.serverUrl + this.httpService.adminRegister,
         body,
         {headers: this.global.requestHeaders}  )
         .map(
@@ -62,7 +66,8 @@ export class AuthService {
     body.append('admin_password', data.admin_password);
 
     return this.http.post(
-        this.global.serverUrl + 'admin/en/login',
+        // this.global.serverUrl + 'admin/en/login',
+        this.global.serverUrl + this.httpService.adminLogin,
         body.toString(),
         {headers: this.global.urlHeaders} )
     .map(
@@ -77,6 +82,37 @@ export class AuthService {
     );
    }
 
+
+   adminChangePassword(data: any) {
+    const headers = new Headers({
+        'd_token':  JSON.parse(localStorage.getItem('token')),
+        'Content-Type': 'application/x-www-form-urlencoded'
+     });
+
+    const body = new URLSearchParams();
+    body.append('admin_password', data.newPassword);
+    body.append('confirm_admin_password', data.confirmPassword);
+    body.append('old_admin_password', data.currentPwd);
+
+
+    return this.http.put(
+    this.global.serverUrl + this.httpService.adminChangePwd,
+    body.toString(),
+    {headers: headers}  )
+    .map(
+        (response: Response) => {
+            const output = response.json();
+            return output;
+        }
+    ).catch(
+        (error: Response) => {
+            console.log('error', error);
+            const output = error.json();
+            return Observable.throw('Something went wrong', output);
+        }
+    );
+
+}
 
 //    signupMechant(data: any) {
 //     const user = this.localStorageService.get('user-data');

@@ -1,156 +1,8 @@
-<!-- <div 
-  *ngIf="admin"
-  class="example-container" 
-  [class.example-is-mobile]="mobileQuery.matches">
- <mat-toolbar color="primary" class="example-toolbar">
-   
-   <button mat-icon-button (click)="snav.toggle()">
-   <mat-icon>menu</mat-icon></button>
-   <h1 class="example-app-name">Nearr</h1>
-
-   <div class="nav-options">
-      <div class="collapse navbar-collapse"
-      style="top: 0px; position: relative;"
-      >
-        <ul 
-          class="nav navbar-nav navbar-right menu-right"
-          style="
-          display:inline-block;
-          margin-right: 20px;
-          margin-top: -0px;"
-          >
-            <li>
-              <img 
-                  src="assets/images/logo.jpg" 
-                  alt="E Commerce" 
-                  style="margin-top:10px; max-height:50px; max-width:50px; cursor: pointer;" 
-                  class="img-responsive img-circle"
-                  href="/"
-                  >   
-            </li>
-          <li><a 
-            style="cursor: pointer; font-size: 16px; font-family: 'SFMedium'; margin-top: 3px; " >
-            user name</a></li>
-            <li class="dropdown">
-              <a class="dropdown-hover"><i 
-                style="font-size: 10px; margin-left: -20px;"
-                class="glyphicon glyphicon-menu-down"></i></a>
-                <ul class="dropdown-menu dropdown-hover-menu">
-                  <li><a (click)="logout()">Logout</a></li>
-                  <li><a (click)="editProfile()">Edit Profile</a></li>
-                </ul>
-              </li>  
-        </ul>
-      </div>
-   </div>
-   
- </mat-toolbar>
-
- <mat-sidenav-container 
- class="example-sidenav-container"
- [style.marginTop.px]="mobileQuery.matches ? 56 : 0"
- >
-   <mat-sidenav 
-   #snav [mode]="mobileQuery.matches ? 'side' : 'over'"
-   [fixedInViewport]="mobileQuery.matches" 
-   fixedTopGap="56"
-   class="sidenav-style"
-   style="width: 204px">
-     <mat-nav-list >
-        <mat-card ></mat-card>
-
-      <mat-card routerLink="/orders" 
-      class="sideNavCard">
-          <i class="fa fa-list-ul" style="margin-right: 12px; margin-left: 22px;"></i>  
-          Orders
-      </mat-card>
-      <mat-card routerLink="/merchants"
-      *ngIf="merchant == false" 
-      class="sideNavCard">
-          <i class="fa fa-home" style="margin-right: 12px; margin-left: 22px;"></i>  
-          Merchants
-      </mat-card>
-      <mat-card routerLink="/orders"
-      *ngIf="merchant == false" 
-      class="sideNavCard">
-          <i class="fa fa-user" style="margin-right: 12px; margin-left: 22px;"></i>  
-          Customer
-      </mat-card>
-
-      <mat-card routerLink="/orders"
-      *ngIf="merchant == false" 
-      class="sideNavCard">
-          <i class="fa fa-tachometer" style="margin-right: 12px; margin-left: 22px;"></i>  
-          Design
-      </mat-card>
-      
-      <mat-card routerLink="/catalogue" class="sideNavCard">
-
-        <i class="fa fa-tachometer" style="margin-right: 12px; margin-left: 22px;"></i>  
-            Catalogue
-      </mat-card>
-      
-      
-
-
-
-        <mat-card class="example-card" >
-          <mat-card-header>
-        
-            <mat-card-title 
-            class="card-title"
-            style="font-size: 16px; color: white"
-            (click)="showSubList()"
-            >
-              <i class="fa fa-user" style="margin-right: 12px; margin-left: 12px;"></i> 
-              Requests
-              <span 
-              style="margin-left: 25px; margin-top: 4px;"
-              class="pull-right showopacity glyphicon glyphicon-menu-down"
-              ></span>
-            </mat-card-title>
-        
-          </mat-card-header>
-        
-          <mat-card-content *ngIf="RequestClicked">
-            
-             <ul class="subList" >
-                <li><a (click)="ShowRequest(1)">Super Categories</a></li>
-                <li><a (click)="ShowRequest(2)">Categories</a></li>
-                <li><a (click)="ShowRequest(3)">Sub Categories</a></li>
-                <li><a (click)="ShowRequest(4)">Products</a></li>
-             </ul>
-        
-        
-          </mat-card-content>
-        
-        </mat-card>
-        
-
-      <a mat-list-item 
-      routerLink="/orders">
-      <i class="fa fa-cog" style="margin-right: 12px; margin-left: 12px;"></i>  
-      Setting</a>
-     </mat-nav-list>
-   </mat-sidenav>
-
-   <mat-sidenav-content>
-     <router-outlet></router-outlet>
-   </mat-sidenav-content>
- </mat-sidenav-container>
-</div>
-
-<div *ngIf="!admin " >
- <router-outlet></router-outlet>
-</div>
- -->
-
-
  <div 
   *ngIf="admin"
-  class="example-container" 
+  class="wrapper" 
   [class.example-is-mobile]="mobileQuery.matches">
- <mat-toolbar color="primary" class="example-toolbar col-xs-12">
+ <!-- <mat-toolbar color="primary" class="example-toolbar col-xs-12">
    
    <button mat-icon-button (click)="snav.toggle()" class="col-xs-1">
    <mat-icon>menu</mat-icon></button>
@@ -189,23 +41,18 @@
               <i
               style=" margin-left: -20px; margin-top: -15px;"
               class="fa fa-chevron-down" ></i>
-                <!-- <i 
-                style="font-size: 20px; margin-left: -20px;"
-                class="glyphicon glyphicon-menu-down"></i> -->
               </a>
                 <ul class="dropdown-menu dropdown-hover-menu">
                   <li *ngIf="merchant == true"><a (click)="editProfile()">Edit Profile</a></li>
                   <li><a *ngIf="merchant == true" 
                     (click)="upgradePlanModal(upgradePlanTemplate)"
                     >Subscription Plans</a></li>
-                  <li><a *ngIf="merchant == true">Change Password</a></li>
+                  <li><a 
+                      *ngIf="merchant == true"
+                      routerLink="/change_password">Change Password</a></li>
                   <li><a *ngIf="merchant == true"
                     routerLink="/documents"
                     >My Documents</a></li>
-
-                  <!-- <li><a *ngIf="merchant == true"
-                    routerLink="/merchant/ar_offers"
-                    >AR Offers</a></li> -->
                   <li><a (click)="logout()">Logout</a></li>
                 </ul>
               </li>  
@@ -231,39 +78,24 @@
        <a mat-list-item routerLink="/merchants" 
        *ngIf="merchant == false"
        >
-       <!-- <span 
-       class="pull-left showopacity glyphicon glyphicon-home"
-       ></span> -->
        <i class="fa fa-home" style="margin-right: 4px;"></i>
        Merchants</a>
        <a mat-list-item (click)=openOrders() 
        >
-        <!-- <span 
-        class="pull-left showopacity glyphicon glyphicon-menu-hamburger"
-        ></span> -->
         <i class="fa fa-list-ul" style="margin-right: 4px;"></i>
          Orders</a>
      
       <a mat-list-item >
-      <!-- <span 
-      class="pull-left showopacity glyphicon glyphicon-user"
-      ></span> -->
       <i class="fa fa-user" style="margin-right: 4px;"></i>
       Customer</a>
       <a mat-list-item 
       *ngIf="merchant == false"
       >
-      <!-- <span 
-        class="pull-left showopacity glyphicon glyphicon-dashboard"
-        ></span> -->
         <i class="fa fa-tachometer" style="margin-right: 4px;"></i>  
       Design</a>
       <a mat-list-item 
       routerLink="/catalogue"
       >
-        <!-- <span 
-          class="pull-left showopacity glyphicon glyphicon-dashboard"
-          ></span> -->
           <i class="fa fa-tachometer" style="margin-right: 4px;"></i>  
         Catalogue</a>
         <div 
@@ -296,9 +128,6 @@
             </div>
         </div>
       <a mat-list-item >
-      <!-- <span 
-        class="pull-left showopacity glyphicon glyphicon-cog"
-        ></span> -->
         <i class="fa fa-cog" style="margin-right: 4px;"></i>  
       Setting</a>
       
@@ -308,7 +137,124 @@
    <mat-sidenav-content>
      <router-outlet></router-outlet>
    </mat-sidenav-content>
- </mat-sidenav-container>
+ </mat-sidenav-container> -->
+
+          <!-- Sidebar Holder -->
+          <!-- viewSidebar -->
+          <nav id="sidebar" 
+                [ngClass]="{
+                    'active':viewSidebar === true
+                }"
+          >
+            
+              <ul class="list-unstyled components">
+                  
+                  <li *ngIf="merchant == false">
+                      <a  routerLink="/merchants">
+                      <i class="fas fa-home"></i> Merchants</a>
+                  </li>
+  
+                  <li>
+                      <a (click)=openOrders()><i class="fas fa-clipboard-list"></i>Orders</a>
+                  </li>
+  
+                   <li>
+                      <a ><i class="fas fa-user-tie"></i> Customers</a>
+                  </li>
+  
+                   <li *ngIf="merchant == false">
+                      <a><i class="fas fa-pencil-alt"></i> Designs</a>
+                  </li>
+  
+                   <li>
+                      <a routerLink="/catalogue"><i class="fas fa-book"></i> Catalogue</a>
+                  </li>
+                  <li *ngIf="merchant == false">
+                      
+                      <a href="#pageSubmenu" data-toggle="collapse" aria-expanded="false" class="dropdown-toggle">
+                        <i class="fas fa-address-book"></i> Requests</a>
+                      <ul class="collapse list-unstyled" id="pageSubmenu">
+                          <li>
+                              <a (click)="ShowRequest(1)">Super Categories</a>
+                          </li>
+                          <li>
+                              <a (click)="ShowRequest(2)">Categories</a>
+                          </li>
+                          <li>
+                              <a (click)="ShowRequest(3)">Sub Categories</a>
+                          </li>
+  
+                          <li>
+                              <a (click)="ShowRequest(4)">Products</a>
+                          </li>
+  
+                          <li>
+                              <a (click)="ShowRequest(5)">Verify Merchant</a>
+                          </li>
+                      </ul>
+                  </li>
+                  <li>
+                      <a><i class="fas fa-cogs"></i> Setting</a>
+                  </li>
+                  
+              </ul>
+  
+          </nav>
+
+
+ <section id="content">
+
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+      <div class="container">
+
+          <button 
+                [ngClass]="{
+                    'active':viewSidebar === true
+                }"
+                type="button" 
+                (click)="showSideBar()" 
+                id="sidebarCollapse" 
+                class="navbar-btn"
+          >
+              <span></span>
+              <span></span>
+              <span></span>
+
+          </button>
+          <div class="brand">
+              <a (click)="logoClicked()" >
+                  <img [src]=logoImage>
+              </a>
+          </div>
+          <div class="logout">
+            <ul>
+              <div class="dropdown">
+                <button class="dropbtn"><img 
+                        class="rounded-circle"
+                        [src]=userImage ></button>
+                <p>{{UserName}}</p>
+                <div class="dropdown-content">
+                    <li *ngIf="merchant === true"><a (click)="editProfile()">Edit Profile</a></li>
+
+                    <li *ngIf="merchant === true" ><a (click)="upgradePlanModal(upgradePlanTemplate)"
+                    >Subscription Plans</a></li>
+
+                    <li *ngIf="merchant === true" ><a 
+                       routerLink="/change_password">Change Password</a></li>
+
+                    <li *ngIf="merchant === true" ><a routerLink="/documents">My Documents</a></li>
+
+                    <li><a (click)="logout()">Logout</a></li>
+                </div>
+              </div>
+            </ul>
+          </div>
+      </div>
+  </nav>
+
+  <router-outlet></router-outlet>
+
+</section>  
 </div>
 
 <div *ngIf="!admin " >
@@ -317,7 +263,9 @@
 
 
 
-<ng-template #upgradePlanTemplate>
+
+
+<!-- <ng-template #upgradePlanTemplate>
     <div class="modal-header">
       <h2 class="modal-title pull-left" style="margin-left: 5px;">Plans</h2>
       <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
@@ -325,7 +273,7 @@
       </button>
     </div>
     <div class="modal-body">
-        <!-- <button class="btn btn-primary login-btn" (click)="planSelected(1)" >Free Listing</button> -->
+        <!-- <button class="btn btn-primary login-btn" (click)="planSelected(1)" >Free Listing</button> --
           <button 
               [ngClass]="{
                 'selectedPlan':currentPlan === 'INSTORE'
@@ -364,7 +312,7 @@
     </div>
     <div class="modal-body" style="padding:15px ">
         <!-- <h3 style="font-size: 22px; font-weight: bold">Free Listing</h3>
-        <p  style="font-size: 18px;">List the store with some prominent offers.</p> -->
+        <p  style="font-size: 18px;">List the store with some prominent offers.</p> --
         <h3 style="font-size: 22px; font-weight: bold">Instore</h3>
         <p  style="font-size:18px;">Register the store, list products, prominent offer of store (to be displayed in AR window), customer to purchase the product instore with some additional discount coming from nearr. On instore purchase, an sms should be triggered to the customer with an unique code which can be validated using seller app. </p>
         <h3 style="font-size: 22px; font-weight: bold">Online</h3>
@@ -372,4 +320,62 @@
     
     </div>
     <div class="row" style="height: 60px;"> </div>
-</ng-template>
+</ng-template> -->
+
+<ng-template #upgradePlanTemplate>
+        <div class="modal-header">
+          <h3 class="modal-title pull-left">Plans</h3>
+          <button type="button" class="close pull-right" aria-label="Close" (click)="modalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+
+            <div class="current_plans btns_plan text-center">
+                    <button 
+                    [ngClass]="{
+                      'selectedPlan':currentPlan === 'INSTORE'
+                    }"
+                    class="btn btn-primary " (click)="planSelected(2)" >Instore</button>
+                <button 
+                    [ngClass]="{
+                      'selectedPlan':currentPlan === 'ONLINE'
+                    }"
+                    class="btn btn-primary " (click)="planSelected(3)" >Online</button>
+                <button 
+                    class="btn btn-primary" (click)="planSelected(4)" 
+                    [ngClass]="{
+                      'selectedPlan':currentPlan === 'ONLINE/INSTORE'
+                    }"    
+                >Online & Instore</button>
+            </div>
+            <div (click)="planDetailModal(PlanDetailTemplate)" class="popup text-right">
+                <i class="fas fa-info-circle"></i>
+            </div>
+        </div>
+    
+    </ng-template>
+    
+    
+    
+    <ng-template #PlanDetailTemplate>
+        <div class="modal-header">
+          <h4 class="modal-title pull-left">Plan Detail(s)</h4>
+          <button type="button" class="close pull-right" aria-label="Close" (click)="planModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+            <h3 >Instore</h3>
+            <p>Register the store, list products, prominent offer of store (to be displayed in AR window), customer to purchase the product instore with some additional discount coming from nearr. On instore purchase, an sms should be triggered to the customer with an unique code which can be validated using seller app. </p>
+            <h3>Online</h3>
+            <p>Register the store, list products, prominent offer of store (to be displayed in AR window), product will be dilvered to customer's doorstep.</p>
+        
+        </div>
+        <div class="row" style="height: 60px;"> </div>
+    </ng-template>
+
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+  crossorigin="anonymous"></script>
+

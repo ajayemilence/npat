@@ -454,3 +454,7 @@ tr {
 ::ng-deep .mat-checkbox-checked .mat-checkbox-background {
   background-color: #49b6d6 !important;
 }
+
+.modal-dialog {
+  margin: 130px auto !important;
+}

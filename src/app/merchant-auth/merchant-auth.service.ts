@@ -7,6 +7,7 @@ import 'rxjs/add/observable/throw';
 import { LocalStorageService } from '../shared/local-storage.service';
 import { GlobalService } from '../shared/global.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { HttpRequestService } from '../shared/http-requests.service';
 
 @Injectable()
 export class MerchantAuthService {
@@ -16,7 +17,9 @@ export class MerchantAuthService {
     currentView = this.defaultView.asObservable();
     constructor(private http: Http,
                 private localStorageService: LocalStorageService,
-                private global: GlobalService) { }
+                private global: GlobalService,
+                private httpService: HttpRequestService
+            ) { }
 
 
     setAddDocRequest() {
@@ -31,7 +34,10 @@ export class MerchantAuthService {
         const body = new URLSearchParams();
         body.append('merchant_email', data);
 
-        return this.http.post(this.global.serverUrl + 'merchant/en/check_emial',
+        return this.http.post(
+        // this.global.serverUrl + 'merchant/en/check_emial',
+
+        this.global.serverUrl + this.httpService.merchantCheckEmail,
         body.toString(),
         {headers: headers}  )
         .map(
@@ -56,7 +62,9 @@ export class MerchantAuthService {
         const body = new URLSearchParams();
         body.append('phone_no', data);
 
-        return this.http.post(this.global.serverUrl + 'merchant/en/otp_resend',
+        return this.http.post(
+            // this.global.serverUrl + 'merchant/en/otp_resend',
+        this.global.serverUrl + this.httpService.merchantOtpResend,
         body.toString(),
         {headers: headers}  )
         .map(
@@ -89,7 +97,8 @@ export class MerchantAuthService {
         // body.append('merchant_display_name' , data.form.value.address);
 
 
-        return this.http.post(this.global.serverUrl + 'merchant/en/register',
+        // return this.http.post(this.global.serverUrl + 'merchant/en/register',
+        return this.http.post(this.global.serverUrl + this.httpService.merchantRegister,
         body,
         {headers: this.global.requestHeaders}  )
         .map(
@@ -112,7 +121,8 @@ export class MerchantAuthService {
         body.append('merchant_email', data.email);
         body.append('merchant_password', data.password);
         return this.http.post(
-            this.global.serverUrl + 'merchant/en/login',
+            // this.global.serverUrl + 'merchant/en/login',
+            this.global.serverUrl + this.httpService.merchantLogin,
             body.toString(),
             {headers: this.global.urlHeaders})
         .map(
@@ -126,6 +136,52 @@ export class MerchantAuthService {
                 return Observable.throw('Something went wrong', output);
             }
         );
+    }
+
+    sendOtpPwdReset(data: any) {
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded'
+         });
+
+        const body = new URLSearchParams();
+        body.append('merchant_email', data.email);
+        body.append('merchant_phone_no', data.number);
+
+        return this.http.post(
+            this.global.serverUrl + this.httpService.merchantForgotPwd,
+            body.toString(),
+            {headers: headers}  )
+        .map((response: Response) => {
+            const output = response.json();
+            return output;
+        }).catch (
+            (error: Response) => {
+            const output = error.json();
+            return Observable.throw('Something went wrong', output);
+        });
+    }
+
+    forgotPwd(data: any) {
+        const headers = new Headers({
+            'Content-Type': 'application/x-www-form-urlencoded'
+         });
+
+        const body = new URLSearchParams();
+        body.append('merchant_otp', data.otp);
+        body.append('merchant_password', data.pwd);
+
+        return this.http.put(
+            this.global.serverUrl + this.httpService.merchantUpdatePwd,
+            body.toString(),
+            {headers: headers}  )
+        .map((response: Response) => {
+            const output = response.json();
+            return output;
+        }).catch (
+            (error: Response) => {
+            const output = error.json();
+            return Observable.throw('Something went wrong', output);
+        });
     }
 }
 

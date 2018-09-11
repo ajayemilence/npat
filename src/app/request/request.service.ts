@@ -7,6 +7,7 @@ import 'rxjs/add/observable/throw';
 import { LocalStorageService } from '../shared/local-storage.service';
 import { GlobalService } from '../shared/global.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { HttpRequestService } from '../shared/http-requests.service';
 
 @Injectable()
 export class RequestService {
@@ -16,7 +17,9 @@ export class RequestService {
 
     constructor(private http: Http,
                 private localStorageService: LocalStorageService,
-                private global: GlobalService) { }
+                private global: GlobalService,
+                private httpRequests: HttpRequestService
+            ) { }
 
 
 
@@ -38,7 +41,9 @@ export class RequestService {
          });
 
         return this.http.get(
-            this.global.serverUrl + 'admin/en/get_requested_super_category?limit=6&last_id=' + data.last_id
+            // this.global.serverUrl + 'admin/en/get_requested_super_category'
+            this.global.serverUrl + this.httpRequests.adminGetReqSuper
+            + '?limit=6&last_id=' + data.last_id
             + '&super_category_admin=' + user.admin_id,
             {headers: headers})
         .map(
@@ -61,7 +66,8 @@ export class RequestService {
             'd_token':  JSON.parse(localStorage.getItem('token'))
          });
         return this.http.get(
-            this.global.serverUrl + 'admin/en/get_req_category_admin',
+            this.global.serverUrl + this.httpRequests.adminGetReqCat ,
+            // this.global.serverUrl + 'admin/en/get_req_category_admin',
             // ?limit=6&last_id=' + data.last_id,
             // + '&super_category_admin=' + user.admin_id,
             {headers: headers})
@@ -87,7 +93,9 @@ export class RequestService {
          });
 
         return this.http.get(
-            this.global.serverUrl + 'admin/en/get_req_sub_category_admin?limit=6&last_id=' + data.last_id
+            // this.global.serverUrl + 'admin/en/get_req_sub_category_admin'
+            this.global.serverUrl + this.httpRequests.adminGetReqSub
+            + '?limit=6&last_id=' + data.last_id
             + '&super_category_admin=' + user.admin_id,
             {headers: headers})
         .map(
@@ -120,7 +128,8 @@ export class RequestService {
         body.append('category_type', data.category_type);
         body.append('status', data.status);
 
-        return this.http.put(this.global.serverUrl + 'admin/en/accept_reject_categories',
+        // return this.http.put(this.global.serverUrl + 'admin/en/accept_reject_categories',
+        return this.http.put(this.global.serverUrl + this.httpRequests.adminAcceptRejectRequest,
         body.toString(),
         {headers: headers})
         .map(
@@ -145,7 +154,9 @@ export class RequestService {
          });
 
         return this.http.get(
-            this.global.serverUrl + 'product/en/get_req_product_merchant?last_id=' + data.last_id
+            // this.global.serverUrl + 'product/en/get_req_product_merchant'
+            this.global.serverUrl + this.httpRequests.productMerchantReq
+            + '?last_id=' + data.last_id
             + '&limit=',
             {headers: headers})
         .map(
@@ -170,7 +181,9 @@ export class RequestService {
          });
 
         return this.http.get(
-            this.global.serverUrl + 'product/en/get_req_products?last_id=' + data.lastId +
+            // this.global.serverUrl + 'product/en/get_req_products'
+            this.global.serverUrl + this.httpRequests.productGetRequested
+                + '?last_id=' + data.lastId +
                 '&merchant_id=' + data.merchantID +
                 '&limit=',
             {headers: headers})

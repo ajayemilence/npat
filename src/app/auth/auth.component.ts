@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from '../shared/local-storage.service';
 import { AuthService } from './auth.service';
 import { NgForm } from '@angular/forms';
+import { GLobalErrorService } from '../shared/global-error.service';
 
 @Component({
   selector: 'app-auth',
@@ -10,7 +11,8 @@ import { NgForm } from '@angular/forms';
   styleUrls: ['./auth.component.css']
 })
 export class AuthComponent implements OnInit {
-
+  logoImage = 'assets/images/app-logo.png';
+  loaderImage = 'assets/images/loader-new.gif';
   showRegister = false;
   showLogin = true;
   postSubmit = false;
@@ -21,11 +23,17 @@ export class AuthComponent implements OnInit {
   showMessage = false;
   message: string;
   showOption = true;
-
+  passwordInput = 0;
+  emailInput = 0;
+  showErrorMsg = false;
+  pwdErrorMsg = false;
+  requestSent = false;
   constructor(private router: Router,
               private route: ActivatedRoute,
               private authService: AuthService,
-              private localStorageService: LocalStorageService) { }
+              private localStorageService: LocalStorageService,
+              private globalErrorService: GLobalErrorService
+            ) { }
 
   ngOnInit() {}
 
@@ -46,81 +54,114 @@ loginPage() {
 
 // Sign In
 onSignin(form: NgForm) {
-  const email = form.value.email;
-  const pass = form.value.password;
-  const body = {
-    'admin_email': email,
-    'admin_password': pass
-  };
-  this.authService.signin(body).subscribe(
-  (response) => {
 
-    if (response.success === 200) {
-    //   console.log('print error message');
-    //   this.showMessage = true;
-    //   this.message = response.msg;
-    // } else if (response.success === 1) {
-      // if response 1 clear local storage and store data again
-
-      // clearing data in local storage
-      localStorage.clear();
-
-      // storing data in local storage
-      this.localStorageService.set('token', response.data.token);
-      this.localStorageService.set('user-data', response.data);
-
-      form.reset();
-      // navigating to profile
-      this.router.navigate(['/']);
+  if (form.valid === false) {
+    if (form.form.controls.email.valid === false) {
+      this.showErrorMsg = true;
     } else {
-      this.showMessage = true;
-      this.message = 'Invalid Email or Password';
-      console.log('something went wrong!!', response.output.payload);
+       this.showErrorMsg = false;
     }
-},
-  (error) => console.log('error!!', error)
-);
+    if (form.form.controls.password.valid === false) {
+      this.pwdErrorMsg = true;
+    } else {
+      this.pwdErrorMsg = false;
+    }
+  } else {
+    this.requestSent = true;
+    const email = form.value.email;
+    const pass = form.value.password;
+    const body = {
+      'admin_email': email,
+      'admin_password': pass
+    };
+    this.authService.signin(body).subscribe(
+      (response) => {
+        this.requestSent = false;
+        if (response.success === 200) {
+        //   console.log('print error message');
+        //   this.showMessage = true;
+        //   this.message = response.msg;
+        // } else if (response.success === 1) {
+          // if response 1 clear local storage and store data again
+
+          // clearing data in local storage
+          localStorage.clear();
+
+          // storing data in local storage
+          this.localStorageService.set('token', response.data.token);
+          this.localStorageService.set('user-data', response.data);
+
+          form.reset();
+          // navigating to profile
+          this.router.navigate(['/']);
+        } else {
+          // this.showMessage = true;
+          // this.message = 'Invalid Email or Password';
+          this.globalErrorService.errorOccured(response);
+          console.log('something went wrong!!', response.output.payload);
+        }
+    },
+      (error) => {
+            this.globalErrorService.errorOccured(error);
+            console.log('error!!', error);
+        }
+    );
+  }
+
 }
 
 
 // Register
 onFileChange(file: FileList) {
-  this.userImage = file.item(0);
-  const reader = new FileReader();
-  reader.onload = (event: any) => {
-    this.displayImage = event.target.result;
-  };
+    this.userImage = file.item(0);
+    const reader = new FileReader();
+    reader.onload = (event: any) => {
+      this.displayImage = event.target.result;
+    };
     reader.readAsDataURL(this.userImage);
 }
 
-onSignup(form: NgForm) {
+  onSignup(form: NgForm) {
 
-  const body = {
-    admin_email : form.value.email,
-    admin_password: form.value.password,
-    admin_first_name: form.value.fname,
-    admin_last_name: form.value.lname,
-    image: this.userImage,
-    admin_phone_no: form.value.phoneNumber
-  };
+      const body = {
+        admin_email : form.value.email,
+        admin_password: form.value.password,
+        admin_first_name: form.value.fname,
+        admin_last_name: form.value.lname,
+        image: this.userImage,
+        admin_phone_no: form.value.phoneNumber
+      };
 
-  this.authService.signup(body)
-  .subscribe(
-    (response) => {
+      this.authService.signup(body)
+      .subscribe(
+        (response) => {
 
-    if (response.success === 200) {
-      this.postSubmit = false;
-      this.router.navigate(['/']);
-      form.reset();
-      this.displayImage = 'assets/images/profile-pic.png';
-    } else {
-      this.postSubmit = true;
-      this.error = response.output.payload.message;
-    }
-    },
-    (error) => {
-      console.log('error', error);
-    }
-  );
-}
+        if (response.success === 200) {
+          this.postSubmit = false;
+          this.router.navigate(['/']);
+          form.reset();
+          this.displayImage = 'assets/images/profile-pic.png';
+        } else {
+          this.postSubmit = true;
+          this.error = response.output.payload.message;
+        }
+        },
+        (error) => {
+          console.log('error', error);
+        }
+      );
+  }
+
+
+  onChangeValue(searchValue, type) {
+      if (type === 'email' && searchValue.length === 0) {
+        this.emailInput = 0;
+      } else if (type === 'email' && searchValue.length > 0) {
+        this.emailInput = 1;
+      } else if (type === 'pwd' && searchValue.length === 0) {
+        this.passwordInput = 0;
+      } else if (type === 'pwd' && searchValue.length > 0) {
+        this.passwordInput = 1;
+      }
+  }
 }

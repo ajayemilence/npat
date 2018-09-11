@@ -7,11 +7,13 @@ import 'rxjs/add/observable/throw';
 import { LocalStorageService } from '../shared/local-storage.service';
 import { GlobalService } from '../shared/global.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { HttpRequestService } from '../shared/http-requests.service';
 
 @Injectable()
 export class VerifyMerchantService {
 
     constructor(private http: Http,
+                private httpRequests: HttpRequestService,
                 private localStorageService: LocalStorageService,
                 private global: GlobalService) { }
 
@@ -25,7 +27,9 @@ export class VerifyMerchantService {
          });
 
         return this.http.get(
-            this.global.serverUrl + 'merchant/en/get_unverified_merchant?last_id=' + data,
+            // this.global.serverUrl + 'merchant/en/get_unverified_merchant?last_id=' + data,
+            this.global.serverUrl + this.httpRequests.merchantAllUnverified +
+            '?last_id=' + data,
             {headers: headers})
         .map(
             (response: Response) => {
@@ -53,7 +57,9 @@ export class VerifyMerchantService {
         body.append('merchant_verification_status', 'Verified');
         body.append('merchant_id', data);
 
-        return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant_verification_status',
+        return this.http.put(
+            // this.global.serverUrl + 'merchant/en/update_merchant_verification_status',
+            this.global.serverUrl + this.httpRequests.merchantVerify,
             body.toString(),
             {headers: headers})
         .map(

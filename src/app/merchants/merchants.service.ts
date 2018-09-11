@@ -7,6 +7,7 @@ import 'rxjs/add/observable/throw';
 import { LocalStorageService } from '../shared/local-storage.service';
 import { GlobalService } from '../shared/global.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { HttpRequestService } from '../shared/http-requests.service';
 
 @Injectable()
 export class MerchantService {
@@ -16,7 +17,9 @@ export class MerchantService {
     // currentMessage = this.messageSource.asObservable();
     constructor(private http: Http,
                 private localStorageService: LocalStorageService,
-                private global: GlobalService) { }
+                private global: GlobalService,
+                private httpRequests: HttpRequestService
+            ) { }
 
 
 
@@ -47,7 +50,9 @@ export class MerchantService {
             body.append('merchant_profile_pic', data.image, data.image.name );
         }
 
-        return this.http.post(this.global.serverUrl + 'merchant/en/register',
+        return this.http.post(
+        // this.global.serverUrl + 'merchant/en/register',
+        this.global.serverUrl + this.httpRequests.merchantRegister,
         body,
         {headers: this.global.requestHeaders}  )
         .map(
@@ -93,7 +98,8 @@ export class MerchantService {
             body.append('merchant_profile_pic', data.image, data.image.name );
         }
 
-        return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant',
+        // return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant',
+        return this.http.put(this.global.serverUrl + this.httpRequests.merchantUpdate,
         body,
         {headers: headers}  )
         .map(
@@ -117,7 +123,9 @@ export class MerchantService {
          });
 
         return this.http.get(
-            this.global.serverUrl + 'merchant/en/get_all_merchant?limit=6&last_id=' + data.last_id
+            // this.global.serverUrl + 'merchant/en/get_all_merchant'
+            this.global.serverUrl + this.httpRequests.getAllMerchant
+            + '?limit=6&last_id=' + data.last_id
             + '&pre_id=' + data.pre_id +
             '&page_no=' + data.page_no,
             {headers: headers})
@@ -156,7 +164,9 @@ export class MerchantService {
         body.append('merchant_pan_id', data.form.pan);
 
         data.imgLicence.forEach(image => {
-            body.append('merchant_licence_image', image, image.name);
+            if (image !== undefined) {
+                body.append('merchant_licence_image', image, image.name);
+            }
         });
         body.append('merchant_pan_image', data.imgPan, data.imgPan.name);
 
@@ -179,7 +189,9 @@ export class MerchantService {
 
 
 
-        return this.http.post(this.global.serverUrl + 'merchant/en/add_merchant_doc',
+        return this.http.post(
+        // this.global.serverUrl + 'merchant/en/add_merchant_doc',
+        this.global.serverUrl + this.httpRequests.merchnatAddDoc,
         body,
         {headers: this.global.requestHeaders}  )
         .map(
@@ -210,7 +222,9 @@ export class MerchantService {
         body.append('merchant_id', user.merchant_id);
 
 
-        return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant',
+        return this.http.put(
+        // this.global.serverUrl + 'merchant/en/update_merchant',
+        this.global.serverUrl + this.httpRequests.merchantUpdate,
         body,
         {headers: headers}  )
         .map(
@@ -235,7 +249,9 @@ export class MerchantService {
          const merchant_id = JSON.parse(localStorage.getItem('user-data')).merchant_id;
 
         return this.http.get(
-            this.global.serverUrl + 'merchant/en/get_single_merchant?merchant_id=' + merchant_id,
+            // this.global.serverUrl + 'merchant/en/get_single_merchant'
+            this.global.serverUrl + this.httpRequests.merchantGetSingle
+            + '?merchant_id=' + merchant_id,
             {headers: headers})
         .map(
             (response: Response) => {
@@ -259,7 +275,9 @@ export class MerchantService {
         //  const merchant_id = JSON.parse(localStorage.getItem('user-data')).merchant_id;
 
         return this.http.get(
-            this.global.serverUrl + 'merchant/en/get_merchant_doc?merchant_id=' + data,
+            // this.global.serverUrl + 'merchant/en/get_merchant_doc'
+            this.global.serverUrl + this.httpRequests.merchantGetDoc
+            + '?merchant_id=' + data,
             {headers: headers})
         .map(
             (response: Response) => {
@@ -319,7 +337,9 @@ export class MerchantService {
         body.append('delete_additional_image', data.deleteDoc);
 
 
-        return this.http.put(this.global.serverUrl + 'merchant/en/update_merchant_doc',
+        return this.http.put(
+        // this.global.serverUrl + 'merchant/en/update_merchant_doc',
+        this.global.serverUrl + this.httpRequests.merchantUpdateDoc,
         body,
         {headers: headers}  )
         .map(
@@ -355,7 +375,9 @@ export class MerchantService {
             headers: headers,
             body : body.toString()
           });
-        return this.http.delete(this.global.serverUrl + 'merchant/en/delete_multiple_merchant',
+        return this.http.delete(
+            // this.global.serverUrl + 'merchant/en/delete_multiple_merchant',
+            this.global.serverUrl + this.httpRequests.merchantDelete,
             options )
         .map(
             (response: Response) => {
@@ -369,6 +391,38 @@ export class MerchantService {
                 return Observable.throw('Something went wrong', output);
             }
         );
+    }
+
+
+    merchantChangePassword(data: any) {
+        const headers = new Headers({
+            'd_token':  JSON.parse(localStorage.getItem('token')),
+            'Content-Type': 'application/x-www-form-urlencoded'
+         });
+
+        const body = new URLSearchParams();
+        body.append('merchant_password', data.newPassword);
+        body.append('confirm_merchant_password', data.confirmPassword);
+        body.append('merchant_old_password', data.currentPwd);
+
+
+        return this.http.put(
+        this.global.serverUrl + this.httpRequests.merchantChangePwd,
+        body.toString(),
+        {headers: headers}  )
+        .map(
+            (response: Response) => {
+                const output = response.json();
+                return output;
+            }
+        ).catch(
+            (error: Response) => {
+                console.log('error', error);
+                const output = error.json();
+                return Observable.throw('Something went wrong', output);
+            }
+        );
+
     }
 }
 

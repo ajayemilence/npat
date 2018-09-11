@@ -1,4 +1,4 @@
-.left h2 { 
+/* .left h2 { 
     font-size: 20px;
     font-family: 'Lato', sans-serif;
     font-weight: bold;
@@ -9,7 +9,6 @@
 h3 { 
     font-size: 15px;
     font-family: 'Lato', sans-serif;
-    /* font-weight: bold; */
 
 }
 
@@ -44,7 +43,6 @@ hr.line{
 
 
 .container-outer { 
-    /* overflow: scroll;  */
     width:80%; 
     height: 100%; 
 }
@@ -56,7 +54,6 @@ hr.line{
 
 .info {
     width: 100%;
-    /* height: 90%; */
     border-collapse: collapse;
     margin-top: 20px;
     border: rgb(63, 63, 63);
@@ -97,7 +94,6 @@ td {
 .btn.btnAdd:hover{
     background-color: rgb(78, 174, 223); 
     color:#fff;
-    /* transform:translateY(4px); */
     box-shadow: 0 1.5px 0 0px #B6B6B5;
 }
 
@@ -125,4 +121,45 @@ td {
 
 .column {
     margin-left: 40px;
+} */
+
+
+.add_merchants {
+    margin-bottom: 10px;
+}
+.add_merchants span {
+    display: inline-block;
+}
+
+.add_merchants .btn {
+    background-color: transparent;
+    border: 1px solid var(--orange) ;
+    margin-right: 10px;
+}
+
+.add_merchants .btn:hover {
+    background-color: var(--orange);
+    border: 1px solid var(--orange) ;
+    transition: 1s;
+    color:var(--white-two);
+}
+
+.table_entrydata td {
+    border-right: 1px solid var(--table-border-grey);
+    padding:25px !important;
+    font-size: 13px;
+}
+
+.table_entrydata table{
+    border: 1px solid var(--table-border-grey);
+}
+.table_entrydata thead {
+    border: 1px solid var(--table-border-grey);
+}
+.merchantinfo th {
+    width: 100%;
+}
+
+.merchantinf td {
+    font-size: 15px !important;
 }

@@ -4,6 +4,7 @@ import { ProductService } from '../../merchants/merchant/catalogue/product.servi
 import { Router } from '@angular/router';
 import { LocalStorageService } from '../../shared/local-storage.service';
 import { MatSnackBar } from '@angular/material';
+import { GLobalErrorService } from '../../shared/global-error.service';
 
 @Component({
   selector: 'app-product-requests',
@@ -19,13 +20,13 @@ showViewMore = false;
               private productService: ProductService,
               private router: Router,
               private localStorageService: LocalStorageService,
-              public snackBar: MatSnackBar
+              public snackBar: MatSnackBar,
+              private globalErrorService: GLobalErrorService
               ) { }
 
   ngOnInit() {
    localStorage.removeItem('request-merchant');
    this.merchant = this.requestService.getRequestMerchant();
-   console.log(this.merchant, 'merchant');
 
    if (this.merchant === undefined) {
       this.router.navigate(['/requests']);
@@ -42,21 +43,17 @@ showViewMore = false;
 
 
   requestStatus(val , product) {
-    console.log(val);
     const data = {
       category_type_id: product.product_id,
       category_type : 4,
       status: val
     };
-console.log(data);
     this.requestService.requestResponse(data).subscribe(
       (response) => {
-        console.log(response);
+
         if (response.success === 200) {
-          const message = (val === 0) ? 'Successfully to rejected Request' : 'Successfully to accepted Request';
-          this.snackBar.open(message, 'Dismiss', {
-            duration: 5000,
-          });
+          const message = (val === 0) ? 'Successfully rejected Request' : 'Successfully accepted Request';
+          this.globalErrorService.showSnackBar(message);
           const data2 = {
             merchantID: this.merchant.merchant_id,
             lastId: '',
@@ -64,17 +61,14 @@ console.log(data);
           };
           this.getProducts(data2);
         } else {
+          console.log(response);
           const message = (val === 0) ? 'Unsuccessful to reject Request' : 'Unsuccessful to accept Request';
-          this.snackBar.open(message, 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.showSnackBar(message);
         }
       },
       (error) => {
         console.log(error);
-        this.snackBar.open('Something went wrong, please try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
 
@@ -88,10 +82,8 @@ console.log(data);
 
 
   getProducts(data: any) {
-      console.log(data);
       this.requestService.getRequestedProducts(data).subscribe(
         (response) => {
-           console.log('Products', response);
 
            if (response.success === 200) {
                 if (response.data.length < 15) {
@@ -106,16 +98,12 @@ console.log(data);
              }
            } else {
              console.log(response.output);
-             this.snackBar.open('Something went wrong, please try again!', 'Dismiss', {
-              duration: 5000,
-            });
+             this.globalErrorService.errorOccured(response);
            }
         },
         (error) => {
           console.log(error);
-          this.snackBar.open('Something went wrong, please try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
         }
       );
   }

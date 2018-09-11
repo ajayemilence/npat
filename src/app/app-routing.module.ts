@@ -20,6 +20,8 @@ import { VerificationComponent } from './verification/verification.component';
 import { VerifyMerchantComponent } from './verify-merchant/verify-merchant.component';
 import { ShowDocumentsComponent } from './show-documents/show-documents.component';
 import { ArOffersComponent } from './ar-offers/ar-offers.component';
+import { ForgotPwdComponent } from './merchant-auth/forgot-pwd/forgot-pwd.component';
+import { ChangePasswordComponent } from './change-password/change-password.component';
 
 const appRoutes: Routes = [
     { path: '',
@@ -40,7 +42,8 @@ const appRoutes: Routes = [
         { path: 'requests', component: RequestComponent},
         { path: 'requests/merchants', component: VerifyMerchantComponent},
         { path: 'requests/products', component: ProductRequestsComponent},
-        { path: 'documents', component: ShowDocumentsComponent}
+        { path: 'documents', component: ShowDocumentsComponent},
+        { path: 'change_password', component: ChangePasswordComponent}
     ]
     },
 
@@ -51,6 +54,9 @@ const appRoutes: Routes = [
     },
     { path: 'merchant/auth',
     component: MerchantAuthComponent,
+    },
+    {
+        path: 'forgot_password', component: ForgotPwdComponent
     },
     { path: 'verify',
     component: VerificationComponent,

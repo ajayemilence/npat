@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { BsModalService } from 'ngx-bootstrap/modal';
 import { BsModalRef } from 'ngx-bootstrap/modal/bs-modal-ref.service';
 import { NgForm, FormGroup } from '@angular/forms';
@@ -11,13 +11,15 @@ import { MerchantService } from '../../merchants.service';
 import { Router } from '@angular/router';
 import { ProductService } from './product.service';
 import { element } from 'protractor';
+import { GLobalErrorService } from '../../../shared/global-error.service';
 
 declare var $: any;
 
 @Component({
   selector: 'app-catalogue',
   templateUrl: './catalogue.component.html',
-  styleUrls: ['./catalogue.component.css']
+  styleUrls: ['./catalogue.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class CatalogueComponent implements OnInit {
 mode = 0; // 0 admin, 1 merchant, 2 merchant through admin
@@ -56,6 +58,7 @@ selectedItem2;
 
 modalRef: BsModalRef;
 displayImage = 'assets/images/upload.png';
+logoImage = 'assets/images/app-logo.png';
 requestLoader = false;
 userImage: File = null;
 inventory = true;
@@ -126,6 +129,27 @@ error = '';
 attributeArray = [];
 
 productInstore = false;
+
+config = {
+  animated: true,
+  keyboard: true,
+  backdrop: true,
+  ignoreBackdropClick: false
+};
+
+
+// add and edit attribute
+AddAttributeTO;
+attributeModalHeading;
+attributeOptions = [];
+keyName;
+valueOption = [];
+addNewValue = '';
+categoryIDForAtt;
+getAllAttribute = [] ;
+addAttributeModalRef: BsModalRef;
+EditAttribute;
+attributeLoader = false;
 constructor(private modalService: BsModalService,
             private localStorageService: LocalStorageService,
             private catalogueService: CatalogueService,
@@ -134,7 +158,8 @@ constructor(private modalService: BsModalService,
             private merchantService: MerchantService,
             private router: Router,
             private productService: ProductService,
-            private merchantsService: MerchantService
+            private merchantsService: MerchantService,
+            private globalErrorService: GLobalErrorService
           ) {}
 
 ngOnInit() {
@@ -216,9 +241,7 @@ ngOnInit() {
                       this.productDetailLoading = false;
                       this.NoProductToShow = true;
                       this.NoProductListToShow = true;
-                      this.snackBar.open('No Product Found', 'Dismiss', {
-                        duration: 5000,
-                      });
+                      this.globalErrorService.showSnackBar('No Products Found');
                    } else if (this.superCategories[0].category.length === 0 && this.superCategories[0].super_category_hasChild !== 2) {
                       this.products = [];
                       this.showViewMore = false;
@@ -226,9 +249,7 @@ ngOnInit() {
                       this.productDetailLoading = false;
                       this.NoProductToShow = true;
                       this.NoProductListToShow = true;
-                      this.snackBar.open('No Product Found', 'Dismiss', {
-                        duration: 5000,
-                      });
+                      this.globalErrorService.showSnackBar('No Products Found');
                    } else if (this.superCategories[0].super_category_hasChild === 2) {
                         this.showProducts(this.superCategories[0]);
                    } else if (this.superCategories[0].category.length > 0 ) {
@@ -239,9 +260,7 @@ ngOnInit() {
                         this.productDetailLoading = false;
                         this.NoProductToShow = true;
                         this.NoProductListToShow = true;
-                        this.snackBar.open('No Product Found', 'Dismiss', {
-                          duration: 5000,
-                        });
+                        this.globalErrorService.showSnackBar('No Products Found');
                       } else if (this.superCategories[0].category[0].category_hasChild === 2) {
                         this.showProducts(this.superCategories[0].category[0]);
                       } else if (this.superCategories[0].category[0].category_hasChild === 1 &&
@@ -252,9 +271,7 @@ ngOnInit() {
                           this.productDetailLoading = false;
                           this.NoProductToShow = true;
                           this.NoProductListToShow = true;
-                          this.snackBar.open('No Product Found', 'Dismiss', {
-                            duration: 5000,
-                          });
+                          this.globalErrorService.showSnackBar('No Products Found');
                       } else {
                         this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
                       }
@@ -285,16 +302,12 @@ ngOnInit() {
             } else {
             // FAILURE CASE
             console.log(response);
-              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-                duration: 5000,
-              });
+            this.globalErrorService.errorOccured(response);
             }
           },
           (error) => {
              console.log(error);
-              this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-                duration: 5000,
-              });
+             this.globalErrorService.errorOccured(error);
           }
         );
         // get catalogue data here
@@ -328,9 +341,7 @@ ngOnInit() {
                       this.productDetailLoading = false;
                       this.NoProductToShow = true;
                       this.NoProductListToShow = true;
-                      this.snackBar.open('No Product Found', 'Dismiss', {
-                        duration: 5000,
-                      });
+                      this.globalErrorService.showSnackBar('No Product Found');
                   } else if (this.superCategories[0].category.length === 0 && this.superCategories[0].super_category_hasChild !== 2) {
                     this.totalProducts = 0;
                     this.products = [];
@@ -339,9 +350,7 @@ ngOnInit() {
                     this.productDetailLoading = false;
                     this.NoProductToShow = true;
                     this.NoProductListToShow = true;
-                    this.snackBar.open('No Product Found', 'Dismiss', {
-                      duration: 5000,
-                    });
+                    this.globalErrorService.showSnackBar('No Product Found');
 
                   } else if (this.superCategories[0].category.length > 0 ) {
                         if (this.superCategories[0].category[0].category_hasChild === 0) {
@@ -352,9 +361,7 @@ ngOnInit() {
                           this.productDetailLoading = false;
                           this.NoProductToShow = true;
                           this.NoProductListToShow = true;
-                          this.snackBar.open('No Product Found', 'Dismiss', {
-                            duration: 5000,
-                          });
+                          this.globalErrorService.showSnackBar('No Product Found');
                         } else if (this.superCategories[0].category[0].category_hasChild === 2) {
                           this.showProducts(this.superCategories[0].category[0]);
                         } else if (this.superCategories[0].category[0].category_hasChild === 1 &&
@@ -366,9 +373,7 @@ ngOnInit() {
                             this.productDetailLoading = false;
                             this.NoProductToShow = true;
                             this.NoProductListToShow = true;
-                            this.snackBar.open('No Product Found', 'Dismiss', {
-                              duration: 5000,
-                            });
+                            this.globalErrorService.showSnackBar('No Product Found');
                         } else {
                           this.showProducts(this.superCategories[0].category[0].Sub_Category[0]);
                         }
@@ -402,16 +407,12 @@ ngOnInit() {
           } else {
             // this.postSubmit = true;
            console.log(response.output.payload.message);
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+           this.globalErrorService.errorOccured(response);
           }
          },
          (error) => {
            console.log('error', error);
-           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+           this.globalErrorService.errorOccured(error);
          }
        );
 
@@ -456,20 +457,16 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
             }
           });
           // this.listSuperCategories = response.data;
-          this.modalRef = this.modalService.show(superCategoryList);
+          this.modalRef = this.modalService.show(superCategoryList,  this.config);
 
         } else {
           console.log(response);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
       },
       (error) => {
         console.log(error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   } else {
@@ -480,7 +477,7 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
       this.currentSuperCategoryName = '';
       this.currentSuperCategoryDesc = '';
 
-      this.modalRef = this.modalService.show(template);
+      this.modalRef = this.modalService.show(template, this.config);
     } else if (user.merchant_id !== undefined) {
       this.fruits = [];
 
@@ -496,10 +493,13 @@ openModal(template: TemplateRef<any>, superCategoryList: TemplateRef<any>) {
 
             // this.listSuperCategories = response.data;
             this.modalRef = this.modalService.show(superCategoryList);
+          } else {
+            this.globalErrorService.errorOccured(response);
           }
         },
         (error) => {
           console.log(error);
+          this.globalErrorService.errorOccured(error);
         }
       );
     }
@@ -512,7 +512,7 @@ addCategoryModel(template: TemplateRef<any>, detail) {
   this.currentSuperCategoryDesc = '';
   this.templateTitle = 'Add a Category';
   this.superCategoryName = detail;
-  this.modalRef = this.modalService.show(template);
+  this.modalRef = this.modalService.show(template, this.config);
 }
 
 addSubCategoryModel(template: TemplateRef<any>, currentSuper, currentCategory) {
@@ -522,22 +522,23 @@ addSubCategoryModel(template: TemplateRef<any>, currentSuper, currentCategory) {
   this.templateTitle = 'Add a Sub Category';
   this.superCategoryName = currentSuper;
   this.currentCategoryName = currentCategory;
-  this.modalRef = this.modalService.show(template);
+  this.modalRef = this.modalService.show(template, this.config);
 }
 
 openVerifyModal (template: TemplateRef<any>) {
-  this.modalRef = this.modalService.show(template);
+  this.modalRef = this.modalService.show(template, this.config);
 }
 addProduct(template: TemplateRef<any>) {
-  this.modalRef = this.modalService.show(template);
+  this.modalRef = this.modalService.show(template, this.config);
 }
 
 upgradePlanModal(template: TemplateRef<any>) {
-  this.modalRef = this.modalService.show(template);
+  this.modalRef = this.modalService.show(template, this.config);
 }
 
 planDetailModal(template: TemplateRef<any>) {
-  this.planModalRef = this.modalService.show(template);
+  console.log('clickeddd');
+  this.planModalRef = this.modalService.show(template, this.config);
 }
 
 openInventoryModal(template: TemplateRef<any>) {
@@ -609,7 +610,7 @@ openInventoryModal(template: TemplateRef<any>) {
         }
   });
 
-  this.modalRef = this.modalService.show(template);
+  this.modalRef = this.modalService.show(template, this.config);
 
 }
 addSuperCategory(form: NgForm) {
@@ -656,16 +657,12 @@ addSuperCategory(form: NgForm) {
 
 
          } else {
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+          this.globalErrorService.errorOccured(response);
          }
         },
         (error) => {
           console.log('error', error);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
         }
       );
 
@@ -686,22 +683,16 @@ addSuperCategory(form: NgForm) {
             }
            const user = JSON.parse(localStorage.getItem('user-data'));
            if (user.merchant_id !== undefined) {
-            this.snackBar.open('Super Category Requested To Admin Successfully', 'ok', {
-              duration: 5000,
-            });
+            this.globalErrorService.showSnackBar('Super Category Requested To Admin Successfully');
            }
 
          } else {
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+            this.globalErrorService.errorOccured(response);
          }
         },
         (error) => {
           console.log('error', error);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
         }
       );
     }
@@ -738,9 +729,7 @@ addProductForm(form: NgForm) {
      },
      (error) => {
        console.log('error', error);
-       this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-        duration: 5000,
-      });
+       this.globalErrorService.errorOccured(error);
      }
    );
 }
@@ -778,16 +767,12 @@ addCategory(form: NgForm) {
           this.modalRef.hide();
           this.getData();
         } else {
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
        },
        (error) => {
           console.log('error', error);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
        }
      );
 
@@ -809,9 +794,7 @@ addCategory(form: NgForm) {
         if (response.success === 200) {
           const user = JSON.parse(localStorage.getItem('user-data'));
            if (user.merchant_id !== undefined) {
-            this.snackBar.open('Category Requested To Admin Successfully', 'ok', {
-              duration: 5000,
-            });
+            this.globalErrorService.showSnackBar('Category Requested To Admin Successfully');
            } else {
             if (this.currentMerchant === undefined) {
               this.getData();
@@ -821,16 +804,12 @@ addCategory(form: NgForm) {
 
            }
         } else {
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
        },
        (error) => {
          console.log('error', error);
-         this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-         });
+         this.globalErrorService.errorOccured(error);
        }
      );
     }
@@ -870,16 +849,12 @@ addSubCategory(form: NgForm) {
            this.modalRef.hide();
            this.getData();
           } else {
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
           }
          },
          (error) => {
            console.log('error', error);
-           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+           this.globalErrorService.errorOccured(error);
          }
        );
     } else {
@@ -900,9 +875,7 @@ addSubCategory(form: NgForm) {
           if (response.success === 200) {
           const user = JSON.parse(localStorage.getItem('user-data'));
            if (user.merchant_id !== undefined) {
-            this.snackBar.open('Sub-Category Requested To Admin Successfully', 'ok', {
-              duration: 5000,
-            });
+            this.globalErrorService.showSnackBar('Sub-Category Requested To Admin Successfully');
            } else {
             if (this.currentMerchant === undefined) {
               this.getData();
@@ -912,16 +885,12 @@ addSubCategory(form: NgForm) {
 
            }
           } else {
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
           }
          },
          (error) => {
            console.log('error', error);
-           this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+           this.globalErrorService.errorOccured(error);
          }
        );
 
@@ -990,16 +959,12 @@ showCategories() {
         this.superCategories = response.data;
         this.totalSuperCategory = this.superCategories.length;
       } else {
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(response);
       }
      },
      (error) => {
        console.log('error', error);
-       this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-        duration: 5000,
-      });
+       this.globalErrorService.errorOccured(error);
      }
    );
   }
@@ -1022,7 +987,7 @@ showCategories() {
     }
     this.editMode = true;
     this.editCategory = superCategory;
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(template, this.config);
   }
 
 
@@ -1041,7 +1006,7 @@ showCategories() {
     this.editMode = true;
     this.editCategory = category;
     this.editParentCategory = superCategory;
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(template, this.config);
   }
 
   editSubCategoryDetail(sub: any, template: TemplateRef<any>, category: any) {
@@ -1059,13 +1024,14 @@ showCategories() {
     this.editMode = true;
     this.editCategory = sub;
     this.editParentCategory = category;
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(template, this.config);
   }
 
 
 
   // get product
   showProducts(category) {
+
     this.Heading = [];
     this.tempAttributeArray = [];
     this.InventoryTableEdit = [];
@@ -1080,9 +1046,7 @@ showCategories() {
       this.NoProductToShow = true;
       this.NoProductListToShow = true;
       this.showProductDetails = false;
-      this.snackBar.open('No Product Found', 'Dismiss', {
-        duration: 5000,
-      });
+
     } else if (category.super_category_id !== undefined && category.super_category_hasChild === 2) {
 
       const data = {
@@ -1101,9 +1065,7 @@ showCategories() {
         this.NoProductToShow = true;
         this.NoProductListToShow = true;
         this.showProductDetails = false;
-        this.snackBar.open('No Product Found', 'Dismiss', {
-          duration: 5000,
-        });
+
     } else if (category.category_id !== undefined && category.category_hasChild === 2) {
 
       const data = {
@@ -1128,9 +1090,7 @@ showCategories() {
         this.NoProductToShow = true;
         this.NoProductListToShow = true;
         this.showProductDetails = false;
-        this.snackBar.open('No Product Found', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.showSnackBar('No Product Found');
     }
   }
 
@@ -1155,18 +1115,22 @@ showCategories() {
             this.products = response.data.rows;
 
           if (response.data.rows.length > 0) {
+
               this.totalProducts = response.data.count;
               this.showSelectedProductDetail = response.data.rows[0];
               this.attributeArray = [];
               this.productListLoading = false;
 
-
               this.showProductCategory.super = this.superCategories[this.collapsed].super_category_name;
               this.showProductCategory.cat = (this.superCategories[this.collapsed].category.length > 0) ?
                             this.superCategories[this.collapsed].category[this.subCollapsed].category_name : '';
-              this.showProductCategory.sub = (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
+              this.showProductCategory.sub = (this.superCategories[this.collapsed].category.length > 0) ?
                             // tslint:disable-next-line:max-line-length
-                            this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '';
+                            // this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name
+
+                            (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
+                            // tslint:disable-next-line:max-line-length
+                            this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '' : '';
               this.showProductCategory.product = (this.showSelectedProductDetail !== undefined) ?
                             this.showSelectedProductDetail.product_name : '';
 
@@ -1178,7 +1142,6 @@ showCategories() {
 
                     this.attributeArray.push(obj);
               });
-
               // const productOne = response.data.rows[0];
               // this.productName = productOne.product_name;
               // this.productDesc =  productOne.product_description;
@@ -1192,7 +1155,7 @@ showCategories() {
               } else {
                   this.productInstore = false;
               }
-
+              console.log(this.showSelectedProductDetail);
               // if (productOne.pricing_array[0].product_inventory.length > 0 &&
               //     productOne.pricing_array[0].product_spec.length > 0) {
               //     // this.productInventory.push
@@ -1276,18 +1239,16 @@ showCategories() {
             this.productDetailLoading = false;
             this.NoProductToShow = true;
             this.NoProductListToShow = true;
-            this.snackBar.open('No Product Found', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.showSnackBar('No Product Found!');
           }
         }
+        } else {
+          this.globalErrorService.errorOccured(response);
         }
       },
       (error) => {
         console.log('error', error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1368,25 +1329,19 @@ showCategories() {
               this.NoProductToShow = true;
               this.NoProductListToShow = true;
               this.showProductDetails = false;
-              this.snackBar.open('No Product Found', 'Dismiss', {
-                duration: 5000,
-              });
+              this.globalErrorService.showSnackBar('No Product Found');
             }
           }
 
 
         } else {
           console.log(response);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
       },
       (error) => {
         console.log('error', error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1478,20 +1433,18 @@ showCategories() {
             this.showProductDetails = false;
             this.NoProductToShow = true;
             this.NoProductListToShow = true;
-            this.snackBar.open('No Product Found', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.showSnackBar('No Product Found');
           }
           }
 
 
+        } else {
+          this.globalErrorService.errorOccured(response);
         }
       },
       (error) => {
         console.log('error', error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1515,9 +1468,13 @@ showCategories() {
     this.showProductCategory.super = this.superCategories[this.collapsed].super_category_name;
     this.showProductCategory.cat = (this.superCategories[this.collapsed].category.length > 0) ?
                   this.superCategories[this.collapsed].category[this.subCollapsed].category_name : '';
-    this.showProductCategory.sub = (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
-                  // tslint:disable-next-line:max-line-length
-                  this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '';
+    this.showProductCategory.sub = (this.superCategories[this.collapsed].category.length > 0) ?
+    // tslint:disable-next-line:max-line-length
+    // this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name
+
+    (this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category.length > 0) ?
+    // tslint:disable-next-line:max-line-length
+    this.superCategories[this.collapsed].category[this.subCollapsed].Sub_Category[this.childCollapsed].sub_category_name : '' : '';
     this.showProductCategory.product = (this.showSelectedProductDetail !== undefined) ?
                   this.showSelectedProductDetail.product_name : '';
 
@@ -1648,7 +1605,7 @@ showCategories() {
     this.currentSuperCategoryName = '';
     this.currentSuperCategoryDesc = '';
 
-    this.modalRef = this.modalService.show(template);
+    this.modalRef = this.modalService.show(template, this.config);
   }
 
   selectSuperCategory(form: NgForm) {
@@ -1675,13 +1632,13 @@ showCategories() {
             form.reset();
             this.fruits = [];
             this.getMerchantData();
+          } else {
+            this.globalErrorService.errorOccured(response);
           }
         },
         (error) => {
           console.log(error);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
         }
       );
   }
@@ -1707,12 +1664,12 @@ showCategories() {
           this.showSuperLoading = false;
           this.superCategories = response.data;
           this.totalSuperCategory = this.superCategories.length;
+        } else {
+          this.globalErrorService.errorOccured(response);
         }
       }, (error) => {
         console.log(error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1726,9 +1683,7 @@ showCategories() {
 
 
     if (this.superCategories.length < 1) {
-        this.snackBar.open('Please Choose or Add Categories, before adding products.', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.showSnackBar('Please Choose or Add Categories, before adding products.');
     } else {
         const user = JSON.parse(localStorage.getItem('user-data'));
         if (user.merchant_id !== undefined) {
@@ -1818,15 +1773,11 @@ showCategories() {
               }
           } else {
             console.log(response.output.payload.message);
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
           }
       }, (error) => {
         console.log(error);
-        this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1854,17 +1805,240 @@ showCategories() {
             this.modalRef.hide();
           } else {
             console.log(response);
-            this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
           }
       }, (error) => {
           console.log(error);
-          this.snackBar.open('Something Went Wrong, try again', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
       }
     );
+}
+
+
+//  Add Attribute part
+
+
+getAttributeModal (category, template) {
+  this.AddAttributeTO = category;
+  if (category.super_category_id !== undefined) {
+    this.categoryIDForAtt = category.super_category_id;
+  } else if (category.category_id !== undefined) {
+    this.categoryIDForAtt = category.category_id;
+  } else if (category.sub_category_id !== undefined) {
+    this.categoryIDForAtt = category.sub_category_id;
+  }
+
+  this.catalogueService.getAttributeOfCategory(this.categoryIDForAtt).subscribe(
+    (response) => {
+        this.getAllAttribute = [];
+        if (response.success === 200 ) {
+          response.data.forEach(val => {
+              const obj = {
+                    id: val.product_spec_id,
+                    name : val.product_spec_name,
+                    values : val.product_spec_type_values.split(',')
+              };
+              this.getAllAttribute.push(obj);
+          });
+
+            this.modalRef = this.modalService.show(template);
+        } else {
+          console.log(response.output.payload.message);
+          this.snackBar.open(response.output.payload.message, 'Dismiss', {
+            duration: 5000,
+          });
+        }
+
+      },
+      (error) => {
+        console.log(error);
+        this.snackBar.open(error.output.payload.message, 'Dismiss', {
+          duration: 5000,
+        });
+      }
+  );
+
+
+}
+
+addAttributeModal(template, attribute) {
+
+  if (attribute === undefined) {
+    this.EditAttribute = undefined;
+    this.keyName = '';
+    this.addNewValue = '';
+    this.valueOption = [];
+
+    this.attributeModalHeading = 'Add Attribute';
+    this.addAttributeModalRef = this.modalService.show(template);
+  } else {
+    this.EditAttribute = attribute;
+    this.attributeModalHeading = 'Edit Attribute';
+    // edit part
+    this.addNewValue = '';
+    this.keyName = attribute.name;
+    attribute.values.forEach(val => {
+      const obj = {
+        id: attribute.id,
+        val: val,
+        checked :  true
+      };
+      this.valueOption.push(obj);
+    });
+    // this.valueOption = attribute.values;
+    this.addAttributeModalRef = this.modalService.show(template);
+  }
+
+}
+newElement(val) {
+  if (val !== '') {
+    const obj = {
+      val: val,
+      checked :  true
+    };
+    this.valueOption.push(obj);
+    this.addNewValue = '';
+  }
+}
+
+uncheck(index) {
+  this.valueOption[index].checked = !this.valueOption[index].checked;
+}
+
+resetForm(form: NgForm) {
+  form.reset();
+  this.valueOption = [];
+
+}
+
+
+addAttributeForm(form: NgForm) {
+  const showValues = [];
+  this.attributeLoader = true;
+
+  if (this.EditAttribute === undefined) {
+    this.valueOption.forEach(value => {
+      if (value.checked === true) {
+        showValues.push(value.val);
+      }
+    });
+
+      const data = {
+        name : this.keyName,
+        values: showValues.toString(),
+        sub: (this.AddAttributeTO.sub_category_id !== undefined) ? this.AddAttributeTO.sub_category_id  : '' ,
+        cat:  (this.AddAttributeTO.category_id !== undefined) ? this.AddAttributeTO.category_id : '' ,
+        super:  (this.AddAttributeTO.super_category_id !== undefined) ? this.AddAttributeTO.super_category_id : ''
+      };
+
+      this.catalogueService.addAttributeToCategory(data).subscribe(
+        (response) => {
+        // reseting values
+
+        this.keyName = '';
+        this.valueOption = [];
+        this.addAttributeModalRef.hide();
+        this.fruits = [];
+
+          if (response.success === 200 ) {
+            this.reloadAttribute(this.AddAttributeTO);
+          } else {
+            console.log(response.output.payload.message);
+            this.snackBar.open(response.output.payload.message, 'Dismiss', {
+              duration: 5000,
+            });
+          }
+
+        },
+        (error) => {
+          console.log(error);
+          this.snackBar.open(error.output.payload.message, 'Dismiss', {
+            duration: 5000,
+          });
+        }
+      );
+  } else {
+
+        this.valueOption.forEach(value => {
+          if (value.checked === true) {
+            showValues.push(value.val);
+          }
+        });
+
+        const data = {
+          name : this.keyName,
+          values: showValues.toString(),
+          id : this.EditAttribute.id
+        };
+
+      this.catalogueService.editAttributeToCategory(data).subscribe(
+        (response) => {
+        // reseting values
+        this.keyName = '';
+        this.valueOption = [];
+        this.addAttributeModalRef.hide();
+        this.fruits = [];
+
+          if (response.success === 200 ) {
+            this.reloadAttribute(this.AddAttributeTO);
+          } else {
+            console.log(response.output.payload.message);
+            this.snackBar.open(response.output.payload.message, 'Dismiss', {
+              duration: 5000,
+            });
+          }
+
+        },
+        (error) => {
+          console.log(error);
+          this.snackBar.open(error.output.payload.message, 'Dismiss', {
+            duration: 5000,
+          });
+        }
+      );
+  }
+
+}
+
+
+reloadAttribute(category) {
+
+  if (category.super_category_id !== undefined) {
+    this.categoryIDForAtt = category.super_category_id;
+  } else if (category.category_id !== undefined) {
+    this.categoryIDForAtt = category.category_id;
+  } else if (category.sub_category_id !== undefined) {
+    this.categoryIDForAtt = category.sub_category_id;
+  }
+
+  this.catalogueService.getAttributeOfCategory(this.categoryIDForAtt).subscribe(
+    (response) => {
+        this.getAllAttribute = [];
+        if (response.success === 200 ) {
+          response.data.forEach(val => {
+              const obj = {
+                    id: val.product_spec_id,
+                    name : val.product_spec_name,
+                    values : val.product_spec_type_values.split(',')
+              };
+              this.getAllAttribute.push(obj);
+          });
+          this.attributeLoader = false;
+        } else {
+          console.log(response.output.payload.message);
+          this.snackBar.open(response.output.payload.message, 'Dismiss', {
+            duration: 5000,
+          });
+        }
+
+      },
+      (error) => {
+        console.log(error);
+        this.snackBar.open(error.output.payload.message, 'Dismiss', {
+          duration: 5000,
+        });
+      }
+  );
 }
 
 }

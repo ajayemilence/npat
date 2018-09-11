@@ -1,6 +1,4 @@
-.home{
-    margin-top: 55px; 
-}
+/* 
 .main{
     -webkit-transition: margin 200ms ease-out;
     -moz-transition: margin 200ms ease-out;
@@ -82,9 +80,7 @@
         margin-left: 0px;
     }
 
-    /* .forAnimate{
-        opacity: 0;
-    } */
+   
 }
 
 @media (min-width: 1330px) {
@@ -116,4 +112,4 @@ nav:hover .forAnimate{
 section{
     padding-left: 15px;
 }
-
+ */

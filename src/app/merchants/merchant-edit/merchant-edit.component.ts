@@ -6,6 +6,7 @@ import { MapsAPILoader } from '@agm/core';
 import {} from '@types/googlemaps';
 import { LocalStorageService } from '../../shared/local-storage.service';
 import { MatSnackBar } from '@angular/material';
+import { GLobalErrorService } from '../../shared/global-error.service';
 
 
 @Component({
@@ -28,20 +29,22 @@ export class MerchantEditComponent implements OnInit {
   phone;
   address;
   profilepic;
-  displayImage = 'assets/images/profile-pic.png';
+  displayImage = 'assets/images/userImage.png';
   userImage: File = null;
+  isLoading = false;
   constructor(private merchantsService: MerchantService,
               private router: Router,
               private mapsAPILoader: MapsAPILoader,
               private ngZone: NgZone,
               private localStorage: LocalStorageService,
-              private snackbar: MatSnackBar
+              private snackbar: MatSnackBar,
+              private globalErrorService: GLobalErrorService
             ) { }
 
   ngOnInit() {
 
     this.currentMerchant = this.merchantsService.getMerchant();
-    console.log(this.currentMerchant);
+
     if (this.currentMerchant === undefined) {
       const user = JSON.parse(localStorage.getItem('user-data'));
       if (user.admin_id !== undefined) {
@@ -166,7 +169,7 @@ onFileChange(file: FileList) {
   if (file.length === 0 ) {
     this.displayImage = 'assets/images/profile-pic.png';
   } else {
-    console.log(file, 'file');
+
     this.userImage = file.item(0);
     const reader = new FileReader();
     reader.onload = (event: any) => {
@@ -182,7 +185,7 @@ onFileChange(file: FileList) {
       this.error = 'Enter Valid Phone Number';
     } else {
       this.postSubmit = false;
-
+      this.isLoading = true;
       // const elevator = new google.maps.ElevationService;
       // const loc = {lat: JSON.parse(this.lat), lng: JSON.parse(this.lng)};
       // return new Promise((resolve, reject) => {
@@ -250,16 +253,17 @@ onFileChange(file: FileList) {
           form.reset();
         } else {
           this.postSubmit = true;
-          this.error = response.output.payload.message;
+          // this.error = response.output.payload.message;
+          // this.isLoading = false;
+          this.globalErrorService.errorOccured(response);
         }
 
         },
         (error) => {
           // handle all error cases
           console.log(error);
-          this.snackbar.open('Something went wrong, please try again later!', 'dismiss', {
-            duration: 5000,
-          });
+          this.isLoading = false;
+          this.globalErrorService.errorOccured(error);
         }
       );
     }

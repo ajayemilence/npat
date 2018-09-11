@@ -1,4 +1,4 @@
-<div class="row" style="margin-top: 60px;">
+<!-- <div class="row" style="margin-top: 60px;">
         <div 
           class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3"> 
           <div class="row  col-xs-8 col-xs-offset-2 border">
@@ -9,7 +9,7 @@
               <!-- <button 
               class="btn btn-default col-xs-6"
               (click)="registerPage()"
-              >Register</button> -->
+              >Register</button> --
       
            <div class="row" style="margin-top: 60px;">      
               <form (ngSubmit)="onSignin(f)" #f="ngForm" *ngIf="showLogin">
@@ -46,7 +46,7 @@
               <button class="btn btn-primary login-btn" type="submit" >Sign In</button>
               </form> 
       
-              <!-- register -->
+              <!-- register --
               <form (ngSubmit)="onSignup(f)" #f="ngForm"  *ngIf="showRegister">
                   <div class="form-group text-center">
                       <input  
@@ -73,7 +73,7 @@
                   <div class="postsignup">
                           <div class="error" *ngIf="postSubmit" >{{error}}</div>
                       </div>
-                  <!-- <div class="col-xs-12 col-sm-6"> -->
+                  <!-- <div class="col-xs-12 col-sm-6"> --
                       <div class="form-group">
                           <label for="fname">First Name</label>
                           <input 
@@ -89,9 +89,9 @@
                           *ngIf="!fname.valid && fname.touched" 
                           class="help-block">Enter Valid Input!</span>
                       </div>
-                  <!-- </div> -->
+                  <!-- </div> --
                   
-                  <!-- <div class="col-xs-12 col-sm-6"> -->
+                  <!-- <div class="col-xs-12 col-sm-6"> --
                       <div class="form-group">
                           <label for="lname">Last Name</label>
                           <input 
@@ -107,7 +107,7 @@
                           *ngIf="!lname.valid && lname.touched" 
                           class="help-block">Enter Valid Input!</span>
                       </div>
-                  <!-- </div> -->
+                  <!-- </div> --
               
                   <div class="form-group">
                       
@@ -164,4 +164,227 @@
           </div>       
         </div>
       </div> 
-              
+               -->
+
+               <div class="row login_signup" >
+                    <nav class="login">
+                        <div class="container">
+                          <div class="nav">
+                              <img [src]="logoImage">
+                          </div>
+                        </div>
+                    
+                      </nav>
+                      <div 
+                        *ngIf="requestSent"
+                        id="preloader">
+                        <div class="loader-main mx-auto">
+                          <img 
+                            [src]="loaderImage"
+                            style="max-height:80px; max-width:80px; float: left; margin-right: 15px;" 
+                            class="img-responsive"
+                            >
+                        </div>
+                      </div>
+                
+                      <section class="form_sec">
+                          <div class="container">
+                            <div class="form">
+                                
+                                <ul class="tab-group">
+                                  <li 
+                                      class="tab"
+                                      [ngClass]="{'active': showLogin === true}"
+                                  ><a (click)="loginPage()">Admin Log In</a></li>
+                                  <!-- <li 
+                                      [ngClass]="{'active': showRegister === true}"
+                                      class="tab "
+                                  ><a (click)="registerPage()">Sign Up</a></li> -->
+                                  
+                                </ul>
+                                
+                                <div class="tab-content">
+                                
+                                  
+                                  <div *ngIf="showLogin">   
+                                    
+                                    
+                                    <form (ngSubmit)="onSignin(f)" #f="ngForm">
+                                      <div class="field-wrap form-group">
+                                        <label
+                                          [ngClass]="{'active': emailInput === 1}"
+                                        >
+                                          Email 
+                                        </label>
+                                        <input 
+                                        type="email text"
+                                        required 
+                                        autocomplete="off"
+                                        name="email" 
+                                        ngModel 
+                                        [(ngModel)]="newEmail"
+                                        (input)="onChangeValue($event.target.value, 'email')"
+                                        #email="ngModel"
+                                        email
+                                        />
+                                        <span 
+                                        *ngIf="(!email.valid && email.touched) || showErrorMsg " 
+                                        style="color: var(--auth-forgot-pwd);">Enter Valid Email Address!</span>
+                                      </div>
+                                    
+                                      <div class="field-wrap">
+                                        <label
+                                          [ngClass]="{'active': passwordInput === 1}"
+                                        >
+                                          Password
+                                        </label>
+                                        <input 
+                                        type="password"
+                                        required 
+                                        autocomplete="off"
+                                        name="password" 
+                                        ngModel 
+                                        [(ngModel)]="newPwd"
+                                        (input)="onChangeValue($event.target.value, 'pwd')"
+                                        #pwd="ngModel"
+                                        />
+                                        <span 
+                                        *ngIf="(!pwd.valid && pwd.touched) || pwdErrorMsg  " 
+                                        style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
+                                      </div>
+                
+                                      <!-- <p class="forgot"><a routerLink="/forgot_password">Forgot Password?</a></p> -->
+                
+                                      <div class="postsignup">
+                                        <div class="error" *ngIf="postSubmit" >{{error}}</div>
+                                      </div>
+                                      <div align="center" class="submit_button">
+                                        <button class="button button-block" type="submit">Log In</button>
+                                      </div>
+                                    </form>
+                
+                                  </div>
+                          
+                                    <div *ngIf =showRegister>   
+                                   
+                                    
+                                    <form (ngSubmit)="onSignup(f)" 
+                                          #f="ngForm">
+                          
+                                      <div class="field-wrap">
+                                        <label
+                                          [ngClass]="{'active': emailInput === 1}"
+                                        >
+                                          Email 
+                                        </label>
+                                        <input 
+                                            type="email"
+                                            required 
+                                            autocomplete="off"
+                                            name="email" 
+                                            ngModel 
+                                            required
+                                            email
+                                            [(ngModel)]="newEmail"
+                                            (input)="onSearchEmail($event.target.value)"
+                                            (click)="formEmailInput(1)"
+                                            (input)="onChangeValue($event.target.value, 'email')"
+                                            #email="ngModel"
+                                        />
+                                        <span 
+                                        *ngIf="(!email.valid && email.touched) || showErrorMsg" 
+                                        style="color: var(--auth-forgot-pwd);">{{ErrorMsg}}</span>
+                                        <!-- <span 
+                                        *ngIf="showErrorMsg" 
+                                        style="color: var(--auth-forgot-pwd);">{{ErrorMsg}}</span> -->
+                                      </div>
+                                      
+                                      
+                                      <div class="field-wrap">
+                                        <label
+                                          [ngClass]="{'active': passwordInput === 1}"
+                                        >
+                                          Set A Password
+                                        </label>
+                                        <input 
+                                            name="password" 
+                                            ngModel 
+                                            [(ngModel)]="newPwd"
+                                            type="password"
+                                            required 
+                                            autocomplete="off"
+                                            (click)="formInputClick(2)"
+                                            (input)="onChangeValue($event.target.value, 'pwd')"
+                                            #pwd="ngModel"
+                                            minlength="6"
+                                            />
+                                            <span 
+                                            *ngIf="(!pwd.valid && pwd.touched ) || pwdErrorMsg" 
+                                            style="color: var(--auth-forgot-pwd);">Minimum Length 6 Digits</span>
+                                      </div>
+                          
+                                       <div class="field-wrap">
+                                        <label
+                                        [ngClass]="{'active': numberInput === 1}"
+                                        >
+                                          Mobile Number
+                                        </label>
+                                        <input 
+                                            type="number"
+                                            required 
+                                            autocomplete="off"
+                                            name="phoneNumber" 
+                                            ngModel 
+                                            [(ngModel)]="newNumber"
+                                            #phoneNumber="ngModel"
+                                            (click)="formInputClick(3)"
+                                            (input)="onChangeValue($event.target.value, 'no')"
+                                        />
+                                        <span 
+                                        *ngIf="(!phoneNumber.valid && phoneNumber.touched) || numberInvalid" 
+                                        style="color: var(--auth-forgot-pwd);">{{NumMsg}}</span>
+                                      </div>
+                          
+                                      <div class="terms">
+                                        <p style="color:#666666;">
+                                          For further details regarding privacy, please visit our 
+                                          <span style="color:#f7941e; font-weight:bold;">
+                                            Privacy Policy</span>.</p>
+                                        <!-- <form action="#"> -->
+                                        <span>
+                                          <!-- <input type="checkbox" name="terms" value="terms">  -->
+                                          <mat-checkbox
+                                              style="font-size: 18px; "
+                                              name="checkbox" 
+                                              ngModel 
+                                              required
+                                          ></mat-checkbox>
+                                          <span style="color:#f7941e;"> Accept </span> 
+                                          Terms of Services<br></span>
+                
+                                          <span 
+                                          *ngIf="(!phoneNumber.valid && phoneNumber.touched) || acceptInvalid" 
+                                          style="color: var(--auth-forgot-pwd);">Please Accept Terms & Conditions. </span>
+                                        <!-- </form> -->
+                                      </div>
+                                      <div class="postsignup">
+                                        <div class="error" *ngIf="postSubmit" >{{error}}</div>
+                                      </div>
+                                       <div align="center" class="submit_button">
+                                          <button type="submit" class="button button-block">Get Started</button>
+                                      </div>
+                                    </form>
+                          
+                                  </div>
+                                  
+                                </div>
+                          </div> <!-- /form -->
+                          </div>
+                          </section>
+                </div>
+
+
+
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+  crossorigin="anonymous"></script>

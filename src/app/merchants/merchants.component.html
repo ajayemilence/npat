@@ -1,5 +1,4 @@
-<div class="row">
-    <!-- <div class="col-xs-12 col-md-10 col-sm-10 col-sm-offset-1" -->
+<!-- <div class="row">
   <div class="col-xs-12 "
        style="margin-top:30px;
               width:90%">
@@ -65,13 +64,13 @@
                 <td><i 
                     (click)="openModal(template,  merchant)"
                     class="fa fa-times deleteIcon"></i></td>
-                    <!-- (click)="deleteMerchant(merchant.merchant_id)" -->
+                    <!-- (click)="deleteMerchant(merchant.merchant_id)" 
               </tr>
           </ng-container>
           
       </table>
   
-      <!-- Pagination -->
+
       <mat-paginator 
               class="paginator"
               [length]="length"
@@ -94,7 +93,7 @@
           >{{page}}</a>
           <a href="#">&raquo;</a>
         </div>
-      </div> -->
+      </div> -
       
     
     </div>
@@ -103,17 +102,100 @@
 
         
   </div>
-</div>
+</div> -->
 
 
+<div class="table-responsive container">
+  <div class="add_merchants">
+      <span><h3>Merchants</h3></span>
+     <span class="float-right buttons_addmerchants"> <a routerLink="/merchants/new">
+       <button class="btn btn-md ">Add Merchants</button></a></span>
+   </div>
+   <!-- <section  *ngIf="isLoading">
+      <div class="loading">Loading&#8230;</div>
+  </section> -->
+  <div 
+    *ngIf="isLoading"
+    id="preloader">
+    <div class="loader-main mx-auto">
+        <img 
+        [src]="loaderImage"
+        style="max-height:80px; max-width:80px; float: left; margin-right: 15px;" 
+        class="img-responsive"
+        >
+    </div>
+    </div>
+  <section class="table_entrydata">
+       <table class="table table-striped">
+          <thead>
+            <tr>
+              <th>Merchant id</th>
+              <th>Store Name</th>
+              <th>Email</th>
+              <th>Address</th>
+              <th>Phone No</th>
+              <th>Status</th>
+              <th></th>    
+            </tr>
+          </thead>
+          <tbody>
+              <tr 
+              *ngFor="let merchant of merchants"
+              >
+                <td 
+                  style="cursor: pointer;"
+                  routerLink="/merchants/merchant/info"
+                  (click)="info(merchant)"  
+                  class="id">{{ merchant.merchant_id }}</td>
+                <td>{{ merchant.merchant_display_name}}</td>
+                <td>{{merchant.merchant_email}}</td>
+                <td>{{merchant.merchant_address}}</td>
+                <td
+                style="padding-right: 5px"
+                >{{merchant.merchant_phone_no}}</td>
+                <td
+                style="padding-right: 5px"
+                >{{merchant.merchant_verification_status}}</td>
+                <td
+                (click)="openModal(template,  merchant)"
+                ><i 
+                    (click)="openModal(template,  merchant)"
+                    class="fas fa-trash"></i></td>
+                    <!-- (click)="deleteMerchant(merchant.merchant_id)"  -->
+              </tr>
+            
+           
+          </tbody>
+           
+      </table>
+       
+      <nav aria-label="...">
+            <ul class="pagination float-right">
+                  <li class="page-item pointer "
+                      [ngClass]="{'disabled':currentPage === 1}"
+                  >
+                    <a class="page-link " (click)="prev()" tabindex="-1"><strong> Previous</strong></a>
+                  </li>
+                  <li 
+                  *ngFor="let page of totalPages"
+                  [ngClass]="{
+                    'active':currentPage === page + 1
+                  }"
+                  (click)="changePage(page + 1)"
+                  class="page-item "><a class="page-link">{{page + 1}}</a></li>
+                  <li class="page-item pointer"
+                      [ngClass]="{'disabled':currentPage === totalPages.length}"
+                  > 
+                    <a class="page-link " (click)="next()" tabindex="1"><strong>Next</strong></a>
+                  </li>
+            </ul>
+      </nav>
 
-<!-- <mat-paginator 
-class="paginator"
-[length]="length"
-[pageSize]="pageSize"
-[pageSizeOptions]="pageSizeOptions"
-(page)="pageEvent = changePage($event)">
-</mat-paginator> -->
+
+  </section>
+</div>  
+
+
 
  
 <ng-template #template>
@@ -124,19 +206,30 @@ class="paginator"
     </button>
   </div>
   <div class="modal-body">
+      <div 
+      *ngIf="isDeleting"
+      id="preloader">
+      <div class="loader-main mx-auto">
+          <img 
+          [src]="loaderImage"
+          style="max-height:80px; max-width:80px; float: left; margin-right: 15px;" 
+          class="img-responsive"
+          >
+      </div>
+      </div>
       <h4>Are you sure you want to delete {{deleteMerchnat.merchant_display_name}} ? </h4>
 
         <hr>
 
-      <div class="row"
+      <div class="row add_merchants"
           style="float: right; margin-right: 18px;"
       >
-        <button class="btn btnAdd btn-primary"
+        <button class="btn btn-md "
           (click)="modalRef.hide()"
           >Cancel</button>
         <button 
           (click)="deleteMerchant(deleteMerchnat.merchant_id)"
-          class="btn btnAdd btn-primary"> Delete </button>
+          class="btn btn-md"> Delete </button>
       </div>
       <div class="row"></div>
       <div class="row"></div>

@@ -1,4 +1,4 @@
-import { Component, OnInit, TemplateRef, ViewChild, ElementRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { CatalogueService } from '../catalogue.service';
 import { NgForm } from '@angular/forms';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap';
@@ -13,13 +13,16 @@ import { Router } from '@angular/router';
 import { GlobalService } from '../../../../shared/global.service';
 import { LocalStorageService } from '../../../../shared/local-storage.service';
 import { ThrowStmt } from '@angular/compiler';
+import { GLobalErrorService } from '../../../../shared/global-error.service';
 
 declare var x;
 declare var y;
 @Component({
   selector: 'app-product-edit',
   templateUrl: './product-edit.component.html',
-  styleUrls: ['./product-edit.component.css']
+  styleUrls: ['./product-edit.component.css'],
+  encapsulation: ViewEncapsulation.None
+
 })
 export class ProductEditComponent implements OnInit, OnDestroy {
   isLoading =  false;
@@ -151,7 +154,8 @@ newAttributes = [];
               private router: Router,
               public snackBar: MatSnackBar,
               private globalService: GlobalService,
-              private localStorageService: LocalStorageService
+              private localStorageService: LocalStorageService,
+              private globalErrorService: GLobalErrorService
             ) { }
 
   ngOnInit() {
@@ -446,16 +450,12 @@ newAttributes = [];
 
       } else {
         console.log(response.output.payload.message);
-        this.snackBar.open('Something went wrong please try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(response);
       }
      },
      (error) => {
        console.log('error', error);
-       this.snackBar.open('Something went wrong please try again', 'Dismiss', {
-         duration: 5000,
-       });
+       this.globalErrorService.errorOccured(error);
      }
    );
   }
@@ -470,7 +470,7 @@ newAttributes = [];
       cat: (this.selectedSub === undefined && this.selectedCategory !== undefined) ? this.selectedCategory.category_id : '' ,
       super: (this.selectedSub === undefined && this.selectedCategory === undefined) ? this.selectedSuper.category_id : ''
     };
-    console.log(search);
+
      this.productService.getAttribute(search).subscribe(
      (response) => {
 
@@ -478,11 +478,13 @@ newAttributes = [];
         this.attributeOptions = [...response.data];
        } else {
          console.log(response);
+         this.globalErrorService.errorOccured(response);
        }
 
      },
      (error) => {
        console.log(error);
+       this.globalErrorService.errorOccured(error);
      }
    );
   }
@@ -583,9 +585,7 @@ onFileChange(file: FileList) {
       } else {
         this.noMoreImages = true;
         if (this.router.url === '/catalogue/product/edit') {
-          this.snackBar.open('Only upto 5 Images can be uploaded', 'ok', {
-            duration: 5000,
-          });
+          this.globalErrorService.showSnackBar('Only upto 5 Images can be uploaded');
         }
 
 
@@ -755,17 +755,13 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
                 const user = JSON.parse(localStorage.getItem('user-data'));
                  if (user.merchant_id !== undefined) {
-                  this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
-                    duration: 5000,
-                  });
+                  this.globalErrorService.showSnackBar('Product Requested To Admin Successfully');
                  }
 
              } else {
                 const user = JSON.parse(localStorage.getItem('user-data'));
                 if (user.merchant_id !== undefined) {
-                 this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
-                   duration: 5000,
-                 });
+                 this.globalErrorService.showSnackBar('Product Requested To Admin Successfully');
                 }
                 const merchant = JSON.parse(localStorage.getItem('user-data'));
                 if (merchant.merchant_id !== null) {
@@ -780,16 +776,12 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
              // this.postSubmit = true;
              // this.error = response.output.payload.message;
              console.log(response.output.payload.message);
-             this.snackBar.open('Somethig went wrong, please try again!', 'Dismiss', {
-                duration: 5000,
-             });
+             this.globalErrorService.errorOccured(response);
            }
           },
           (error) => {
             console.log('error', error);
-            this.snackBar.open('Somethig went wrong, please try again!', 'Dismiss', {
-                duration: 5000,
-            });
+            this.globalErrorService.errorOccured(error);
           }
         );
         }
@@ -886,21 +878,16 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
               } else {
                 console.log(response.output.payload);
-                this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
-                  duration: 5000,
-                });
-
                 const requestMerchant = JSON.parse(localStorage.getItem('request-merchant'));
                 if (requestMerchant !== null) {
                   this.router.navigate(['/requests']);
                 }
+                this.globalErrorService.errorOccured(response);
               }
             },
             (error) => {
               console.log(error);
-              this.snackBar.open('Something went wrong, please try again later', 'Dismiss', {
-                duration: 5000,
-              });
+              this.globalErrorService.errorOccured(error);
             }
           );
         }
@@ -933,29 +920,32 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
           backdrop: 'static'
         });
     } else if (this.router.url === '/catalogue/product/new') {
+        console.log('here', this.selectedSuper);
         if (this.selectedSuper === undefined) {
-          this.snackBar.open('Please Select a Category', 'Dismiss', {duration: 3000});
+          this.globalErrorService.showSnackBar('Please Select a Category');
         } else if (this.selectedSuper.super_category_hasChild === 1 ) {
+
+
             if (this.selectedSuper.category.length === 0) {
               this.modalRef = this.modalService.show(template, {
                 backdrop: 'static'
               });
             } else if (this.selectedSuper.category.length > 0 && this.selectedCategory === undefined)  {
-              this.snackBar.open('Please Select a Category', 'Dismiss', {duration: 3000});
+              this.globalErrorService.showSnackBar('Please Select a Category');
             } else if ( this.selectedCategory.category_hasChild === 2) {
                 this.modalRef = this.modalService.show(template, {
                   backdrop: 'static'
                 });
             } else if (this.selectedCategory.category_hasChild === 1) {
               if (this.selectedCategory.Sub_Category.length > 0 && this.selectedSub === undefined) {
-                this.snackBar.open('Please Select a Category', 'Dismiss', {duration: 3000});
+                this.globalErrorService.showSnackBar('Please Select a Category');
               } else {
                 this.modalRef = this.modalService.show(template, {
                   backdrop: 'static'
                 });
               }
             }
-        } else if (this.selectedSuper.super_category_hasChild === 2) {
+        } else if (this.selectedSuper.super_category_hasChild === 2 || this.selectedSuper.super_category_hasChild === 0) {
           this.modalRef = this.modalService.show(template, {
             backdrop: 'static'
           });
@@ -1024,25 +1014,19 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
                 // const finalValues = [];
                 this.table[indexTable].values = values;
 
-                this.snackBar.open('Edited Attribute Successfully!', 'Dismiss', {
-                  duration: 5000,
-                });
+                this.globalErrorService.showSnackBar('Edited Attribute Successfully!');
                 // reseting values
                 this.keyName = '';
                 this.valueOption = [];
                 this.modalRef.hide();
                 this.fruits = [];
               } else {
-                this.snackBar.open('Failed to edit Attributes, please try again!', 'Dismiss', {
-                  duration: 5000,
-                });
+                this.globalErrorService.errorOccured(response);
               }
             },
             (error) => {
               console.log(error);
-              this.snackBar.open('Failed to edit Attributes, please try again!', 'Dismiss', {
-                duration: 5000,
-              });
+              this.globalErrorService.errorOccured(error);
             }
           );
 
@@ -1159,9 +1143,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
               this.valueOption = [];
               this.modalRef.hide();
               this.fruits = [];
-              this.snackBar.open('Failed to add Attributes, please try again!', 'Dismiss', {
-                duration: 5000,
-              });
+              this.globalErrorService.errorOccured(response);
             }
 
           },
@@ -1172,9 +1154,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
             this.valueOption = [];
             this.modalRef.hide();
             this.fruits = [];
-            this.snackBar.open('Failed to add Attributes, please try again!', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(error);
           }
         );
       }
@@ -1239,20 +1219,14 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
       (response) => {
           if (response.success === 200) {
             this.table.splice(index, 1);
-            this.snackBar.open('Attribute Deleted Successfully!', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.showSnackBar('Attribute Deleted Successfully!');
           } else {
             console.log(response);
-            this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
           }
       }, (error) => {
           console.log(error);
-          this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1318,7 +1292,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
         // val => val.name === this.keyName
         // const index = this.attributes.findIndex(val => val.selectedValue !== '');
         const index = this.newAttributes.findIndex(val => val.selectedValue === '');
-        console.log(this.newAttributes);
+
         if (index < 0) {
           this.attributes.forEach(attribute => {
             const arry2 = {
@@ -1336,7 +1310,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
               quantity : form.value.quantity
             };
             this.tempTable.push(currentRow);
-            console.log(this.tempTable);
+
             form.reset();
         } else {
           this.quantityError = true;
@@ -1428,7 +1402,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
     });
 
 
-    console.log(final);
+
     this.productService.addQuantity(final).subscribe(
       (response) => {
         if (response.success === 200) {
@@ -1485,9 +1459,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
           } else {
               if (user.merchant_id !== undefined) {
                 this.router.navigate(['/catalogue']);
-                this.snackBar.open('Product Requested To Admin Successfully', 'ok', {
-                  duration: 5000,
-                });
+                this.globalErrorService.showSnackBar('Product Requested To Admin Successfully');
               } else if (user.admin_id !== undefined) {
                 this.router.navigate(['/merchants/merchant/catalogue']);
               }
@@ -1495,16 +1467,12 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
 
         } else {
           console.log(response);
-          this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.errorOccured(response);
         }
       },
       (error) => {
         console.log(error);
-        this.snackBar.open('Something Went Wrong, please try again!', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1517,21 +1485,15 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
       (response) => {
         if (response.success === 200) {
           this.InventoryTableEdit.splice(index, 1);
-          this.snackBar.open('Inventory Deleted Successfully!', 'Dismiss', {
-            duration: 5000,
-          });
+          this.globalErrorService.showSnackBar('Inventory Deleted Successfully!');
         } else {
             console.log(response);
-            this.snackBar.open('Something went wrong please try again', 'Dismiss', {
-              duration: 5000,
-            });
+            this.globalErrorService.errorOccured(response);
         }
 
       }, (error) => {
         console.log(error);
-        this.snackBar.open('Something went wrong please try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.errorOccured(error);
       }
     );
   }
@@ -1577,9 +1539,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
       // const index2 = actual.findIndex(val => val.product_spec_values === value.toString());
 
       if (index < 0) {
-        this.snackBar.open('Something went wrong please try again', 'Dismiss', {
-          duration: 5000,
-        });
+        this.globalErrorService.showSnackBar('Something went wrong, try again later ');
       } else {
           const data = {
             id : actual[index].product_inventory_id,
@@ -1590,19 +1550,13 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
           this.productService.editInventory(data).subscribe(
             (response) => {
               if (response.success === 200) {
-                this.snackBar.open('Quantity Updated successfully!', 'Dismiss', {
-                  duration: 5000,
-                });
+                this.globalErrorService.showSnackBar('Quantity Updated successfully!');
               } else {
-                this.snackBar.open('Something went wrong please try again', 'Dismiss', {
-                  duration: 5000,
-                });
+                this.globalErrorService.errorOccured(response);
               }
           }, (error) => {
               console.log(error);
-              this.snackBar.open('Something went wrong please try again', 'Dismiss', {
-                duration: 5000,
-              });
+              this.globalErrorService.errorOccured(error);
           });
           this.EditQuantityArray = [];
           this.InventoryTableEdit[this.EditQuantityIndexValue].quantity = form.value.quantity;
@@ -1622,17 +1576,29 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
   addQuantityModal(template) {
     this.newAttributes = [] ;
 
-    this.attributes.forEach(attribute => {
-      if (attribute.checked === true) {
-          this.newAttributes.push(attribute);
-      }
-    });
+    // this.attributes.forEach(attribute => {
+    //   if (attribute.checked === true) {
+    //       this.newAttributes.push(attribute);
+    //   }
+    // });
+    // const promise = new Promise ((resolve, reject) => {
+      this.attributes.forEach((attribute, index) => {
 
-    this.modalRef.hide();
-    this.defaultquantity = '';
-    this.modalRef = this.modalService.show(template, {
-      backdrop: 'static'
-    });
+        if (attribute.checked === true) {
+            this.newAttributes.push(attribute);
+        }
+        if (this.attributes.length - 1 === index) {
+            this.modalRef.hide();
+            this.defaultquantity = '';
+            this.modalRef = this.modalService.show(template, {
+              backdrop: 'static'
+            });
+        }
+      });
+
+    // });
+
+
     // // use when going back
     // this.tempTable = [];
     // this.attributes = [];
@@ -1692,7 +1658,7 @@ addProductForm(form: NgForm, template: TemplateRef<any>) {
     this.tempTable = [];
     this.attributes = [];
     this.tempAttribute = [...this.EditProduct.pricing_array[0].product_spec, ...this.newAttributesAdded];
-    console.log(this.tempAttribute);
+
     this.tempAttribute.forEach(attribute => {
         attribute.product_spec_value.split(',');
         const singleAttribute = {

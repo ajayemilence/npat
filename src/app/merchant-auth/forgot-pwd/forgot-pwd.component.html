@@ -1,0 +1,252 @@
+<div class="row" style="margin-top: 60px;" *ngIf="otpPage">
+    <div class="container">
+        <section class="Enter_OTP">
+            <div class="jumbotron mx-auto">
+              <div class="logo">
+                <img [src]="logoImage">
+            </div>
+              <h1>Enter OTP</h1>
+              <div class="postsignup">
+                  <div class="error" *ngIf="postSubmit" >{{error}}</div>
+              </div>
+              <form 
+                (ngSubmit)="otpform(f)" #f="ngForm">
+                <div class="form-group">  
+                  <!-- <input type="text number" class="form-control" placeholder="Enter Email/Phone number" id="usr"> -->
+                  <input 
+                    type="number"
+                    id="otp" 
+                    name="otp" 
+                    ngModel 
+                    class="inputField"
+                    required
+                    placeholder="Enter OTP"
+                    #otp="ngModel"
+                    maxlength="4"
+                    >
+                    <span 
+                    *ngIf="!otp.valid && otp.touched" 
+                    style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
+                </div>
+                <button class="btn btn-primary" type="submit">Next</button>
+              </form>       
+           </div>
+        </section>
+          
+      </div>
+  <!-- <div 
+    class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3"> 
+    <div class="row  col-xs-8 col-xs-offset-2 border">
+ 
+     <div class="row" style="margin-top: 5px; margin-bottom: 5px;">      
+        <form (ngSubmit)="otpform(f)" #f="ngForm" >
+
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
+        <div class="form-group">
+            <label for="otp" class="page-title"><h1>Enter OTP: </h1></label>
+            <input 
+            type="number" 
+            id="otp" 
+            name="otp" 
+            ngModel 
+            class="form-control input"
+            required
+            placeholder="Enter OTP"
+            #otp="ngModel"
+            maxlength="4"
+            >
+            <span 
+            *ngIf="!otp.valid && otp.touched " 
+            class="help-block">Enter Valid Input!</span>
+        </div>
+        <button class="btn btn-primary login-btn" type="submit" >Next</button>
+        </form> 
+
+    
+      </div>
+    </div>       
+  </div> -->
+</div> 
+        
+<div 
+  *ngIf="requestSent"
+  id="preloader">
+  <div class="loader-main mx-auto">
+    <img 
+      [src]="loaderImage"
+      style="max-height:80px; max-width:80px; float: left; margin-right: 15px;" 
+      class="img-responsive"
+      >
+  </div>
+</div>
+<div class="row" style="margin-top: 60px;" *ngIf=usernamePage>
+  <!-- <div 
+    class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3"> 
+    <div class="row  col-xs-8 col-xs-offset-2 border">
+ 
+     <div class="row" style="margin-top: 5px; margin-bottom: 5px;">      
+        <form (ngSubmit)="verifyForm(f)" #f="ngForm" >
+
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
+        <div class="form-group">
+            <label for="username" class="page-title"><h1>Enter Username: </h1></label>
+            <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            ngModel 
+            class="form-control input"
+            required
+            placeholder="Enter Email/Phone number"
+            #username="ngModel"
+            >
+            <span 
+            *ngIf="!username.valid && username.touched " 
+            class="help-block">Enter Valid Input!</span>
+        </div>
+        <button class="btn btn-primary login-btn" type="submit" >Next</button>
+        </form> 
+
+    
+      </div>
+    </div>       
+  </div> -->
+  <div class="container">
+    <section class="Enter_OTP">
+        <div class="jumbotron mx-auto">
+          <div class="logo">
+            <img [src]="logoImage">
+        </div>
+          <h1>Enter Username</h1>
+          
+          <form 
+                (ngSubmit)="verifyForm(f)" #f="ngForm">
+            <div class="form-group">  
+              <!-- <input type="text number" class="form-control" placeholder="Enter Email/Phone number" id="usr"> -->
+              <input 
+                type="text" 
+                id="username" 
+                name="username" 
+                ngModel 
+                class="inputField"
+                required
+                placeholder="Enter Email/Phone number"
+                #username="ngModel"
+                >
+                <span 
+                *ngIf="!username.valid && username.touched " 
+                style="color: var(--auth-forgot-pwd);">Enter Valid Input!</span>
+            </div>
+            <button class="btn btn-primary" type="submit">Next</button>
+          </form>       
+       </div>
+    </section>
+      
+  </div>
+</div> 
+
+<div class="row" style="margin-top: 60px;" *ngIf=passwordPage>
+  <!-- <div 
+    class="col-xs-12 col-sm-8 col-md-6 col-sm-offset-2 col-md-offset-3"> 
+    <div class="row  col-xs-8 col-xs-offset-2 border">
+ 
+    <div class="row" style="margin-top: 5px; margin-bottom: 5px;">      
+      <form (ngSubmit)="pwdForm(f)" #f="ngForm" >
+
+        <div class="postsignup">
+            <div class="error" *ngIf="postSubmit" >{{error}}</div>
+        </div>
+          <div class="form-group">
+              <label for="pwd">Password</label>
+              <input 
+              type="password" 
+              id="pwd" 
+              name="pwd" 
+              ngModel 
+              class="form-control input"
+              required
+              placeholder="Enter Password"
+              #pwd="ngModel"
+              >
+              <span *ngIf="pwdValid" 
+              class="help-block">Minimum 6 Digits!</span>
+          </div>
+          <div class="form-group">
+              <label for="cpwd">Confirm Password</label>
+              <input 
+              type="password" 
+              id="cpwd" 
+              name="cpwd" 
+              ngModel 
+              class="form-control input"
+              required
+              placeholder="Rewrite Password"
+              >
+              <span *ngIf="rewritePwd"
+              class="help-block">Please Rewrite Same Password!</span>
+          </div>
+        <button class="btn btn-primary login-btn" type="submit" >Next</button>
+      </form> 
+
+    
+      </div>
+    </div>       
+  </div> -->
+
+  <div class="container">
+      <section class="Enter_OTP">
+          <div class="jumbotron mx-auto">
+            <div class="logo">
+              <img [src]="logoImage">
+          </div>
+            <h1>New Password</h1>
+            
+            <form 
+              (ngSubmit)="pwdForm(f)" #f="ngForm">
+              <div class="form-group">  
+                <label><strong>Password</strong></label>
+                <input 
+                  type="password" 
+                  id="pwd" 
+                  name="pwd"  
+                  ngModel 
+                  class="inputField"
+                  required
+                  placeholder="Enter Password"
+                  >
+                  <span 
+                  *ngIf="pwdValid"  
+                  style="color: var(--auth-forgot-pwd);">Minimum 6 Digits!</span>
+              </div>
+              <div class="form-group">  
+                  <label><strong>Confirm Password</strong></label>
+                  <input 
+                    type="password" 
+                    id="cpwd" 
+                    name="cpwd" 
+                    ngModel 
+                    class="inputField"
+                    required
+                    placeholder="Rewrite Password"
+                    #pwd="ngModel"
+                    >
+                    <span 
+                      *ngIf="rewritePwd"  
+                    style="color: var(--auth-forgot-pwd);">Please Rewrite Same Password!</span>
+                </div>
+              <button class="btn btn-primary" type="submit">Save</button>
+            </form>       
+         </div>
+      </section>
+        
+    </div>
+
+</div> 
+
+<!-- Popper.JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.0/umd/popper.min.js" integrity="sha384-cs/chFZiN24E4KMATLdqdvsezGxaGsi4hLGOzlXwp5UZB1LY//20VyM2taTB4QvJ"
+  crossorigin="anonymous"></script>
