@@ -58,7 +58,7 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAll', (req, res) => {
-        Credit.find({} , (err, credits) => {
+        Credit.findOne({} , (err, credits) => {
             if (err) {
                 res.json({ success: 0, msg: "error occurred while retriving the credits" });
             }
