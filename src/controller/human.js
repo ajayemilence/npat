@@ -85,6 +85,7 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAllNames', (req, res) => {
+        
         Human.find({}, (err, names) => {
             if (err) {
                 res.json({ success: 0, msg: "error occurred while retriving the names of human" });
@@ -92,6 +93,10 @@ module.exports = ({ config, db }) => {
             return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
         });
     });
+
+
+
+
 
     api.put('/updateHuman/:id', (req, res) => {
         Human.findById(req.params.id, (err, human) => {

@@ -29,63 +29,63 @@ module.exports = ({ config, db }) => {
     // ======csv file uplodation =================
 
 
-app.use('/image', express.static(__dirname + '../uploads'));
+    app.use('/image', express.static(__dirname + '../uploads'));
 
     api.post('/csvsample', (req, res) => {
 
         let upload = multer({ storage: storage }).single('csvFile');
         upload(req, res, (err) => {
-            if(err){
-                return res.status(500).json({success : 0 , msg : "error in uploading" , error : err})
+            if (err) {
+                return res.status(500).json({ success: 0, msg: "error in uploading", error: err })
             }
 
-//             const csvFilePath='<path to csv file>'
-// const csv=require('csvtojson')
-// csv()
-// .fromFile(csvFilePath)
-// .then((jsonObj)=>{
-//     console.log(jsonObj);
-  
-// });
+            //             const csvFilePath='<path to csv file>'
+            // const csv=require('csvtojson')
+            // csv()
+            // .fromFile(csvFilePath)
+            // .then((jsonObj)=>{
+            //     console.log(jsonObj);
+
+            // });
 
             var csvFileName = req.file.filename;
 
             fs.createReadStream('/root/npatAPI/src/uploads/' + csvFileName)
-            .pipe(csv())
-            .on('data', function(data) {
-                // body...
-                let human = new adminHuman({
-                    name: data[2],
-                     word: req.body.word,
-                    type: req.body.type,
-                    gender: req.body.gender,
-                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
-                    createdAt: moment().local().valueOf(),
-                    updatedAt: moment().local().valueOf(),
-                    language: req.body.language,
-                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
-                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
-                });
-                human.save((error, human) => {
-                    if (error) {
-                        res.json({ success: 0, msg: error });
-                    }
-                });
-                //===
+                .pipe(csv())
+                .on('data', function(data) {
+                    // body...
+                    let human = new adminHuman({
+                        name: data[2],
+                        word: req.body.word,
+                        type: req.body.type,
+                        gender: req.body.gender,
+                        createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                        createdAt: moment().local().valueOf(),
+                        updatedAt: moment().local().valueOf(),
+                        language: req.body.language,
+                        upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                        downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                    });
+                    human.save((error, human) => {
+                        if (error) {
+                            res.json({ success: 0, msg: error });
+                        }
+                    });
+                    //===
 
-                console.log(data[2] , "11111111111111");
-            })
-            .on('end', function(data) {
-                res.json({ success: 1, msg: "csv file uploaded" });
-                console.log('read finished');
-            })
+                    console.log(data[2], "11111111111111");
+                })
+                .on('end', function(data) {
+                    res.json({ success: 1, msg: "csv file uploaded" });
+                    console.log('read finished');
+                })
 
         });
     });
 
 
 
-// app.use('/image', express.static(__dirname + '/uploads'));
+    // app.use('/image', express.static(__dirname + '/uploads'));
 
 
 
@@ -150,26 +150,36 @@ app.use('/image', express.static(__dirname + '../uploads'));
 
 
     api.get('/getAllNames', (req, res) => {
-        if(req.query.lastId == "" || req.query.lastId == undefined) {
-        adminHuman.find({}).sort({$natural : -1}).limit(2).exec((err, names) => {
-            if (err) {
-                res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+        adminHuman.count({}, (err, humanCount) => {
+
+            var limit = 2;
+            console.log(humanCount);
+            var pages = Math.ceil(humanCount / limit);
+            console.log("count");
+             console.log(pages);
+            if (req.query.pageNumber == undefined 
+                || req.query.pageNumber == null 
+                || req.query.pageNumber == "" 
+                || req.query.pageNumber == 1){
+                skipCount = 0;
             }
-            return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
-        });
-    }
-    else {
-            adminHuman.find({ _id : {$lt : req.query.lastId} } ).limit(15).exec((err, names) => {
-                if(err) {
-                    return res.json({success : 0 , msg : "error while retriving" , error : err});
+            else {
+                skipCount = (req.query.pageNumber - 1) * limit
+                console.log(req.query.pageNumber);
+                console.log(skipCount);
+            }
+            adminHuman.find({}).sort({ name: 'asc' }).limit(2)
+            .skip(skipCount).exec((err, names) => {
+                if (err) {
+                    return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
                 }
-                return res.status(200).json({success : 1 , msg : "successfully" , data : names});
+                return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
             });
-        }
+        });
     });
 
 
-    
+
 
 
     api.put('/updateHuman/:id', (req, res) => {

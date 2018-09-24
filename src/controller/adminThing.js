@@ -111,27 +111,32 @@ module.exports = ({ config, db }) => {
 
     //===========================================
 
+
+
     api.get('/getAllthings', (req, res) => {
-        if(req.query.lastId == "" || req.query.lastId == undefined){
-        adminThing.find({}).sort({$natural : -1}).limit(2).exec((err, names) => {
-            if (err) {
-                res.json({ success: 0, msg: "error occurred while retriving the things" });
+        adminThing.count({}, (err, thingCount) => {
+
+            var limit = 2;
+            console.log(thingCount);
+            var pages = Math.ceil(thingCount / limit);
+            if (req.query.pageNumber == undefined 
+                || req.query.pageNumber == null 
+                || req.query.pageNumber == "" 
+                || req.query.pageNumber == 1){
+                skipCount = 0;
             }
-            return res.status(200).json({ success: 1, msg: "successfully get all names ", data: names });
-        });
-        }
-        else {
-            adminThing.find({ _id : {$lt : req.query.lastId} } ).limit(15).exec((err, names) => {
-                if(err) {
-                    return res.json({success : 0 , msg : "error while retriving" , error : err});
+            else {
+                skipCount = (req.query.pageNumber - 1) * limit
+            }
+            adminThing.find({}).sort({ name: 'asc' }).limit(2)
+            .skip(skipCount).exec((err, names) => {
+                if (err) {
+                    return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
                 }
-                return res.status(200).json({success : 1 , msg : "successfully" , data : names});
+                return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
             });
-        }
+        });
     });
-
-
-
 
 
 

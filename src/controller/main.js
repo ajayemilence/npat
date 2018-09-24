@@ -11,6 +11,7 @@ let AdminHuman = require('../model/adminHuman');
 let AdminPlace = require('../model/adminPlace');
 let AdminPlant = require('../model/adminPlant');
 let AdminThing = require('../model/adminThing');
+let Hints = require('../model/hints');
 
 
 module.exports = ({ config, db }) => {
@@ -32,16 +33,14 @@ module.exports = ({ config, db }) => {
         var rightBot;
         var wrongBot;
 
-        var languageWord ;
+        var languageWord;
 
         if (req.query.language == '1') {
             languageWord = "Arabian";
-        }
-        else if(req.query.language == '0') {
+        } else if (req.query.language == '0') {
             languageWord = "English";
-        }
-        else {
-            return res.json({success : 0 , msg : "Please send launguage code right"});
+        } else {
+            return res.json({ success: 0, msg: "Please send launguage code right" });
         }
 
         switch (req.query.round) {
@@ -114,57 +113,57 @@ module.exports = ({ config, db }) => {
 
         if (rightBot == 1) {
 
-                AdminAnimal.count({ word: req.query.word , language : languageWord}).exec(function(err, count) {
+            AdminAnimal.count({ word: req.query.word, language: languageWord }).exec(function(err, count) {
                 var random = Math.floor(Math.random() * count)
-                AdminAnimal.findOne({ word: req.query.word , language : languageWord}).skip(random).exec(
+                AdminAnimal.findOne({ word: req.query.word, language: languageWord }).skip(random).exec(
                     (err, animal) => {
-                        AdminHuman.count({ word: req.query.word , language : languageWord}).exec(function(err, counthuman) {
+                        AdminHuman.count({ word: req.query.word, language: languageWord }).exec(function(err, counthuman) {
                             var randomHuman = Math.floor(Math.random() * counthuman)
-                            AdminHuman.findOne({ word: req.query.word , language : languageWord}).skip(randomHuman).exec(
+                            AdminHuman.findOne({ word: req.query.word, language: languageWord }).skip(randomHuman).exec(
                                 (err, human) => {
 
-                                    AdminPlant.count({ word: req.query.word , language : languageWord}).exec(function(err, countplant) {
+                                    AdminPlant.count({ word: req.query.word, language: languageWord }).exec(function(err, countplant) {
                                         var randomplant = Math.floor(Math.random() * countplant)
-                                        AdminPlant.findOne({ word: req.query.word , language : languageWord}).skip(randomplant).exec(
+                                        AdminPlant.findOne({ word: req.query.word, language: languageWord }).skip(randomplant).exec(
                                             (err, plant) => {
 
-                                                AdminThing.count({ word: req.query.word , language : languageWord}).exec(function(err, countthing) {
+                                                AdminThing.count({ word: req.query.word, language: languageWord }).exec(function(err, countthing) {
                                                     var randomthing = Math.floor(Math.random() * countthing)
-                                                    AdminThing.findOne({ word: req.query.word , language : languageWord}).skip(randomthing).exec(
+                                                    AdminThing.findOne({ word: req.query.word, language: languageWord }).skip(randomthing).exec(
                                                         (err, thing) => {
 
-                                                            AdminPlace.count({ word: req.query.word , language : languageWord}).exec(function(err, countplace) {
+                                                            AdminPlace.count({ word: req.query.word, language: languageWord }).exec(function(err, countplace) {
                                                                 var randomplace = Math.floor(Math.random() * countplace)
-                                                                AdminPlace.findOne({ word: req.query.word , language : languageWord}).skip(randomplace).exec(
+                                                                AdminPlace.findOne({ word: req.query.word, language: languageWord }).skip(randomplace).exec(
                                                                     (err, place) => {
                                                                         // Tada! random user
                                                                         var data = new Object();
-                                                                        if(human == null) {
-                                                                        data.humanName = "nullWord";
-                                                                        }else {
-                                                                         data.humanName = human.name;
-                                                                         }
-                                                                         if(place == null) {
-                                                                        data.placeName = "nullWord";
-                                                                        }else {
-                                                                         data.placeName = place.name;
-                                                                         }
-                                                                         if(animal == null) {
-                                                                        data.animalName = "nullWord";
-                                                                        }else {
-                                                                         data.animalName = animal.name;
-                                                                         }
-                                                                         if(thing == null) {
-                                                                        data.thingName = "nullWord";
-                                                                        }else {
-                                                                         data.thingName = thing.name;
-                                                                         } 
-                                                                         if(plant == null) {
-                                                                        data.plantName = "nullWord";
-                                                                        }else {
-                                                                         data.plantName = plant.name;
-                                                                         }                                                         
-                                                                        
+                                                                        if (human == null) {
+                                                                            data.humanName = "nullWord";
+                                                                        } else {
+                                                                            data.humanName = human.name;
+                                                                        }
+                                                                        if (place == null) {
+                                                                            data.placeName = "nullWord";
+                                                                        } else {
+                                                                            data.placeName = place.name;
+                                                                        }
+                                                                        if (animal == null) {
+                                                                            data.animalName = "nullWord";
+                                                                        } else {
+                                                                            data.animalName = animal.name;
+                                                                        }
+                                                                        if (thing == null) {
+                                                                            data.thingName = "nullWord";
+                                                                        } else {
+                                                                            data.thingName = thing.name;
+                                                                        }
+                                                                        if (plant == null) {
+                                                                            data.plantName = "nullWord";
+                                                                        } else {
+                                                                            data.plantName = plant.name;
+                                                                        }
+
                                                                         res.status(200).json({ success: 1, msg: 'words shown of given letter', data: data });
                                                                     });
                                                             });
@@ -180,7 +179,7 @@ module.exports = ({ config, db }) => {
 
         } else {
 
-             var npatArr = ['Name', 'Place', 'Animal', 'Plant', 'Thing'];
+            var npatArr = ['Name', 'Place', 'Animal', 'Plant', 'Thing'];
             var rand = Math.floor(Math.random() * npatArr.length);
 
 
@@ -233,7 +232,7 @@ module.exports = ({ config, db }) => {
 
 
 
-var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
+            var npatBotArr = ['Name', 'Place', 'Animal', 'Thing', 'Plant'];
 
 
             var NpatBotPromises = npatBotArr.map(type => {
@@ -241,232 +240,214 @@ var npatBotArr = ['Name', 'Place', 'Animal', 'Thing' , 'Plant' ];
                     if (type == 'Name') {
                         if (showRight.includes(1)) {
 
-                AdminHuman.count({ word: req.query.word  , language : languageWord})
-                .exec(function(err, count) {
-                    var humanRandom = Math.floor(Math.random() * count)
-                    AdminHuman.findOne({ word: req.query.word , language : languageWord})
-                    .skip(humanRandom).exec(
-                        (err, human) => {
-                            if(human == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = human.name;
-                            }
-                            
-                            resolve(botWord)
+                            AdminHuman.count({ word: req.query.word, language: languageWord })
+                                .exec(function(err, count) {
+                                    var humanRandom = Math.floor(Math.random() * count)
+                                    AdminHuman.findOne({ word: req.query.word, language: languageWord })
+                                        .skip(humanRandom).exec(
+                                            (err, human) => {
+                                                if (human == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = human.name;
+                                                }
 
-                        });
-                });
-            } else {
+                                                resolve(botWord)
 
-                AdminHuman.count({ word: { $ne: req.query.word } , "language" : languageWord})
-                .exec(function(err, count) {
-                    var humanRandom = Math.floor(Math.random() * count)
-                    AdminHuman.findOne({ word: { $ne: req.query.word } , "language" : languageWord})
-                    .skip(humanRandom).exec(
-                        (err, human) => {
+                                            });
+                                });
+                        } else {
 
-                             if(human == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = human.name;
-                            }
-                            
-                            resolve(botWord)
+                            AdminHuman.count({ word: { $ne: req.query.word }, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var humanRandom = Math.floor(Math.random() * count)
+                                    AdminHuman.findOne({ word: { $ne: req.query.word }, "language": languageWord })
+                                        .skip(humanRandom).exec(
+                                            (err, human) => {
 
+                                                if (human == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = human.name;
+                                                }
 
-                        });
-                });
-            }
+                                                resolve(botWord)
 
 
+                                            });
+                                });
+                        }
+
+
+                    } else if (type == 'Place') {
+                        if (showRight.includes(2)) {
+                            AdminPlace.count({ word: req.query.word, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var placeRandom = Math.floor(Math.random() * count)
+                                    AdminPlace.findOne({ word: req.query.word, "language": languageWord })
+                                        .skip(placeRandom).exec(
+                                            (err, place) => {
+
+                                                if (place == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = place.name;
+                                                }
+
+                                                resolve(botWord)
+
+                                            });
+                                });
+                        } else {
+                            AdminPlace.count({ word: { $ne: req.query.word }, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var placeRandom = Math.floor(Math.random() * count)
+                                    AdminPlace.findOne({ word: { $ne: req.query.word }, "language": languageWord })
+                                        .skip(placeRandom).exec(
+                                            (err, place) => {
+
+                                                if (place == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = place.name;
+                                                }
+
+                                                resolve(botWord)
+
+                                            });
+                                });
+                        }
+                    } else if (type == 'Animal') {
+                        if (showRight.includes(3)) {
+                            AdminAnimal.count({ word: req.query.word, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var animalRandom = Math.floor(Math.random() * count)
+                                    AdminAnimal.findOne({ word: req.query.word, "language": languageWord })
+                                        .skip(animalRandom).exec(
+                                            (err, animal) => {
+
+                                                if (animal == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = animal.name;
+                                                }
+
+                                                resolve(botWord)
+                                            });
+                                });
+                        } else {
+                            AdminAnimal.count({ word: { $ne: req.query.word }, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var animalRandom = Math.floor(Math.random() * count)
+                                    AdminAnimal.findOne({ word: { $ne: req.query.word }, "language": languageWord })
+                                        .skip(animalRandom).exec(
+                                            (err, animal) => {
+
+                                                if (animal == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = animal.name;
+                                                }
+
+                                                resolve(botWord)
+                                            });
+                                });
+                        }
+                    } else if (type == 'Thing') {
+                        if (showRight.includes(4)) {
+                            AdminThing.count({ word: req.query.word, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var animalRandom = Math.floor(Math.random() * count)
+                                    AdminThing.findOne({ word: req.query.word, "language": languageWord })
+                                        .skip(animalRandom).exec(
+                                            (err, thing) => {
+
+                                                if (thing == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = thing.name;
+                                                }
+
+                                                resolve(botWord)
+
+                                            });
+                                });
+                        } else {
+                            AdminThing.count({ word: { $ne: req.query.word }, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var animalRandom = Math.floor(Math.random() * count)
+                                    AdminThing.findOne({ word: { $ne: req.query.word }, "language": languageWord })
+                                        .skip(animalRandom).exec(
+                                            (err, thing) => {
+
+                                                if (thing == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = thing.name;
+                                                }
+
+                                                resolve(botWord)
+
+                                            });
+                                });
+                        }
+                    } else {
+                        if (showRight.includes(5)) {
+                            AdminPlant.count({ word: req.query.word, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var plantRandom = Math.floor(Math.random() * count)
+                                    AdminPlant.findOne({ word: req.query.word, "language": languageWord })
+                                        .skip(plantRandom).exec(
+                                            (err, plant) => {
+
+                                                if (plant == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = plant.name;
+                                                }
+
+                                                resolve(botWord)
+
+                                            });
+                                });
+                        } else {
+                            AdminPlant.count({ word: { $ne: req.query.word }, "language": languageWord })
+                                .exec(function(err, count) {
+                                    var plantRandom = Math.floor(Math.random() * count)
+                                    AdminPlant.findOne({ word: { $ne: req.query.word }, "language": languageWord })
+                                        .skip(plantRandom).exec(
+                                            (err, plant) => {
+
+                                                if (plant == null) {
+                                                    var botWord = "nullWord";
+                                                } else {
+                                                    var botWord = plant.name;
+                                                }
+                                                resolve(botWord)
+
+                                            });
+                                });
+                        }
                     }
-                     else if (type == 'Place') {
-                    if (showRight.includes(2)) {
-                AdminPlace.count({ word: req.query.word , "language" : languageWord})
-                .exec(function(err, count) {
-                    var placeRandom = Math.floor(Math.random() * count)
-                    AdminPlace.findOne({ word: req.query.word , "language" : languageWord})
-                    .skip(placeRandom).exec(
-                        (err, place) => {
-
-                            if(place == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = place.name;
-                            }
-                            
-                            resolve(botWord)
-
-                        });
-                });
-            } else {
-                AdminPlace.count({ word: { $ne: req.query.word } , "language" : languageWord})
-                .exec(function(err, count) {
-                    var placeRandom = Math.floor(Math.random() * count)
-                    AdminPlace.findOne({ word: { $ne: req.query.word } , "language" : languageWord})
-                    .skip(placeRandom).exec(
-                        (err, place) => {
-
-                            if(place == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = place.name;
-                            }
-                            
-                            resolve(botWord)
-
-                        });
-                });
-            }
-            }
-            else if (type == 'Animal') {
-                if (showRight.includes(3)) {
-                AdminAnimal.count({ word: req.query.word , "language" : languageWord})
-                .exec(function(err, count) {
-                    var animalRandom = Math.floor(Math.random() * count)
-                    AdminAnimal.findOne({ word: req.query.word , "language" : languageWord})
-                    .skip(animalRandom).exec(
-                        (err, animal) => {
-
-                            if(animal == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = animal.name;
-                            }
-                            
-                            resolve(botWord)
-                        });
-                });
-            } else {
-                AdminAnimal.count({ word: { $ne: req.query.word }, "language" : languageWord })
-                .exec(function(err, count) {
-                    var animalRandom = Math.floor(Math.random() * count)
-                    AdminAnimal.findOne({ word: { $ne: req.query.word } , "language" : languageWord})
-                    .skip(animalRandom).exec(
-                        (err, animal) => {
-
-                            if(animal == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = animal.name;
-                            }
-                            
-                            resolve(botWord)
-                        });
-                });
-            }
-            }
-            else if (type == 'Thing') {
-                if (showRight.includes(4)) {
-                AdminThing.count({ word: req.query.word , "language" : languageWord})
-                .exec(function(err, count) {
-                    var animalRandom = Math.floor(Math.random() * count)
-                    AdminThing.findOne({ word: req.query.word , "language" : languageWord})
-                    .skip(animalRandom).exec(
-                        (err, thing) => {
-
-                            if(thing == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = thing.name;
-                            }
-                            
-                            resolve(botWord)
-
-                        });
-                });
-            } else {
-                AdminThing.count({ word: { $ne: req.query.word }, "language" : languageWord })
-                .exec(function(err, count) {
-                    var animalRandom = Math.floor(Math.random() * count)
-                    AdminThing.findOne({ word: { $ne: req.query.word } , "language" : languageWord})
-                    .skip(animalRandom).exec(
-                        (err, thing) => {
-
-                           if(thing == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = thing.name;
-                            }
-
-                            resolve(botWord)
-
-                        });
-                });
-            }
-            }
-            else{
-                if (showRight.includes(5)) {
-                AdminPlant.count({ word: req.query.word , "language" : languageWord})
-                .exec(function(err, count) {
-                    var plantRandom = Math.floor(Math.random() * count)
-                    AdminPlant.findOne({ word: req.query.word , "language" : languageWord})
-                    .skip(plantRandom).exec(
-                        (err, plant) => {
-
-                            if(plant == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = plant.name;
-                            }
-
-                            resolve(botWord)
-
-                        });
-                });
-                //console.log("Animal");
-            } else {
-                AdminPlant.count({ word: { $ne: req.query.word }, "language" : languageWord })
-                .exec(function(err, count) {
-                    var plantRandom = Math.floor(Math.random() * count)
-                    AdminPlant.findOne({ word: { $ne: req.query.word } , "language" : languageWord})
-                    .skip(plantRandom).exec(
-                        (err, plant) => {
-
-                            if(plant == null) {
-                                var botWord = "nullWord";
-                            }else {
-                                var botWord = plant.name;
-                            }
-                            resolve(botWord)
-
-                        });
-                });
-            }
-            }
 
 
                 });
             });
-// Promise.all(cropPromises).then(crops => {
-Promise.all(NpatBotPromises).then(botWords =>{
+            Promise.all(NpatBotPromises).then(botWords => {
 
-    // botWords.map(words => {
 
-    // })
-
-    // var finalBotWords = Object.assign({animalName : botWords[2] ,
-    //  humanName : botWords[0],
-    //   thingName : botWords[3] , 
-    //   placeName : botWords[1], 
-    //   plantName : botWords[4]}); 
-
-    var finalBotWords = Object.assign({humanName : botWords[0] ,
-     placeName : botWords[1],
-      animalName : botWords[2] , 
-      thingName : botWords[3], 
-      plantName : botWords[4]}); 
-
-                     return res.json({success: 1, msg: 'words shown of given letter', data: finalBotWords});
-                }).catch(err => {
-                    res.json({success: 0, msg:'Unable to get field'});
+                var finalBotWords = Object.assign({
+                    humanName: botWords[0],
+                    placeName: botWords[1],
+                    animalName: botWords[2],
+                    thingName: botWords[3],
+                    plantName: botWords[4]
                 });
 
-
-//==================================khtam ====================
-
-
+                return res.json({ success: 1, msg: 'words shown of given letter', data: finalBotWords });
+            }).catch(err => {
+                res.json({ success: 0, msg: 'Unable to get field' });
+            });
 
         }
 
@@ -474,7 +455,61 @@ Promise.all(NpatBotPromises).then(botWords =>{
     });
 
 
-    
+
+
+    api.post('/hints/add', (req, res) => {
+
+        let hint = new Hints({
+            name: req.body.name,
+            type: req.body.type,
+            language: req.body.language,
+        });
+        hint.save((error, hint) => {
+            if (error) {
+                return res.status(401).json({ success: 0, msg: error });
+            }
+
+            res.status(200).json({ success: 1, msg: 'hint info added', data: hint });
+
+        });
+
+    });
+
+    api.get('/hints/get', (req, res) => {
+        if (req.query.language == "1") {
+            Hints.aggregate([{ $match: { language: "Arabian" } },
+                { $sample: { size: 1 } }
+            ], (err, hint) => {
+                if (err) {
+                    return res.status(401).json({ success: 0, msg: "error while retriving the hint" });
+                } else if (!hint && hint == undefined && hint == null) {
+                    return res.status(404).json({ success: 0, msg: "no hint retrived" });
+                } else {
+                    return res.status(200).json({ success: 1, msg: "hint retrived", data: hint });
+                }
+            })
+        } else {
+
+            Hints.aggregate([{ $match: { language: "English" } },
+                { $sample: { size: 1 } }
+            ], (err, hint) => {
+                if (err) {
+                    return res.status(401).json({ success: 0, msg: "error while retriving the hint" });
+                } else if (!hint && hint == undefined && hint == null) {
+                    return res.status(404).json({ success: 0, msg: "no hint retrived" });
+                } else {
+                    return res.status(200).json({ success: 1, msg: "hint retrived", data: hint });
+                }
+            })
+        }
+
+    })
+
+
+
+
+
+
 
 
 
