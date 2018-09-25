@@ -133,7 +133,7 @@ module.exports = ({ config, db }) => {
                 if (err) {
                     return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
                 }
-                return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
+                return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names , numPages : pages});
             });
         });
     });
