@@ -124,7 +124,7 @@ module.exports = ({ config, db }) => {
             else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
-            adminPlant.find({}).sort({ name: 'asc' }).limit(2)
+            adminPlant.find({}).sort({ name: 'asc' }).limit(limit)
             .skip(skipCount).exec((err, names) => {
                 if (err) {
                     return res.json({ success: 0, msg: "error occurred while retriving the names of human" });

@@ -168,7 +168,7 @@ module.exports = ({ config, db }) => {
                 console.log(req.query.pageNumber);
                 console.log(skipCount);
             }
-            adminHuman.find({}).sort({ name: 'asc' }).limit(2)
+            adminHuman.find({}).sort({ name: 'asc' }).limit(limit)
             .skip(skipCount).exec((err, names) => {
                 if (err) {
                     return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
