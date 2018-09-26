@@ -112,7 +112,7 @@ module.exports = ({ config, db }) => {
     api.get('/getAllplants', (req, res) => {
         adminPlant.count({}, (err, plantCount) => {
 
-            var limit = 2;
+            var limit = 35;
             console.log(plantCount);
             var pages = Math.ceil(plantCount / limit);
             if (req.query.pageNumber == undefined 
