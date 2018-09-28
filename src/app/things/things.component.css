@@ -1,0 +1,178 @@
+.table_entrydata td {
+  border-right: 1px solid var(--table-border-grey);
+  padding:25px !important;
+  font-size: 13px;
+}
+
+.table_entrydata table{
+  border: 1px solid var(--table-border-grey);
+}
+.table_entrydata thead {
+  border: 1px solid var(--table-border-grey);
+}
+
+.table_entrydata .fa-trash {
+  color: var(--red);
+  cursor: pointer;
+}
+
+a, a:hover, a:focus {
+  color: inherit;
+  text-decoration: none;
+  transition: all 0.3s;
+}
+
+.line {
+  width: 100%;
+  height: 1px;
+  border-bottom: 1px dashed var(-grey-three);
+  margin: 40px 0;
+}
+
+.add_merchants span {
+  display: inline-block;
+}
+
+.add_merchants .btn {
+  background-color: transparent;
+  border: 1px solid var(--violet) ;
+  margin-right: 10px;
+}
+
+.add_merchants .btn:hover {
+  background-color: var(--green);
+  border: 1px solid var(--green) ;
+  transition: 1s;
+  color:var(--white-two);
+}
+
+.pointer  a {
+  color: var(--green);
+}
+
+
+.alert {
+  font-size: 18px;
+  padding: 25px;
+  /* background-color: #f44336d0;
+  color: white; */
+}
+
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 40px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.closebtn:hover {
+  color: #721c24;
+}
+
+/* .pagination  a {
+  color: var(--orange);
+} */
+.active  a {
+  background-color: var(--green);
+  border: 1px solid var(--green) ;
+  color:var(--white-two);
+}
+
+
+
+.disabled {
+  pointer-events:none; 
+  opacity:0.6;         
+}
+
+.id {
+  color:  var(--green); 
+  font-weight: bold;
+}
+
+#preloader {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: var(--loader-bg-color)
+}
+
+.loader-main.mx-auto {
+  width: 15%;
+  margin-top: 160px;
+}
+
+
+.modal-dialog {
+  margin: 130px auto !important;
+}
+
+/* =================switch ===============*/
+/* windows vala */
+
+.switch{
+
+}
+
+.onoffswitch4 {
+position: relative; width: 90px;
+-webkit-user-select:none; -moz-user-select:none; -ms-user-select: none;
+}
+
+.onoffswitch4-checkbox {
+display: none;
+}
+
+.onoffswitch4-label {
+display: block; overflow: hidden; cursor: pointer;
+border: 2px solid #27A1CA; border-radius: 0px;
+}
+
+.onoffswitch4-inner {
+display: block; width: 200%; margin-left: -100%;
+-moz-transition: margin 0.3s ease-in 0s; -webkit-transition: margin 0.3s ease-in 0s;
+-o-transition: margin 0.3s ease-in 0s; transition: margin 0.3s ease-in 0s;
+}
+
+.onoffswitch4-inner:before, .onoffswitch4-inner:after {
+display: block; float: left; width: 50%; height: 30px; padding: 0; line-height: 26px;
+font-size: 14px; color: white; font-family: Trebuchet, Arial, sans-serif; font-weight: bold;
+-moz-box-sizing: border-box; -webkit-box-sizing: border-box; box-sizing: border-box;
+border: 2px solid transparent;
+background-clip: padding-box;
+}
+
+.onoffswitch4-inner:before {
+content: "Admin";
+padding-left: 10px;
+background-color: #FFFFFF; color: #27A1CA;
+}
+
+.onoffswitch4-inner:after {
+content: "Game";
+padding-right: 10px;
+background-color: #FFFFFF; color: #27A1CA;
+text-align: right;
+}
+
+.onoffswitch4-switch {
+display: block; width: 25px; margin: 0px;
+background: #27A1CA;
+position: absolute; top: 0; bottom: 0; right: 65px;
+-moz-transition: all 0.3s ease-in 0s; -webkit-transition: all 0.3s ease-in 0s;
+-o-transition: all 0.3s ease-in 0s; transition: all 0.3s ease-in 0s; 
+}
+
+.onoffswitch4-checkbox:checked + .onoffswitch4-label .onoffswitch4-inner {
+margin-left: 0;
+}
+
+.onoffswitch4-checkbox:checked + .onoffswitch4-label .onoffswitch4-switch {
+right: 0px; 
+}
