@@ -152,7 +152,7 @@ module.exports = ({ config, db }) => {
     api.get('/getAllNames', (req, res) => {
         adminHuman.count({}, (err, humanCount) => {
 
-            var limit = 2;
+            var limit = 35;
             console.log(humanCount);
             var pages = Math.ceil(humanCount / limit);
             console.log("count");
