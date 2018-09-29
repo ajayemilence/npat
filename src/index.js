@@ -4,6 +4,7 @@ let bodyParser = require('body-parser');
 
 let passport = require('passport');
 let LocalStrategy = require('passport-local').Strategy;
+let cors = require('cors');
 let app = express();
 
 let http = require('http').Server(app);
@@ -11,6 +12,9 @@ let http = require('http').Server(app);
 let config = require('./config');
 let routes = require('./routes');
 
+
+
+app.use(cors());
 
 //  parse application /json
 app.use(bodyParser.json({

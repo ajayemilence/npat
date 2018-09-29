@@ -145,10 +145,6 @@ module.exports = ({ config, db }) => {
 
 
 
-
-
-
-
     api.get('/getAllNames', (req, res) => {
         adminHuman.count({}, (err, humanCount) => {
 
