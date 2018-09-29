@@ -32,7 +32,7 @@ module.exports = ({ config, db }) => {
                     name: req.body.name,
                     word: req.body.word,
                     type: req.body.type,
-                    createdBy : (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
                     createdAt: moment().local().valueOf(),
                     updatedAt: moment().local().valueOf(),
                     language: req.body.language,
@@ -72,40 +72,46 @@ module.exports = ({ config, db }) => {
 
         let upload = multer({ storage: storage }).single('csvFile');
         upload(req, res, (err) => {
-            if(err){
-                return res.status(500).json({success : 0 , msg : "error in uploading" , error : err})
+            if (err) {
+                return res.status(500).json({ success: 0, msg: "error in uploading", error: err })
             }
 
 
             var csvFileName = req.file.filename;
 
             fs.createReadStream('/root/npatAPI/src/uploads/' + csvFileName)
-            .pipe(csv())
-            .on('data', function(data) {
-                // body...
-                let animal = new adminAnimal({
-                    word: data[0],
-                    name: data[1],
-                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
-                    createdAt: moment().local().valueOf(),
-                    updatedAt: moment().local().valueOf(),
-                    language: data[2],
-                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
-                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
-                });
-                animal.save((error, animal) => {
-                    if (error) {
-                        res.json({ success: 0, msg: error });
-                    }
-                });
-                //===
+                .pipe(csv())
+                .on('data', function(data) {
+                    adminAnimal.findOne({ name: data[1] }, (err, word) => {
+                        if (word) {
+                            console.log("already a word in place")
+                        } else {
+                            // body...
+                            let animal = new adminAnimal({
+                                word: data[0],
+                                name: data[1],
+                                createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                                createdAt: moment().local().valueOf(),
+                                updatedAt: moment().local().valueOf(),
+                                language: data[2],
+                                upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                                downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                            });
+                            animal.save((error, animal) => {
+                                if (error) {
+                                    res.json({ success: 0, msg: error });
+                                }
+                            });
+                        }
+                    });
+                    //===
 
-                console.log(data[2] , "11111111111111");
-            })
-            .on('end', function(data) {
-                res.json({ success: 1, msg: "csv file uploaded" });
-                console.log('read finished');
-            })
+                    console.log(data[2], "11111111111111");
+                })
+                .on('end', function(data) {
+                    res.json({ success: 1, msg: "csv file uploaded" });
+                    console.log('read finished');
+                })
 
         });
     });
@@ -145,22 +151,21 @@ module.exports = ({ config, db }) => {
 
             var limit = 35;
             var pages = Math.ceil(animalCount / limit);
-            if (req.query.pageNumber == undefined 
-                || req.query.pageNumber == null 
-                || req.query.pageNumber == "" 
-                || req.query.pageNumber == 1){
+            if (req.query.pageNumber == undefined ||
+                req.query.pageNumber == null ||
+                req.query.pageNumber == "" ||
+                req.query.pageNumber == 1) {
                 skipCount = 0;
-            }
-            else {
+            } else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
             adminAnimal.find({}).sort({ name: 'asc' }).limit(limit)
-            .skip(skipCount).exec((err, names) => {
-                if (err) {
-                    return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
-                }
-                return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names , numPages : pages });
-            });
+                .skip(skipCount).exec((err, names) => {
+                    if (err) {
+                        return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+                    }
+                    return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names, numPages: pages });
+                });
         });
     });
 

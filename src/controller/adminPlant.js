@@ -31,7 +31,7 @@ module.exports = ({ config, db }) => {
                     name: req.body.name,
                     word: req.body.word,
                     type: req.body.type,
-                    createdBy : (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
                     createdAt: moment().local().valueOf(),
                     updatedAt: moment().local().valueOf(),
                     language: req.body.language,
@@ -63,45 +63,51 @@ module.exports = ({ config, db }) => {
         });
     });
 
-            //==============csv file uplodation ==========================
+    //==============csv file uplodation ==========================
 
 
     api.post('/csvsample', (req, res) => {
 
         let upload = multer({ storage: storage }).single('csvFile');
         upload(req, res, (err) => {
-            if(err){
-                return res.status(500).json({success : 0 , msg : "error in uploading" , error : err});
+            if (err) {
+                return res.status(500).json({ success: 0, msg: "error in uploading", error: err });
             }
 
             var csvFileName = req.file.filename;
 
             fs.createReadStream('/root/npatAPI/src/uploads/' + csvFileName)
-            .pipe(csv())
-            .on('data', function(data) {
-                // body...
-                let plant = new adminPlant({
-                    word: data[0],
-                    name: data[1],
-                    createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
-                    createdAt: moment().local().valueOf(),
-                    updatedAt: moment().local().valueOf(),
-                    language: data[2],
-                    upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
-                    downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
-                });
-                plant.save((error, plant) => {
-                    if (error) {
-                        res.json({ success: 0, msg: error });
-                    }
-                });
-                //===
-                console.log(data[2] , "11111111111111");
-            })
-            .on('end', function(data) {
-                res.json({ success: 1, msg: "csv file uploaded" });
-                console.log('read finished');
-            })
+                .pipe(csv())
+                .on('data', function(data) {
+                    adminPlant.findOne({ name: data[1] }, (err, word) => {
+                        if (word) {
+                            console.log("already a word in place")
+                        } else {
+                            // body...
+                            let plant = new adminPlant({
+                                word: data[0],
+                                name: data[1],
+                                createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                                createdAt: moment().local().valueOf(),
+                                updatedAt: moment().local().valueOf(),
+                                language: data[2],
+                                upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                                downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                            });
+                            plant.save((error, plant) => {
+                                if (error) {
+                                    res.json({ success: 0, msg: error });
+                                }
+                            });
+                        }
+                    });
+                    //===
+                    console.log(data[2], "11111111111111");
+                })
+                .on('end', function(data) {
+                    res.json({ success: 1, msg: "csv file uploaded" });
+                    console.log('read finished');
+                })
 
         });
     });
@@ -115,22 +121,21 @@ module.exports = ({ config, db }) => {
             var limit = 35;
             console.log(plantCount);
             var pages = Math.ceil(plantCount / limit);
-            if (req.query.pageNumber == undefined 
-                || req.query.pageNumber == null 
-                || req.query.pageNumber == "" 
-                || req.query.pageNumber == 1){
+            if (req.query.pageNumber == undefined ||
+                req.query.pageNumber == null ||
+                req.query.pageNumber == "" ||
+                req.query.pageNumber == 1) {
                 skipCount = 0;
-            }
-            else {
+            } else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
             adminPlant.find({}).sort({ name: 'asc' }).limit(limit)
-            .skip(skipCount).exec((err, names) => {
-                if (err) {
-                    return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
-                }
-                return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names , numPages : pages});
-            });
+                .skip(skipCount).exec((err, names) => {
+                    if (err) {
+                        return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+                    }
+                    return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names, numPages: pages });
+                });
         });
     });
 

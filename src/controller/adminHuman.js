@@ -53,22 +53,29 @@ module.exports = ({ config, db }) => {
             fs.createReadStream('/root/npatAPI/src/uploads/' + csvFileName)
                 .pipe(csv())
                 .on('data', function(data) {
-                    // body...
-                    let human = new adminHuman({
-                        name: data[2],
-                        word: req.body.word,
-                        type: req.body.type,
-                        gender: req.body.gender,
-                        createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
-                        createdAt: moment().local().valueOf(),
-                        updatedAt: moment().local().valueOf(),
-                        language: req.body.language,
-                        upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
-                        downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
-                    });
-                    human.save((error, human) => {
-                        if (error) {
-                            res.json({ success: 0, msg: error });
+                    adminHuman.findOne({ name: data[1] }, (err, word) => {
+                        if (word) {
+                            console.log("already a word in place")
+                        } else {
+                            // body...
+
+                            let human = new adminHuman({
+                                name: data[1],
+                                word: data[0],
+                                //type: req.body.type,
+                                gender: data[3],
+                                createdBy: (req.body.createdBy === undefined) ? "Admin" : req.body.createdBy,
+                                createdAt: moment().local().valueOf(),
+                                updatedAt: moment().local().valueOf(),
+                                language: data[2],
+                                upVote: (req.body.upVote === undefined) ? 0 : req.body.upVote,
+                                downVote: (req.body.downVote === undefined) ? 0 : req.body.downVote
+                            });
+                            human.save((error, human) => {
+                                if (error) {
+                                    res.json({ success: 0, msg: error });
+                                }
+                            });
                         }
                     });
                     //===
@@ -152,25 +159,24 @@ module.exports = ({ config, db }) => {
             console.log(humanCount);
             var pages = Math.ceil(humanCount / limit);
             console.log("count");
-             console.log(pages);
-            if (req.query.pageNumber == undefined 
-                || req.query.pageNumber == null 
-                || req.query.pageNumber == "" 
-                || req.query.pageNumber == 1){
+            console.log(pages);
+            if (req.query.pageNumber == undefined ||
+                req.query.pageNumber == null ||
+                req.query.pageNumber == "" ||
+                req.query.pageNumber == 1) {
                 skipCount = 0;
-            }
-            else {
+            } else {
                 skipCount = (req.query.pageNumber - 1) * limit
                 console.log(req.query.pageNumber);
                 console.log(skipCount);
             }
             adminHuman.find({}).sort({ name: 'asc' }).limit(limit)
-            .skip(skipCount).exec((err, names) => {
-                if (err) {
-                    return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
-                }
-                return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names , numPages : pages});
-            });
+                .skip(skipCount).exec((err, names) => {
+                    if (err) {
+                        return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+                    }
+                    return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names, numPages: pages });
+                });
         });
     });
 
