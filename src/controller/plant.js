@@ -60,7 +60,7 @@ module.exports = ({ config, db }) => {
      api.get('/getAllplants', (req, res) => {
         Plant.count({}, (err, plantCount) => {
 
-            var limit = 35;
+            var limit = 20;
             var pages = Math.ceil(plantCount / limit);
             if (req.query.pageNumber == undefined ||
                 req.query.pageNumber == null ||

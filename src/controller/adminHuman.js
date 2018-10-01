@@ -162,7 +162,7 @@ module.exports = ({ config, db }) => {
     api.get('/getAllNames', (req, res) => {
         adminHuman.count({}, (err, humanCount) => {
 
-            var limit = 35;
+            var limit = 20;
             console.log(humanCount);
             var pages = Math.ceil(humanCount / limit);
             console.log("count");

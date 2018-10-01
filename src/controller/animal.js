@@ -85,14 +85,29 @@ module.exports = ({ config, db }) => {
 
 
 
-    api.get('/getAllAnimals', (req, res) => {
-        Animal.find({}, (err, names) => {
-            if (err) {
-                res.json({ success: 0, msg: "error occurred while retriving the animals" });
+ api.get('/getAllAnimals', (req, res) => {
+        Animal.count({}, (err, animalCount) => {
+
+            var limit = 20;
+            var pages = Math.ceil(animalCount / limit);
+            if (req.query.pageNumber == undefined ||
+                req.query.pageNumber == null ||
+                req.query.pageNumber == "" ||
+                req.query.pageNumber == 1) {
+                skipCount = 0;
+            } else {
+                skipCount = (req.query.pageNumber - 1) * limit
             }
-            return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names });
+            Animal.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+                .skip(skipCount).exec((err, names) => {
+                    if (err) {
+                        return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+                    }
+                    return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names, numPages: pages });
+                });
         });
     });
+
 
     api.post('/upVote', (req, res) => {
         Animal.findOne({ name: req.body.name }, (err, animal) => {

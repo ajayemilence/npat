@@ -121,7 +121,7 @@ module.exports = ({ config, db }) => {
     api.get('/getAllplaces', (req, res) => {
         adminPlace.count({}, (err, placeCount) => {
 
-            var limit = 35;
+            var limit = 20;
             console.log(placeCount);
             var pages = Math.ceil(placeCount / limit);
             if (req.query.pageNumber == undefined ||

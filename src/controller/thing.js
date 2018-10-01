@@ -61,7 +61,7 @@ module.exports = ({ config, db }) => {
      api.get('/getAllthings', (req, res) => {
         Thing.count({}, (err, thingCount) => {
 
-            var limit = 35;
+            var limit = 20;
             var pages = Math.ceil(thingCount / limit);
             if (req.query.pageNumber == undefined ||
                 req.query.pageNumber == null ||

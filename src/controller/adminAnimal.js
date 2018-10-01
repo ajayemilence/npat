@@ -149,7 +149,7 @@ module.exports = ({ config, db }) => {
     api.get('/getAllAnimals', (req, res) => {
         adminAnimal.count({}, (err, animalCount) => {
 
-            var limit = 35;
+            var limit = 20;
             var pages = Math.ceil(animalCount / limit);
             if (req.query.pageNumber == undefined ||
                 req.query.pageNumber == null ||
