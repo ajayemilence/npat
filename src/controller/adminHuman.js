@@ -112,6 +112,7 @@ module.exports = ({ config, db }) => {
                 return res.send(err);
             }
 
+
             if (human == null || !human) {
 
                 let human = new adminHuman({
@@ -136,6 +137,10 @@ module.exports = ({ config, db }) => {
 
                 });
             } else {
+                 // if(req.body.upvote !== null || 
+                 //    req.body.downvote !== undefined ||
+                 //    req.body.upvote !== undefined
+                 //    ) {
                 human.upVote = human.upVote + req.body.upVote;
                 human.downVote = human.downVote + req.body.downVote;
 
@@ -145,6 +150,8 @@ module.exports = ({ config, db }) => {
                     }
                     return res.status(200).json({ success: 1, msg: " human word info added upvoted", data: human })
                 });
+                // }
+                //return res.status(200).json({ success: 1, msg: " already a word", data: human })
             }
 
         });
@@ -170,7 +177,8 @@ module.exports = ({ config, db }) => {
                 console.log(req.query.pageNumber);
                 console.log(skipCount);
             }
-            adminHuman.find({}).sort({ name: 'asc' }).limit(limit)
+            adminHuman.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } )
+            .limit(limit)
                 .skip(skipCount).exec((err, names) => {
                     if (err) {
                         return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
@@ -179,6 +187,37 @@ module.exports = ({ config, db }) => {
                 });
         });
     });
+
+
+
+    // api.get('/getAllNames', (req, res) => {
+    //     adminHuman.count({}, (err, humanCount) => {
+
+    //         var limit = 35;
+    //         console.log(humanCount);
+    //         var pages = Math.ceil(humanCount / limit);
+    //         console.log("count");
+    //         console.log(pages);
+    //         if (req.query.pageNumber == undefined ||
+    //             req.query.pageNumber == null ||
+    //             req.query.pageNumber == "" ||
+    //             req.query.pageNumber == 1) {
+    //             skipCount = 0;
+    //         } else {
+    //             skipCount = (req.query.pageNumber - 1) * limit
+    //             console.log(req.query.pageNumber);
+    //             console.log(skipCount);
+    //         }
+    //         adminHuman.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } )
+    //         .limit(limit)
+    //             .skip(skipCount).exec((err, names) => {
+    //                 if (err) {
+    //                     return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+    //                 }
+    //                 return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names, numPages: pages });
+    //             });
+    //     });
+    // });
 
 
 
@@ -264,47 +303,3 @@ module.exports = ({ config, db }) => {
 
     return api;
 };
-
-//csv file import
-
-
-// $(function(){
-
-//     /** Click on Fetch data and display in HTML table **/
-
-//     $("#fetchdata").on('click', function(){
-
-//         $.get( "/fetchdata", function( data ) {
-
-//             var products = data['data'];
-
-//             $("#trdata").html('');
-
-//             $("#message").hide();
-
-//             var string = '';
-
-//             $.each(products, function(index, product ) {
-
-//                 string += '<tr><td>'+(index+1)+'</td><td>'+product['_id']+'</td><td>'+product['name']+'</td><td>'+product['category']+'</td><td>'+product['price']+'</td><td>'+product['manufacturer']+'</td></tr>';
-
-//             });
-
-//             $("#trdata").html(string);
-
-//         });
-//     });
-
-//     /** Import data after click on a button */
-
-//     $("#importdata").on('click', function(){
-
-//         $.get( "/import", function( data ) {
-
-//             $("#message").show().html(data['success']);
-
-//         });
-
-//     });
-
-// });

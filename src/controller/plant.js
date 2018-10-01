@@ -57,14 +57,30 @@ module.exports = ({ config, db }) => {
     });
 
 
-    api.get('/getAllplants', (req, res) => {
-        Plant.find({}, (err, names) => {
-            if (err) {
-                res.json({ success: 0, msg: "error occurred while retriving the plants" });
+     api.get('/getAllplants', (req, res) => {
+        Plant.count({}, (err, plantCount) => {
+
+            var limit = 35;
+            var pages = Math.ceil(plantCount / limit);
+            if (req.query.pageNumber == undefined ||
+                req.query.pageNumber == null ||
+                req.query.pageNumber == "" ||
+                req.query.pageNumber == 1) {
+                skipCount = 0;
+            } else {
+                skipCount = (req.query.pageNumber - 1) * limit
             }
-            return res.status(200).json({ success: 1, msg: "succesfully get all names ", data: names });
+            Plant.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+                .skip(skipCount).exec((err, names) => {
+                    if (err) {
+                        return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+                    }
+                    return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names, numPages: pages });
+                });
         });
     });
+
+
 
 
     api.put('/updateplant/:id', (req, res) => {
