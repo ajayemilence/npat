@@ -59,7 +59,13 @@ module.exports = ({ config, db }) => {
 
 
      api.get('/getAllthings', (req, res) => {
-        Thing.count({}, (err, thingCount) => {
+        if(req.query.type == undefined || req.query.type == null || req.query.type == "" || req.query.type == 0){
+            languageType = "English";
+        }
+        else {
+            languageType = "Arabian";
+        }
+        Thing.count({language: languageType}, (err, thingCount) => {
 
             var limit = 20;
             var pages = Math.ceil(thingCount / limit);
@@ -71,7 +77,7 @@ module.exports = ({ config, db }) => {
             } else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
-            Thing.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+            Thing.find({language: languageType}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
                 .skip(skipCount).exec((err, names) => {
                     if (err) {
                         return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
