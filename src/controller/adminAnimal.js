@@ -147,7 +147,7 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAllAnimals', (req, res) => {
-        adminAnimal.count({}, (err, animalCount) => {
+        adminAnimal.count({language: "English"}, (err, animalCount) => {
 
             var limit = 20;
             var pages = Math.ceil(animalCount / limit);
@@ -159,7 +159,30 @@ module.exports = ({ config, db }) => {
             } else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
-            adminAnimal.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+            adminAnimal.find({language: "English"}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+                .skip(skipCount).exec((err, names) => {
+                    if (err) {
+                        return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
+                    }
+                    return res.status(200).json({ success: 1, msg: "succesfully get all names", data: names, numPages: pages });
+                });
+        });
+    });
+
+    api.get('/getAllAnimalsArabic', (req, res) => {
+        adminAnimal.count({language: "Arabian"}, (err, animalCount) => {
+
+            var limit = 20;
+            var pages = Math.ceil(animalCount / limit);
+            if (req.query.pageNumber == undefined ||
+                req.query.pageNumber == null ||
+                req.query.pageNumber == "" ||
+                req.query.pageNumber == 1) {
+                skipCount = 0;
+            } else {
+                skipCount = (req.query.pageNumber - 1) * limit
+            }
+            adminAnimal.find({language: "Arabian"}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
                 .skip(skipCount).exec((err, names) => {
                     if (err) {
                         return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
