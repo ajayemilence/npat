@@ -3,7 +3,8 @@ let Schema = mongoose.Schema;
 
 let adminAnimalSchema = new Schema({
     name: {
-        type: String
+        type: String,
+        lowercase: true
     },
     word: {
         type :String,
