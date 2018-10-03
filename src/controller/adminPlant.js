@@ -116,7 +116,13 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAllplants', (req, res) => {
-        adminPlant.count({}, (err, plantCount) => {
+        if(req.query.type == undefined || req.query.type == null || req.query.type == "" || req.query.type == 0){
+            languageType = "English";
+        }
+        else {
+            languageType = "Arabian";
+        }
+        adminPlant.count({language: languageType }, (err, plantCount) => {
 
             var limit = 20;
             console.log(plantCount);
@@ -129,7 +135,7 @@ module.exports = ({ config, db }) => {
             } else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
-            adminPlant.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+            adminPlant.find({language: languageType }).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
                 .skip(skipCount).exec((err, names) => {
                     if (err) {
                         return res.json({ success: 0, msg: "error occurred while retriving the names of human" });

@@ -119,10 +119,15 @@ module.exports = ({ config, db }) => {
     //===========================================
 
     api.get('/getAllplaces', (req, res) => {
-        adminPlace.count({}, (err, placeCount) => {
+        if(req.query.type == undefined || req.query.type == null || req.query.type == "" || req.query.type == 0){
+            languageType = "English";
+        }
+        else {
+            languageType = "Arabian";
+        }
+        adminPlace.count({language: languageType }, (err, placeCount) => {
 
             var limit = 20;
-            console.log(placeCount);
             var pages = Math.ceil(placeCount / limit);
             if (req.query.pageNumber == undefined ||
                 req.query.pageNumber == null ||
@@ -132,7 +137,7 @@ module.exports = ({ config, db }) => {
             } else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
-            adminPlace.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+            adminPlace.find({language: languageType }).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
                 .skip(skipCount).exec((err, names) => {
                     if (err) {
                         return res.json({ success: 0, msg: "error occurred while retriving the names of human" });

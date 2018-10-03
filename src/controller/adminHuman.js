@@ -160,7 +160,13 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAllNames', (req, res) => {
-        adminHuman.count({}, (err, humanCount) => {
+        if(req.query.type == undefined || req.query.type == null || req.query.type == "" || req.query.type == 0){
+            languageType = "English";
+        }
+        else {
+            languageType = "Arabian";
+        }
+        adminHuman.count({language: languageType }, (err, humanCount) => {
 
             var limit = 20;
             console.log(humanCount);
@@ -177,7 +183,7 @@ module.exports = ({ config, db }) => {
                 console.log(req.query.pageNumber);
                 console.log(skipCount);
             }
-            adminHuman.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } )
+            adminHuman.find({language: languageType }).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } )
             .limit(limit)
                 .skip(skipCount).exec((err, names) => {
                     if (err) {

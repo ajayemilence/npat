@@ -119,7 +119,13 @@ module.exports = ({ config, db }) => {
 
 
     api.get('/getAllthings', (req, res) => {
-        adminThing.count({}, (err, thingCount) => {
+        if(req.query.type == undefined || req.query.type == null || req.query.type == "" || req.query.type == 0){
+            languageType = "English";
+        }
+        else {
+            languageType = "Arabian";
+        }
+        adminThing.count({language: languageType }, (err, thingCount) => {
 
             var limit = 20;
             console.log(thingCount);
@@ -132,7 +138,7 @@ module.exports = ({ config, db }) => {
             } else {
                 skipCount = (req.query.pageNumber - 1) * limit
             }
-            adminThing.find({}).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
+            adminThing.find({language: languageType }).sort({ name: +1 }).collation( { locale: 'en', strength: 2 } ).limit(limit)
                 .skip(skipCount).exec((err, names) => {
                     if (err) {
                         return res.json({ success: 0, msg: "error occurred while retriving the names of human" });
