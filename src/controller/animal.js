@@ -90,7 +90,7 @@ module.exports = ({ config, db }) => {
             languageType = "English";
         }
         else {
-            languageType = "Arabian";
+            languageType = "Arabic";
         }
         Animal.count({language: languageType}, (err, animalCount) => {
 
