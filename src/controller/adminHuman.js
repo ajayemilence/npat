@@ -107,7 +107,8 @@ module.exports = ({ config, db }) => {
 
 
     api.post('/addHuman', (req, res) => {
-        adminHuman.findOne({ name: req.body.name }, (err, human) => {
+        var name = req.body.name.toLowerCase();
+        adminHuman.findOne({ name: name }, (err, human) => {
             if (err) {
                 return res.send(err);
             }

@@ -21,7 +21,8 @@ module.exports = ({ config, db }) => {
     // add place ============================>
 
     api.post('/addPlace', (req, res) => {
-        adminPlace.findOne({ name: req.body.name }, (err, place) => {
+        var name = req.body.name.toLowerCase();
+        adminPlace.findOne({ name: name }, (err, place) => {
             if (err) {
                 return res.send(err);
             }

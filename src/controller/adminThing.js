@@ -21,7 +21,8 @@ module.exports = ({ config, db }) => {
     // add thing ============================>
 
     api.post('/addThing', (req, res) => {
-        adminThing.findOne({ name: req.body.name }, (err, thing) => {
+        var name = req.body.name.toLowerCase();
+        adminThing.findOne({ name: name }, (err, thing) => {
             if (err) {
                 return res.send(err);
             }
